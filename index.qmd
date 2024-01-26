@@ -1,0 +1,7 @@
+---
+title: "ISSS608-VAA"
+---
+
+Welcome to **ISSS608 Visual Analytics and Applications**! I'm Yanrui.
+
+In this website, you will find my learning journey of Visual Analytics taught by Prof Kam Tin Seong.
