@@ -1,0 +1,286 @@
+---
+title: "Hands-on Exercise 2: Beyond ggplot2 Fundamentals"
+date: "January 17, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+editor: visual
+---
+
+# 1. Getting started
+
+## 1.1 Loading R packages
+
+In this hands-on exercise, 4 R packages will be used, they are:
+
+-   **ggrepel**: provides geoms for ggplot2 to repel overlapping text labels
+-   **ggthemes**: provides some extra themes, geoms, and scales for ‘ggplot2’
+-   **hrbrthemes**: provides typography-centric themes and theme components for ggplot2
+-   **patchwork**: prepare composite figure created using ggplot2
+
+```{r}
+#| code-fold: true
+pacman::p_load(ggrepel, patchwork, 
+               ggthemes, hrbrthemes,
+               tidyverse) 
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  If installed, then load; If not installed, then install+load
+2.  They are packages independent from ggplot2
+:::
+
+## 1.2 Importing data
+
+Use `read_csv()` to import data
+
+```{r}
+#| code-fold: true
+exam_data <- read_csv("data/Exam_data.csv")
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+Note to get the right file path and change "\\" to "/" or "\\\\" for Window user
+:::
+
+# 2. Plot with clear labels
+
+## **2.1 Scenario:** **Bad outlook of labels**
+
+-   For a dataset with large number of observations or data points, it's hard to use ggplot2 (`geom_label()`) to add labels because it will add labels to all data points which will cause overlapping on text and difficulty in viewing graphs.
+
+    ```{r}
+    #| code-fold: true
+    ggplot(data=exam_data, 
+           aes(x= MATHS, 
+               y=ENGLISH)) +
+      geom_point() +
+      geom_smooth(method=lm, 
+                  size=0.5) +  
+      geom_label(aes(label = ID), 
+                 hjust = .5, 
+                 vjust = -.5) +
+      coord_cartesian(xlim=c(0,100),
+                      ylim=c(0,100)) +
+      ggtitle("English scores versus Maths scores for Primary 3")
+    ```
+
+## **2.2 Solution: ggrepel**
+
+[ggrepel](https://ggrepel.slowkow.com/)
+
+-   extension of ggplot2 package
+
+-   avoid overlapping text, show labels of selective data points with significance
+
+## **2.3 Usage of ggrepel**
+
+-   `geom_text_repel()`
+
+-   `geom_label_repel()`
+
+```{r}
+#| code-fold: true
+ggplot(data=exam_data, 
+       aes(x= MATHS, 
+           y=ENGLISH)) +
+  geom_point() +
+  geom_smooth(method=lm, 
+              size=0.5) +  
+  geom_label_repel(aes(label = ID), 
+                   fontface = "bold") +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100)) +
+  ggtitle("English scores versus Maths scores for Primary 3")
+```
+
+# 3. Plot with more themes
+
+## **3.1 Scenario: Limited themes**
+
+-   8 built-in themes in ggplot2: `theme_gray()`, `theme_bw()`, `theme_classic()`, `theme_dark()`, `theme_light()`, `theme_linedraw()`, `theme_minimal()`, and `theme_void()`
+
+    ```{r}
+    #| code-fold: true
+    ggplot(data=exam_data,
+           aes(x=MATHS))+
+      geom_histogram(bins=20,
+                     boundary=100,
+                     color="grey25",
+                     fill="grey90")+
+      theme_gray()+
+      ggtitle("Distribution of Maths scores")
+    ```
+
+## **3.2 Solution1: ggthemes**
+
+[ggthemes](https://cran.r-project.org/web/packages/ggthemes/)
+
+-   More themes with similar styles of famous publications
+
+## **3.3 Usage of ggthemes**
+
+`theme_economist()`, `theme_stata()`, `theme_excel()`, `theme_tufte()`, `theme_fivethirtyeight()`, `theme_wsj()`
+
+```{r}
+#| code-fold: true
+ggplot(data=exam_data,
+       aes(x=MATHS))+
+  geom_histogram(bins=20,
+                 boundary=100,
+                 color="grey25",
+                 fill="grey90")+
+  theme_wsj()+
+  ggtitle("Distribution of Maths scores")
+```
+
+## **3.4 Solution 2: hrbrthemes**
+
+[hrbrthemes](https://cinc.rud.is/web/packages/hrbrthemes/)
+
+-   More themes with similar style of professional reports
+
+## **3.5 Usage of hrbrthemes**
+
+`theme_ipsum()`, `theme_ipsum_tw()`, `theme_ipsum_ps()`
+
+```{r}
+#| code-fold: true
+ggplot(data=exam_data,
+       aes(x=MATHS))+
+  geom_histogram(bins=20,
+                 boundary=100,
+                 color="grey25",
+                 fill="grey90")+
+  theme_ipsum()+
+  ggtitle("Distribution of Math scores")
+```
+
+```{r}
+#| code-fold: true
+ggplot(data=exam_data,
+       aes(x=MATHS))+
+  geom_histogram(bins=20,
+                 boundary=100,
+                 color="grey25",
+                 fill="grey90")+
+  ggtitle("Distribution of Math scores")+
+  theme_ipsum(axis_title_size=18,
+              base_size=15,
+              grid="Y")
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+`axis_title_size`: adjust font size of X and Y axis titles (e.g. MATHS, count)
+
+`base_size`: adjust basic font size of the plot, including plot title, labels and scales
+
+`grid`: remove the x-axis grid lines (vertical lines)
+:::
+
+# 4. Plot with multiple graphs
+
+## 4.1 Scenario:
+
+-   Multiple graphs combined in one plot are more useful to tell a compelling visual story than one graph in one plot
+
+    ```{r}
+    #| code-fold: true
+    p1 <- ggplot(data=exam_data, 
+                 aes(x = MATHS)) +
+      geom_histogram(bins=20, 
+                     boundary = 100,
+                     color="grey25", 
+                     fill="grey90") + 
+      coord_cartesian(xlim=c(0,100)) +
+      ggtitle("Distribution of Maths scores")
+    p1
+    ```
+
+    ```{r}
+    #| code-fold: true
+    p2 <- ggplot(data=exam_data,
+                 aes(x=ENGLISH))+
+      geom_histogram(bins=20,
+                     boundary=100,
+                     color="grey25",
+                     fill="grey90")+
+      coord_cartesian(xlim=c(0,100))+
+      ggtitle("Distribution of English scores")
+    p2
+    ```
+
+    ```{r}
+    #| code-fold: true
+    p3 <- ggplot(data=exam_data,
+                 aes(x=MATHS,
+                     y=ENGLISH))+
+      geom_point()+
+      geom_smooth(method=lm,
+                  size=0.5)+
+      coord_cartesian(xlim=c(0,100),
+                      ylim=c(0,100))+
+      ggtitle("English scores versus Maths scores for Primary 3")
+    p3
+    ```
+
+## 4.2 Solution: pathwork
+
+[pathwork](https://patchwork.data-imaginist.com/)
+
+-   combining separate ggplot2 graphs into a single figure
+
+## 4.3 Usage of pathwork
+
+### 4.3.1 Combining two graphs
+
+-   "+": two-column layout
+
+    ```{r}
+    #| code-fold: true
+    p1+p2
+    ```
+
+### 4.3.2 Combining three graphs
+
+-   "()": define the sequence of the plotting
+
+-   "/": beside
+
+-   "\|" stack
+
+    ```{r}
+    #| code-fold: true
+    (p1/p2)|p3
+    ```
+
+### 4.3.3 Creating figure with insert
+
+-   `inset_element()`
+
+    ```{r}
+    #| code-fold: true
+    p3 + inset_element(p2,
+                       left=0.02,
+                       bottom=0.7,
+                       right=0.5,
+                       top=1)
+    ```
+
+### 4.3.4 Creating a composite figure with theme
+
+-   "&": add theme to composite figure
+
+    ```{r}
+    #| code-fold: true
+    patchwork <- (p1/p2)|p3
+    patchwork & theme_economist()
+    ```

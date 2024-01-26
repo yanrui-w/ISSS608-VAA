@@ -1,0 +1,594 @@
+---
+title: "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R"
+author: "Wei Yanrui"
+date: "January 24, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+editor: visual
+---
+
+# 1. Getting Started
+
+## 1.1 Install R packages
+
+In this hands-on exercise, 5 R packages will be used, they are:
+
+-   **ggiraph**: for making ‘ggplot’ graphics interactive
+
+-   **plotly**: R library for plotting interactive statistical graphs
+
+-   **DT**: provides an R interface to the JavaScript library DataTables that create interactive table on html page
+
+-   **tidyverse**: supports data science, analysis and communication task including creating static statistical graphs
+
+-   **patchwork**: for combining multiple ggplot2 graphs into one figure
+
+Write code chunk to check, install and launch these 5 R packages:
+
+```{r}
+pacman::p_load(ggiraph, plotly, 
+               DT, tidyverse, patchwork)
+```
+
+## 1.2 Import data
+
+Using `read_csv()` to import *Exam_data.csv* into R, assign it to an R object named as *exam_data*.
+
+```{r}
+exam_data <- read_csv("data/Exam_data.csv")
+```
+
+# 2. Intro to ggiraph
+
+ggiraph is an htmlwidget and a ggplot2 extension. It allows ggplot graphics to be interactive. There are 3 arguments under ggiraph:
+
+-   **Tooltip**: when the mouse hovers over any point, the tooltip value of this point will be shown.
+
+-   **Onclick**: when clicking on any point, a JavaScript function will be executed
+
+-   **Data_id**: when the mouse hovers over any point, all points with the same data_id value are highlighted.
+
+# 3. Plot interactive graphs with ggiraph
+
+## 3.1 Display single information on tooltip
+
+Let's start with a typical interactive graph. To create a typical interactive graph, there are 2 steps. First, an interactive version of ggplot2 geom (i.e. `geom_dotplot_interactive()`) will be used to create the basic graph. Then, `girafe()` will be used to generate an svg object to be displayed on an html page.
+
+```{r}
+p <- ggplot(data = exam_data,
+            aes(x=MATHS))+
+  geom_dotplot_interactive(
+    aes(tooltip = ID),
+    stackgroups = TRUE,
+    binwidth = 1,
+    method = "histodot")+
+  scale_y_continuous(NULL,
+                     breaks = NULL)
+
+girafe(
+  ggobj = p,
+  width_svg = 6,
+  height_svg = 6*0.618)
+```
+
+Hover the mouse pointer on an data point of interest, the student’s ID will be displayed.
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `aes(tooltip = ID)`: when you hover the mouse over the dots, the corresponding ID values will be displayed as tooltips
+2.  `stackgroups`: determines whether the dots should be stacked
+3.  `binwidth`: specifies the width of the bins(interval value)
+4.  `method`: specifies the plotting method used
+5.  `scale_y_continuous()`: sets the continuous scale for the y-axis\
+    5.1 `labels=NULL`: no custom labels will be displayed on the y-axis (e.g."count")\
+    5.2 `breaks=NULL`: no custom tick positions (breaks) will be displayed on the y-axis (e.g.0,100,200)
+6.  `width_svg`: specifies the appearance(width) of the output graphics(svg)
+7.  `height_svg`: specifies the appearance(height) of the output graphics(svg)
+:::
+
+## 3.2 Display multiple information on tooltip
+
+```{r}
+exam_data$tooltip <- c(paste0(
+  "Name = ", exam_data$ID,
+  "\n Class = ", exam_data$CLASS))
+
+p <- ggplot(data = exam_data,
+            aes(x=MATHS))+
+  geom_dotplot_interactive(
+    aes(tooltip = exam_data$tooltip),
+    stackgroups = TRUE,
+    binwidth = 1,
+    method = "histodot")+
+  scale_y_continuous(NULL,
+                     breaks = NULL)
+
+girafe(
+  ggobj = p,
+  width_svg = 8,
+  height_svg = 8*0.618)
+```
+
+Hover the mouse pointer on an data point of interest, the student’s ID and Class will be displayed.
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `exam_data$tooltip`: create a new column called "Tooltip" in exam_data and assign a vector to it
+
+2.  `paste0()`: is used to combine multiple pieces of text together without any separator. In this case, it's used to combine two columns in exam_data without any separator, but it allows you to add new text in the combined cell, so you can add \\n or other text to separator messages if needed.
+
+    2.1 `"Name = "`: the 1st text to be combined, meaning every line of this column will start with "Name = "
+
+    2.2 `exam_data$ID`: the 2nd text to be combined, extracting value in ID column
+
+    2.3 `"\n Class = "`: the 3rd text to be combined, same as "Name = ". Note that \\n means carriage return(start a new line in each cell of this column)
+
+    2.4 `exam_data$CLASS`: the 4th text to be combined, extracting value in CLASS column
+:::
+
+## 3.3 Customize Tooltip style
+
+```{r}
+tooltip_css <- "background-color:white;
+front-style:bold; color:black;" #<<
+
+p <- ggplot(data = exam_data,
+            aes(x=MATHS))+
+  geom_dotplot_interactive(
+    aes(tooltip = ID),
+    stackgroups = TRUE,
+    binwidth = 1,
+    method = "histodot")+
+  scale_y_continuous(NULL,
+                     breaks = NULL)
+
+girafe(
+  ggobj = p,
+  width_svg = 6,
+  height_svg = 6*0.618,
+  options = list(opts_tooltip(css = tooltip_css)))
+```
+
+Now the background colour of the tooltip is white and the font colour is black and bold.
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `background-color:white;`: CSS style rule, specifies background color of tooltip
+
+2.  `font-style:bold;`: CSS style rule, specifies font style of tooltip
+
+3.  `color:black;`: CSS style rule, specifies font color of tooltip
+
+4.  `options = list()`: to customize tooltips. List here means to assign a list of settings to the 'options' parameter
+
+5.  `opts_tooltip()`: within the 'options' list, setting the behavior and appearance of tooltips
+
+6.  `css`: specifies the CSS styling rules for tooltips
+:::
+
+## 3.4 Display statistics on tooltip
+
+Instead of using an interactive version of ggplot2 geom (i.e. `geom_dotplot_interactive()`), we can put tooltip inside `stat_summary` to display statistics.
+
+```{r}
+tooltip <- function(y, ymax, accuracy = .01) {
+  mean <- scales::number(y, accuracy = accuracy)
+  sem <- scales::number(ymax - y, accuracy = accuracy)
+  paste("Mean maths scores:", mean, "+/-", sem)
+}
+
+gg_point <- ggplot(data=exam_data, 
+                   aes(x = RACE),
+) +
+  stat_summary(aes(y = MATHS, 
+                   tooltip = after_stat(  
+                     tooltip(y, ymax))),  
+    fun.data = mean_se, 
+    geom = GeomInteractiveCol,  
+    fill = "light blue"
+  ) +
+  stat_summary(aes(y = MATHS),
+    fun.data = mean_se,
+    geom = "errorbar", width = 0.2, size = 0.2
+  )
+
+girafe(ggobj = gg_point,
+       width_svg = 8,
+       height_svg = 8*0.618)
+```
+
+Hover the mouse pointer on each bar, we can see the 90% confident interval of the mean.
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `function(parameter1, parameter2, parameter3){expression}`
+
+    1.1 `accuracy`: The precision for displaying numbers, defaulting to 0.01
+
+    1.2 `scales::number(number, accuracy)`: formats numbers with specified accuracy, and then creates a string that combines these values
+
+2.  `fun.data = "mean_se"`: argument in the 'stat_summary' function, calculates y(mean), ymin(mean-se), ymax(mean+se). Note the mean and standard error is for the "MATHS" variable for each racial group specified in the 'aes' mapping
+
+    2.1 `"mean_se"` and `mean_se`: defined function in statistics package under ggplot2. As long as you install and launch ggplot2, you can call this function in 2 ways. One is directly call the function object `mean_se`, the other one is to call the string of the function `"mean_se"`.
+
+3.  `after_stat()`: argument in the 'stat_summary' function, is used to apply the statistics resulting from `fun.data = "mean_se"` to the funciton behind it.
+
+4.  `tooltip(y,ymax)`: call the function and generate a text of 'Mean maths scores: mean +/- sem' with the calculated outcome and specified accuracy.
+
+5.  `geom = GeomInteractiveCol`: for interactive column display(bar graph)
+
+6.  `geom = "errorbar", width, size`: display error bars, set the width and size of the error bars
+
+    6.1 Note that `"errorbar"` has "", but `GeoInteractiveCol` hasn't. This shows the flexibility of R in handling parameters. Standard ggplot2 geometric objects such as geom_point, geom_line, geom_bar, etc., are typically passed as strings. Non-standard or extended package geometric objects, like GeomInteractiveCol in ggiraph, the object itself is passed directly.
+:::
+
+## 3.5 Display data points with same parameter on *data_id*
+
+How to display all the other data points with same defined parameter when hovering the mouse pointer to one data point?
+
+```{r}
+p <- ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(           
+    aes(data_id = CLASS),             
+    stackgroups = TRUE,               
+    binwidth = 1,                        
+    method = "histodot") +               
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+girafe(                                  
+  ggobj = p,                             
+  width_svg = 6,                         
+  height_svg = 6*0.618                      
+)                                        
+```
+
+Now when you hover the mouse pointer to one data point, you can see all the other data points in the same CLASS are marked in orange
+
+## 3.6 Styling hover effect
+
+How to change to hover styling?
+
+```{r}
+p <- ggplot(data = exam_data,
+            aes(x = MATHS))+
+  geom_dotplot_interactive(
+    aes(data_id = CLASS),
+    stackgroups = TRUE,
+    binwidth = 1,
+    method = "histodot")+
+  scale_y_continuous(NULL,
+                     breaks = NULL)
+
+girafe(
+  ggobj = p,
+  width_svg = 6,
+  height_svg = 6*0.618,
+  options = list(
+    opts_hover(css = "fill: #202020;"),
+    opts_hover_inv(css = "opacity:0.2;")
+  )
+)
+```
+
+Now when you hover the mouse pointer to one data point, you can see all the other data points in the same CLASS are highlighted in a more visualized way.
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `opts_hover()`: sets the style for a point when the mouse hovers over it
+
+2.  `"fill: #202020;"`: the fill color of the point will change to #202020, which is a color close to black, upon hover
+
+3.  `opts_hover_inv()`: defines the style for all other points that are not being hovered over when the mouse hovers over a point.
+
+4.  `"opacity:0.2;"`: the opacity of all other points will be set to 0.2 (making them more transparent).
+:::
+
+## 3.7 Combining tooltip and hover effect
+
+How to add multiple interactive effect in the graph?
+
+```{r}
+p <- ggplot(data = exam_data,
+            aes(x = MATHS))+
+  geom_dotplot_interactive(
+    aes(tooltip = CLASS,
+        data_id = CLASS),
+    stackgroups = TRUE,
+    binwidth = 1,
+    method = "histodot")+
+  scale_y_continuous(NULL,
+                     breaks = NULL)
+
+girafe(
+  ggobj = p,
+  width_svg = 6,
+  height_svg = 6*0.618,
+  options = list(
+    opts_hover(css = "fill: #202020;"),
+    opts_hover_inv(css = "opacity:0.2;")
+  )
+)
+```
+
+Now when you hover the mouse pointer to one data point, the tooltip will show the CLASS and all the other points associated with CLASS will be highlighted as well.
+
+## 3.8 Click effect with onclick
+
+How to link the graph with hotlink interactivity on the web?
+
+```{r}
+exam_data$onclick <- sprintf("window.open(\"%s%s\")",
+                             "https://www.moe.gov.sg/schoolfinder?journey=Primary%20school",
+                             as.character(exam_data$ID))
+
+p <- ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(              
+    aes(onclick = onclick),              
+    stackgroups = TRUE,                  
+    binwidth = 1,                        
+    method = "histodot") +               
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+
+girafe(                                  
+  ggobj = p,                             
+  width_svg = 6,                         
+  height_svg = 6*0.618) 
+```
+
+Now when you click on the data point, it'll open a website.
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `exam_data$onclick`: create a new column named 'onclick'
+
+2.  `sprintf`: format strings in R, similar to the printf function in python
+
+    2.1 `%s`(1st): will be replaced by the subsequent arguments in the sprintf function call: "https://www.moe.gov.sg/schoolfinder?journey=Primary%20school"
+
+    2.2 `%s`(2nd): will be replaced by the value from "as.character(exam_data\$ID)"
+
+    2.3 If ID is '123', the 'sprintf' will produce: "window.open("https://www.moe.gov.sg/schoolfinder?journey=Primary%20school123")"
+
+3.  `as.character(exam_data$ID)`: take the ID column from the exam_data and convert it into character strings.
+
+**4. Note that click actions must be a string column in the dataset containing valid javascript instructions**
+:::
+
+## 3.9 Coordinated Multiple Views with graph
+
+How to create coordinated interactive views between multiple graphs?
+
+```{r}
+# Create 2 graphs with appropriate interactive functions of ggiraph
+p1 <- ggplot(data=exam_data, 
+       aes(x = MATHS)) +
+  geom_dotplot_interactive(              
+    aes(data_id = ID),              
+    stackgroups = TRUE,                  
+    binwidth = 1,                        
+    method = "histodot") +  
+  coord_cartesian(xlim=c(0,100)) + 
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+
+p2 <- ggplot(data=exam_data, 
+       aes(x = ENGLISH)) +
+  geom_dotplot_interactive(              
+    aes(data_id = ID),              
+    stackgroups = TRUE,                  
+    binwidth = 1,                        
+    method = "histodot") +  
+  coord_cartesian(xlim=c(0,100)) + 
+  scale_y_continuous(NULL,               
+                     breaks = NULL)
+
+# Use pathwork inside girafe function to create the interactive coordinated multiple views
+girafe(code = print(p1+p2),
+       width_svg = 6,
+       height_svg = 3,
+       options = list(
+         opts_hover(css = "fill: #202020;"),
+         opts_hover_inv(css = "opacity:0.2;")
+       ))
+```
+
+Now when you select a data point of one graph, the corresponding data point ID on the second data visualization will be highlighted too.
+
+# 4. Intro to plotly
+
+It is to create interactive web graphics from ggplot2 graphs and/or a custom interface to the (MIT-licensed) JavaScript library plotly.js inspired by the grammar of graphics.
+
+Two ways to create interactive graph by using plotly:
+
+-   by using *plot_ly()*
+
+-   by using *ggplotly()*
+
+# 5. Plot interactive graphs with ggiraph
+
+## 5.1 Create an interactive scatter plot with *plot_ly()*
+
+How to create scatter plot of two continuous data?
+
+```{r}
+plot_ly(data = exam_data,
+        x = ~MATHS,
+        y = ~ENGLISH)
+```
+
+Now you can get 2 information based on the scatter plot:
+
+-   the correlation between the two continuous data (math and english score)
+
+-   when you hover the mouse pointer to one data point, you can see math score and english score of each student (first math score, then english score)
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `x=~ENGLISH`: The "\~" symbol is used in Plotly's formula syntax to reference a variable within the dataset.
+
+**2. Note that the interactivity will show as (value of x axis, value of y axis).**
+:::
+
+## 5.2 Work with visual variables with *plot_ly()*
+
+What if we want to display more information based on the scatter plot of two continuous data, say, the two continuous data grouped by another categorical data?
+
+```{r}
+plot_ly(data = exam_data,
+        x = ~MATHS,
+        y = ~ENGLISH,
+        color = ~RACE)
+```
+
+Now you can get 3 information based on the scatter plot:
+
+-   the correlation between the two continuous data (math and english score)
+
+-   when you hover the mouse pointer to one data point, you can see math score and english score of each student (frist math score, then english score)
+
+-   the race of each student marked in different color
+
+## 5.3 Create an interactive scatter plot with *ggplotly()*
+
+How to create above graphs by using ggplotly()?
+
+-   scatter plot of two continuous data
+
+```{r}
+p <- ggplot(data=exam_data, 
+            aes(x = MATHS,
+                y = ENGLISH)) +
+  geom_point(size=1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+
+ggplotly(p)
+```
+
+-   scatter plot of two continuous data grouped by categorical data
+
+```{r}
+p <- ggplot(data=exam_data, 
+            aes(x = MATHS,
+                y = ENGLISH,
+                color = RACE)) +
+  geom_point(size=1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+
+ggplotly(p)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  Note that all the arguments inside `aes()` will be shown in interactive way.
+:::
+
+## 5.4 Coordinate Multiple Views with plotly
+
+```{r}
+d <- highlight_key(exam_data)
+p1 <- ggplot(data=d, 
+            aes(x = MATHS,
+                y = ENGLISH)) +
+  geom_point(size=1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+
+p2 <- ggplot(data=d, 
+            aes(x = MATHS,
+                y = SCIENCE)) +
+  geom_point(size=1) +
+  coord_cartesian(xlim=c(0,100),
+                  ylim=c(0,100))
+subplot(ggplotly(p1),
+        ggplotly(p2))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `highlight_key()`: adds unique identifiers to each row of the dataset exam_data. This will make it easy and clear when specifying which data points or rows to include in the plots.
+:::
+
+# 6. Intro to crosstalk
+
+Crosstalk is an add-on to the htmlwidgets package. It extends htmlwidgets with a set of classes, functions, and conventions for implementing cross-widget interactions (currently, linked brushing and filtering). A package in R designed to allow different data visualizations and tables to interact with each other within a web application.
+
+# 7. Interactive Data Visualisation with crosstalk
+
+## 7.1 Interactive Data Table with DT package
+
+DT package provides functions to create DataTables from R data frames, allowing for features like sorting, paging, and searching within the table in a web interface.
+
+Create an interactive table (DataTable) from a dataset:
+
+```{r}
+DT::datatable(exam_data, class= "compact")
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `DT::datatable()`: convert an R data frame into an interactive DataTable.
+
+2.  `class = "compact"`: 'class' argument is used to apply CSS styling classes to the table. "compact" is a predefined styling option that makes the table more compact.
+:::
+
+## 7.2 Linked brushing with crosstalk
+
+```{r}
+d <- highlight_key(exam_data)
+
+p <- ggplot(d,
+            aes(ENGLISH,
+                MATHS))+
+  geom_point(size = 1)+
+  coord_cartesian(xlim = c(0,100),
+                  ylim = c(0,100))
+
+gg <- highlight(ggplotly(p),
+                "plotly_selected")
+
+crosstalk::bscols(gg,
+                  DT::datatable(d),
+                  widths = 5)
+```
+
+Now you can see a side-by-side plot with a scatter plot on the left and a data table on the right, there are 3 interactive function in this plot:
+
+-   when hovering mouse pointer on the point of scatter plot, both english and math scores of this student will be shown
+
+-   datatable can be filtered and sorted
+
+-   when clicking on one line of the datatable, the english and math score of this student will be highlighted both on scatter plot and datatable
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `highlight(ggplotly(p),"plotly_selected")`:
+
+    1.1 `ggplotly(p)`: convert static graph 'p' into interactive plotly graph.
+
+    1.2 `"plotly_selected"`: highlight the data point by clicking on it.
+
+    1.3 Note that this code is similar yet more flexible to `ggplot_ly(data=d,x=ENGLISH,y=MATHS)`. It allows user to customize graph by using ggplot2 first, then add interaction function which can highlight data point by clicking on it.
+
+2.  `crosstalk::bscols()`: create a side-by-side layout including two elements: an interactive graph 'gg' created by plotly, and an interactive datatable 'd' created by DT.
+
+3.  `aes(ENGLISH,MATHS)`: will assign ENGLISH as x axis, MATHS as y axis by default.
+:::

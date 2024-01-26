@@ -1,0 +1,50 @@
+---
+title: "Hands-on Exercise 1"
+date: "January 10, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+editor: visual
+---
+
+# Getting Started
+
+## Install and launching R packages
+
+The code chunk below uses p_load() of pacman package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R.
+
+```{r}
+pacman::p_load(tidyverse)
+```
+
+## Importing the data
+
+1.  Local file of full path
+
+```{r}
+exam_data <- read_csv("data/Exam_data.csv")
+```
+
+2.  Local file of short path\
+    2.1 check the short path folder and check if the file is in the same folder
+
+```{r}
+getwd()
+```
+
+2.2 import file
+
+```{r}
+exam_data <- read_csv("data/Exam_data.csv")
+```
+
+## Plotting a simple bar chart
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, 
+           x= GENDER)) 
+  geom_boxplot(notch=TRUE)
+```

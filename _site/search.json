@@ -12,5 +12,383 @@
     "title": "About",
     "section": "",
     "text": "About this site\n\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "",
+    "text": "In this hands-on exercise, 5 R packages will be used, they are:\n\nggiraph: for making ‘ggplot’ graphics interactive\nplotly: R library for plotting interactive statistical graphs\nDT: provides an R interface to the JavaScript library DataTables that create interactive table on html page\ntidyverse: supports data science, analysis and communication task including creating static statistical graphs\npatchwork: for combining multiple ggplot2 graphs into one figure\n\nWrite code chunk to check, install and launch these 5 R packages:\n\npacman::p_load(ggiraph, plotly, \n               DT, tidyverse, patchwork)\n\n\n\n\nUsing read_csv() to import Exam_data.csv into R, assign it to an R object named as exam_data.\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#install-r-packages",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#install-r-packages",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "",
+    "text": "In this hands-on exercise, 5 R packages will be used, they are:\n\nggiraph: for making ‘ggplot’ graphics interactive\nplotly: R library for plotting interactive statistical graphs\nDT: provides an R interface to the JavaScript library DataTables that create interactive table on html page\ntidyverse: supports data science, analysis and communication task including creating static statistical graphs\npatchwork: for combining multiple ggplot2 graphs into one figure\n\nWrite code chunk to check, install and launch these 5 R packages:\n\npacman::p_load(ggiraph, plotly, \n               DT, tidyverse, patchwork)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#import-data",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#import-data",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "",
+    "text": "Using read_csv() to import Exam_data.csv into R, assign it to an R object named as exam_data.\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#display-single-information-on-tooltip",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#display-single-information-on-tooltip",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "3.1 Display single information on tooltip",
+    "text": "3.1 Display single information on tooltip\nLet’s start with a typical interactive graph. To create a typical interactive graph, there are 2 steps. First, an interactive version of ggplot2 geom (i.e. geom_dotplot_interactive()) will be used to create the basic graph. Then, girafe() will be used to generate an svg object to be displayed on an html page.\n\np &lt;- ggplot(data = exam_data,\n            aes(x=MATHS))+\n  geom_dotplot_interactive(\n    aes(tooltip = ID),\n    stackgroups = TRUE,\n    binwidth = 1,\n    method = \"histodot\")+\n  scale_y_continuous(NULL,\n                     breaks = NULL)\n\ngirafe(\n  ggobj = p,\n  width_svg = 6,\n  height_svg = 6*0.618)\n\n\n\n\n\nHover the mouse pointer on an data point of interest, the student’s ID will be displayed.\n\n\n\n\n\n\nCode Notes\n\n\n\n\naes(tooltip = ID): when you hover the mouse over the dots, the corresponding ID values will be displayed as tooltips\nstackgroups: determines whether the dots should be stacked\nbinwidth: specifies the width of the bins(interval value)\nmethod: specifies the plotting method used\nscale_y_continuous(): sets the continuous scale for the y-axis\n5.1 labels=NULL: no custom labels will be displayed on the y-axis (e.g.”count”)\n5.2 breaks=NULL: no custom tick positions (breaks) will be displayed on the y-axis (e.g.0,100,200)\nwidth_svg: specifies the appearance(width) of the output graphics(svg)\nheight_svg: specifies the appearance(height) of the output graphics(svg)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#display-multiple-information-on-tooltip",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#display-multiple-information-on-tooltip",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "3.2 Display multiple information on tooltip",
+    "text": "3.2 Display multiple information on tooltip\n\nexam_data$tooltip &lt;- c(paste0(\n  \"Name = \", exam_data$ID,\n  \"\\n Class = \", exam_data$CLASS))\n\np &lt;- ggplot(data = exam_data,\n            aes(x=MATHS))+\n  geom_dotplot_interactive(\n    aes(tooltip = exam_data$tooltip),\n    stackgroups = TRUE,\n    binwidth = 1,\n    method = \"histodot\")+\n  scale_y_continuous(NULL,\n                     breaks = NULL)\n\ngirafe(\n  ggobj = p,\n  width_svg = 8,\n  height_svg = 8*0.618)\n\n\n\n\n\nHover the mouse pointer on an data point of interest, the student’s ID and Class will be displayed.\n\n\n\n\n\n\nCode Notes\n\n\n\n\nexam_data$tooltip: create a new column called “Tooltip” in exam_data and assign a vector to it\npaste0(): is used to combine multiple pieces of text together without any separator. In this case, it’s used to combine two columns in exam_data without any separator, but it allows you to add new text in the combined cell, so you can add \\n or other text to separator messages if needed.\n2.1 \"Name = \": the 1st text to be combined, meaning every line of this column will start with “Name =”\n2.2 exam_data$ID: the 2nd text to be combined, extracting value in ID column\n2.3 \"\\n Class = \": the 3rd text to be combined, same as “Name =”. Note that \\n means carriage return(start a new line in each cell of this column)\n2.4 exam_data$CLASS: the 4th text to be combined, extracting value in CLASS column"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#customize-tooltip-style",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#customize-tooltip-style",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "3.3 Customize Tooltip style",
+    "text": "3.3 Customize Tooltip style\n\ntooltip_css &lt;- \"background-color:white;\nfront-style:bold; color:black;\" #&lt;&lt;\n\np &lt;- ggplot(data = exam_data,\n            aes(x=MATHS))+\n  geom_dotplot_interactive(\n    aes(tooltip = ID),\n    stackgroups = TRUE,\n    binwidth = 1,\n    method = \"histodot\")+\n  scale_y_continuous(NULL,\n                     breaks = NULL)\n\ngirafe(\n  ggobj = p,\n  width_svg = 6,\n  height_svg = 6*0.618,\n  options = list(opts_tooltip(css = tooltip_css)))\n\n\n\n\n\nNow the background colour of the tooltip is white and the font colour is black and bold.\n\n\n\n\n\n\nCode Notes\n\n\n\n\nbackground-color:white;: CSS style rule, specifies background color of tooltip\nfont-style:bold;: CSS style rule, specifies font style of tooltip\ncolor:black;: CSS style rule, specifies font color of tooltip\noptions = list(): to customize tooltips. List here means to assign a list of settings to the ‘options’ parameter\nopts_tooltip(): within the ‘options’ list, setting the behavior and appearance of tooltips\ncss: specifies the CSS styling rules for tooltips"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#display-statistics-on-tooltip",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#display-statistics-on-tooltip",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "3.4 Display statistics on tooltip",
+    "text": "3.4 Display statistics on tooltip\nInstead of using an interactive version of ggplot2 geom (i.e. geom_dotplot_interactive()), we can put tooltip inside stat_summary to display statistics.\n\ntooltip &lt;- function(y, ymax, accuracy = .01) {\n  mean &lt;- scales::number(y, accuracy = accuracy)\n  sem &lt;- scales::number(ymax - y, accuracy = accuracy)\n  paste(\"Mean maths scores:\", mean, \"+/-\", sem)\n}\n\ngg_point &lt;- ggplot(data=exam_data, \n                   aes(x = RACE),\n) +\n  stat_summary(aes(y = MATHS, \n                   tooltip = after_stat(  \n                     tooltip(y, ymax))),  \n    fun.data = mean_se, \n    geom = GeomInteractiveCol,  \n    fill = \"light blue\"\n  ) +\n  stat_summary(aes(y = MATHS),\n    fun.data = mean_se,\n    geom = \"errorbar\", width = 0.2, size = 0.2\n  )\n\ngirafe(ggobj = gg_point,\n       width_svg = 8,\n       height_svg = 8*0.618)\n\n\n\n\n\nHover the mouse pointer on each bar, we can see the 90% confident interval of the mean.\n\n\n\n\n\n\nCode Notes\n\n\n\n\nfunction(parameter1, parameter2, parameter3){expression}\n1.1 accuracy: The precision for displaying numbers, defaulting to 0.01\n1.2 scales::number(number, accuracy): formats numbers with specified accuracy, and then creates a string that combines these values\nfun.data = \"mean_se\": argument in the ‘stat_summary’ function, calculates y(mean), ymin(mean-se), ymax(mean+se). Note the mean and standard error is for the “MATHS” variable for each racial group specified in the ‘aes’ mapping\n2.1 \"mean_se\" and mean_se: defined function in statistics package under ggplot2. As long as you install and launch ggplot2, you can call this function in 2 ways. One is directly call the function object mean_se, the other one is to call the string of the function \"mean_se\".\nafter_stat(): argument in the ‘stat_summary’ function, is used to apply the statistics resulting from fun.data = \"mean_se\" to the funciton behind it.\ntooltip(y,ymax): call the function and generate a text of ‘Mean maths scores: mean +/- sem’ with the calculated outcome and specified accuracy.\ngeom = GeomInteractiveCol: for interactive column display(bar graph)\ngeom = \"errorbar\", width, size: display error bars, set the width and size of the error bars\n6.1 Note that \"errorbar\" has ““, but GeoInteractiveCol hasn’t. This shows the flexibility of R in handling parameters. Standard ggplot2 geometric objects such as geom_point, geom_line, geom_bar, etc., are typically passed as strings. Non-standard or extended package geometric objects, like GeomInteractiveCol in ggiraph, the object itself is passed directly."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#display-data-points-with-same-parameter-on-data_id",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#display-data-points-with-same-parameter-on-data_id",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "3.5 Display data points with same parameter on data_id",
+    "text": "3.5 Display data points with same parameter on data_id\nHow to display all the other data points with same defined parameter when hovering the mouse pointer to one data point?\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(           \n    aes(data_id = CLASS),             \n    stackgroups = TRUE,               \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618                      \n)                                        \n\n\n\n\n\nNow when you hover the mouse pointer to one data point, you can see all the other data points in the same CLASS are marked in orange"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#styling-hover-effect",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#styling-hover-effect",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "3.6 Styling hover effect",
+    "text": "3.6 Styling hover effect\nHow to change to hover styling?\n\np &lt;- ggplot(data = exam_data,\n            aes(x = MATHS))+\n  geom_dotplot_interactive(\n    aes(data_id = CLASS),\n    stackgroups = TRUE,\n    binwidth = 1,\n    method = \"histodot\")+\n  scale_y_continuous(NULL,\n                     breaks = NULL)\n\ngirafe(\n  ggobj = p,\n  width_svg = 6,\n  height_svg = 6*0.618,\n  options = list(\n    opts_hover(css = \"fill: #202020;\"),\n    opts_hover_inv(css = \"opacity:0.2;\")\n  )\n)\n\n\n\n\n\nNow when you hover the mouse pointer to one data point, you can see all the other data points in the same CLASS are highlighted in a more visualized way.\n\n\n\n\n\n\nCode Notes\n\n\n\n\nopts_hover(): sets the style for a point when the mouse hovers over it\n\"fill: #202020;\": the fill color of the point will change to #202020, which is a color close to black, upon hover\nopts_hover_inv(): defines the style for all other points that are not being hovered over when the mouse hovers over a point.\n\"opacity:0.2;\": the opacity of all other points will be set to 0.2 (making them more transparent)."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#combining-tooltip-and-hover-effect",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#combining-tooltip-and-hover-effect",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "3.7 Combining tooltip and hover effect",
+    "text": "3.7 Combining tooltip and hover effect\nHow to add multiple interactive effect in the graph?\n\np &lt;- ggplot(data = exam_data,\n            aes(x = MATHS))+\n  geom_dotplot_interactive(\n    aes(tooltip = CLASS,\n        data_id = CLASS),\n    stackgroups = TRUE,\n    binwidth = 1,\n    method = \"histodot\")+\n  scale_y_continuous(NULL,\n                     breaks = NULL)\n\ngirafe(\n  ggobj = p,\n  width_svg = 6,\n  height_svg = 6*0.618,\n  options = list(\n    opts_hover(css = \"fill: #202020;\"),\n    opts_hover_inv(css = \"opacity:0.2;\")\n  )\n)\n\n\n\n\n\nNow when you hover the mouse pointer to one data point, the tooltip will show the CLASS and all the other points associated with CLASS will be highlighted as well."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#click-effect-with-onclick",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#click-effect-with-onclick",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "3.8 Click effect with onclick",
+    "text": "3.8 Click effect with onclick\nHow to link the graph with hotlink interactivity on the web?\n\nexam_data$onclick &lt;- sprintf(\"window.open(\\\"%s%s\\\")\",\n                             \"https://www.moe.gov.sg/schoolfinder?journey=Primary%20school\",\n                             as.character(exam_data$ID))\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(onclick = onclick),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618) \n\n\n\n\n\nNow when you click on the data point, it’ll open a website.\n\n\n\n\n\n\nCode Notes\n\n\n\n\nexam_data$onclick: create a new column named ‘onclick’\nsprintf: format strings in R, similar to the printf function in python\n2.1 %s(1st): will be replaced by the subsequent arguments in the sprintf function call: “https://www.moe.gov.sg/schoolfinder?journey=Primary%20school”\n2.2 %s(2nd): will be replaced by the value from “as.character(exam_data$ID)”\n2.3 If ID is ‘123’, the ‘sprintf’ will produce: “window.open(”https://www.moe.gov.sg/schoolfinder?journey=Primary%20school123”)”\nas.character(exam_data$ID): take the ID column from the exam_data and convert it into character strings.\n\n4. Note that click actions must be a string column in the dataset containing valid javascript instructions"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#coordinated-multiple-views-with-graph",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#coordinated-multiple-views-with-graph",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "3.9 Coordinated Multiple Views with graph",
+    "text": "3.9 Coordinated Multiple Views with graph\nHow to create coordinated interactive views between multiple graphs?\n\n# Create 2 graphs with appropriate interactive functions of ggiraph\np1 &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(data_id = ID),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +  \n  coord_cartesian(xlim=c(0,100)) + \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\np2 &lt;- ggplot(data=exam_data, \n       aes(x = ENGLISH)) +\n  geom_dotplot_interactive(              \n    aes(data_id = ID),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +  \n  coord_cartesian(xlim=c(0,100)) + \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\n# Use pathwork inside girafe function to create the interactive coordinated multiple views\ngirafe(code = print(p1+p2),\n       width_svg = 6,\n       height_svg = 3,\n       options = list(\n         opts_hover(css = \"fill: #202020;\"),\n         opts_hover_inv(css = \"opacity:0.2;\")\n       ))\n\n\n\n\n\nNow when you select a data point of one graph, the corresponding data point ID on the second data visualization will be highlighted too."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#create-an-interactive-scatter-plot-with-plot_ly",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#create-an-interactive-scatter-plot-with-plot_ly",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "5.1 Create an interactive scatter plot with plot_ly()",
+    "text": "5.1 Create an interactive scatter plot with plot_ly()\nHow to create scatter plot of two continuous data?\n\nplot_ly(data = exam_data,\n        x = ~MATHS,\n        y = ~ENGLISH)\n\n\n\n\n\nNow you can get 2 information based on the scatter plot:\n\nthe correlation between the two continuous data (math and english score)\nwhen you hover the mouse pointer to one data point, you can see math score and english score of each student (first math score, then english score)\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\nx=~ENGLISH: The “~” symbol is used in Plotly’s formula syntax to reference a variable within the dataset.\n\n2. Note that the interactivity will show as (value of x axis, value of y axis)."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#work-with-visual-variables-with-plot_ly",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#work-with-visual-variables-with-plot_ly",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "5.2 Work with visual variables with plot_ly()",
+    "text": "5.2 Work with visual variables with plot_ly()\nWhat if we want to display more information based on the scatter plot of two continuous data, say, the two continuous data grouped by another categorical data?\n\nplot_ly(data = exam_data,\n        x = ~MATHS,\n        y = ~ENGLISH,\n        color = ~RACE)\n\n\n\n\n\nNow you can get 3 information based on the scatter plot:\n\nthe correlation between the two continuous data (math and english score)\nwhen you hover the mouse pointer to one data point, you can see math score and english score of each student (frist math score, then english score)\nthe race of each student marked in different color"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#create-an-interactive-scatter-plot-with-ggplotly",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#create-an-interactive-scatter-plot-with-ggplotly",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "5.3 Create an interactive scatter plot with ggplotly()",
+    "text": "5.3 Create an interactive scatter plot with ggplotly()\nHow to create above graphs by using ggplotly()?\n\nscatter plot of two continuous data\n\n\np &lt;- ggplot(data=exam_data, \n            aes(x = MATHS,\n                y = ENGLISH)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\n\nggplotly(p)\n\n\n\n\n\n\nscatter plot of two continuous data grouped by categorical data\n\n\np &lt;- ggplot(data=exam_data, \n            aes(x = MATHS,\n                y = ENGLISH,\n                color = RACE)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\n\nggplotly(p)\n\n\n\n\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\nNote that all the arguments inside aes() will be shown in interactive way."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#coordinate-multiple-views-with-plotly",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#coordinate-multiple-views-with-plotly",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "5.4 Coordinate Multiple Views with plotly",
+    "text": "5.4 Coordinate Multiple Views with plotly\n\nd &lt;- highlight_key(exam_data)\np1 &lt;- ggplot(data=d, \n            aes(x = MATHS,\n                y = ENGLISH)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\n\np2 &lt;- ggplot(data=d, \n            aes(x = MATHS,\n                y = SCIENCE)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\nsubplot(ggplotly(p1),\n        ggplotly(p2))\n\n\n\n\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\nhighlight_key(): adds unique identifiers to each row of the dataset exam_data. This will make it easy and clear when specifying which data points or rows to include in the plots."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#interactive-data-table-with-dt-package",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#interactive-data-table-with-dt-package",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "7.1 Interactive Data Table with DT package",
+    "text": "7.1 Interactive Data Table with DT package\nDT package provides functions to create DataTables from R data frames, allowing for features like sorting, paging, and searching within the table in a web interface.\nCreate an interactive table (DataTable) from a dataset:\n\nDT::datatable(exam_data, class= \"compact\")\n\n\n\n\n\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\nDT::datatable(): convert an R data frame into an interactive DataTable.\nclass = \"compact\": ‘class’ argument is used to apply CSS styling classes to the table. “compact” is a predefined styling option that makes the table more compact."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#linked-brushing-with-crosstalk",
+    "href": "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html#linked-brushing-with-crosstalk",
+    "title": "Hands-on Exercise 3_1: Programming Interactive Data Visualisation with R",
+    "section": "7.2 Linked brushing with crosstalk",
+    "text": "7.2 Linked brushing with crosstalk\n\nd &lt;- highlight_key(exam_data)\n\np &lt;- ggplot(d,\n            aes(ENGLISH,\n                MATHS))+\n  geom_point(size = 1)+\n  coord_cartesian(xlim = c(0,100),\n                  ylim = c(0,100))\n\ngg &lt;- highlight(ggplotly(p),\n                \"plotly_selected\")\n\ncrosstalk::bscols(gg,\n                  DT::datatable(d),\n                  widths = 5)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNow you can see a side-by-side plot with a scatter plot on the left and a data table on the right, there are 3 interactive function in this plot:\n\nwhen hovering mouse pointer on the point of scatter plot, both english and math scores of this student will be shown\ndatatable can be filtered and sorted\nwhen clicking on one line of the datatable, the english and math score of this student will be highlighted both on scatter plot and datatable\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\nhighlight(ggplotly(p),\"plotly_selected\"):\n1.1 ggplotly(p): convert static graph ‘p’ into interactive plotly graph.\n1.2 \"plotly_selected\": highlight the data point by clicking on it.\n1.3 Note that this code is similar yet more flexible to ggplot_ly(data=d,x=ENGLISH,y=MATHS). It allows user to customize graph by using ggplot2 first, then add interaction function which can highlight data point by clicking on it.\ncrosstalk::bscols(): create a side-by-side layout including two elements: an interactive graph ‘gg’ created by plotly, and an interactive datatable ‘d’ created by DT.\naes(ENGLISH,MATHS): will assign ENGLISH as x axis, MATHS as y axis by default."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "",
+    "text": "Singapore’s education has been praised for achieving high standards without major gaps between rich and poor, as per a BBC report. However, there’s still concern over inequalities among different schools, genders and social groups."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#install-r-packages",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#install-r-packages",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "3.1 Install R Packages",
+    "text": "3.1 Install R Packages\nUse following code chunk to install relating R packages:\n\n\nCode\npacman::p_load(ggrepel, patchwork,\n               ggthemes, hrbrthemes, \n               tidyverse, haven, ggpattern, ggridges)"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#dataset-overview",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#dataset-overview",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "3.2 Dataset Overview",
+    "text": "3.2 Dataset Overview\nIn this study, the dataset used is the student questionnaire data file provided from PISA 2022 survey. It contains the personal and school information of 15-year-old students across the world, their responses to the questionnaires, and the assessment assigned by PISA experts to their performance in mathematics, science, and reading based on their answers.\nBased on the objectives of this study, which focuses on analyzing the performance of Singaporean students in mathematics, science, and reading, as well as the impact of school, gender, and socioeconomic status on these achievements, the dataset was filtered to retain the following variables for research analysis.\n:::{.panel-tabset group=“dataset_overview”}"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#retained-variables",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#retained-variables",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "Retained Variables",
+    "text": "Retained Variables\n\n\n\n\n\n\n\n\nCol Name\nLabel\nUsed for\n\n\n\n\nSTRATUM\nSchool Type\nvariable of school type\n\n\nST004D01T\nGender\nvariable of gender\n\n\nESCS\nIndex of economic, social and cultural status\nvariable of socioeconomic status\n\n\nPV1MATH-PV10MATH\nPerformance in Math\nvariable of performance in Math\n\n\nPV1READ-PV10READ\nPerformance in Reading\nvariable of performance in Reading\n\n\nPV1SCIE-PV10SCIE\nPerformance in Science\nvariable of performance in Science"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#code-chunk",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#code-chunk",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "Code chunk",
+    "text": "Code chunk\n\n#Filter SGP students\nstu_qqq &lt;- read_sas(\"data/cy08msp_stu_qqq.sas7bdat\")\nstu_qqq_SG &lt;- stu_qqq %&gt;%\n  filter(CNT == \"SGP\")\n\n#select columns relating to this analysis\nselect_df &lt;- stu_qqq_SG[c(3:4,7,26,1039,1167:1196)]"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#check-missing-values",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#check-missing-values",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "4.1 Check missing values",
+    "text": "4.1 Check missing values\nMissing values will have adverse impact on subsequent analysis, so it’s essential to check missing values at the first stage of the study. Use colSums(is.na()) to check if each column has missing value.\n\n\nCode\n#check missing value\ncolSums(is.na(select_df))\n\n\n CNTSCHID  CNTSTUID   STRATUM ST004D01T      ESCS   PV1MATH   PV2MATH   PV3MATH \n        0         0         0         0        47         0         0         0 \n  PV4MATH   PV5MATH   PV6MATH   PV7MATH   PV8MATH   PV9MATH  PV10MATH   PV1READ \n        0         0         0         0         0         0         0         0 \n  PV2READ   PV3READ   PV4READ   PV5READ   PV6READ   PV7READ   PV8READ   PV9READ \n        0         0         0         0         0         0         0         0 \n PV10READ   PV1SCIE   PV2SCIE   PV3SCIE   PV4SCIE   PV5SCIE   PV6SCIE   PV7SCIE \n        0         0         0         0         0         0         0         0 \n  PV8SCIE   PV9SCIE  PV10SCIE \n        0         0         0 \n\n\nIt turns out that 47 data points in variable “ESCS” are missing, which account for 0.7% of variable “ESCS”. Since the missing percentage is quite small, we can ignore it when analyzing."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#combine-10-pvs-for-each-subject",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#combine-10-pvs-for-each-subject",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "4.2 Combine 10 PVs for each subject",
+    "text": "4.2 Combine 10 PVs for each subject\nAccording to PISA, PV (plausible value) is the assessment of performance given by experts based on students’ responses to questions. For each subject, experts will give out 10 PVs representing 10 well-picked estimated points draw from a certain distribution which represents the range of ability or score the student might have in one subject. Multiple PVs in one subject can help to reduce the uncertainty of the test measurement. In order to retain the progress experts made, in this study, all 10 original PVs will be taken into account when forming distribution and exploring relationship between performance and school/gender/social status without being averaged.\nBased on this consideration, the current wide format need to be converted into long format, so that all the 10 PVs of each subject of each students can be listed in one column and be plotted easily.\nUse pivot_longer to convert wide format into long format.\n\n\nCode\n#Convert wide-format into long-format\nmath_long &lt;- select_df %&gt;%\n  pivot_longer(\n    cols = contains(\"MATH\"),\n    names_to = \"MATH\",\n    values_to = \"MATH_score\"\n  )\nmath_long &lt;- math_long %&gt;% \n  arrange(CNTSCHID, CNTSTUID, STRATUM, ST004D01T, ESCS)\nmath_long_selected &lt;- select(math_long, -contains(\"READ\"), -contains(\"SCIE\"))\n\nread_long &lt;- select_df %&gt;%\n  pivot_longer(\n    cols = contains(\"READ\"),\n    names_to = \"READ\",\n    values_to = \"READ_score\"\n  )\nread_long &lt;- read_long %&gt;% \n  arrange(CNTSCHID, CNTSTUID, STRATUM, ST004D01T, ESCS)\nread_long_selected &lt;- select(read_long, -contains(\"MATH\"), -contains(\"SCIE\"), -one_of(names(math_long_selected)))\n\nscie_long &lt;- select_df %&gt;%\n  pivot_longer(\n    cols = contains(\"SCIE\"),\n    names_to = \"SCIENCE\",\n    values_to = \"SCIENCE_score\"\n  )\nscie_long &lt;- scie_long %&gt;% \n  arrange(CNTSCHID, CNTSTUID, STRATUM, ST004D01T, ESCS)\nscie_long_selected &lt;- select(scie_long, -contains(\"MATH\"), -contains(\"READ\"), -one_of(names(math_long_selected)))\n\ncombined_long_df &lt;- bind_cols(math_long_selected, read_long_selected, scie_long_selected)"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#group-esc-status",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#group-esc-status",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "4.3 Group ESC status",
+    "text": "4.3 Group ESC status\nIn PISA report, ESC status is shown as index. For better view on the relationship study, the ESC status will be first converted into percentage according to the min and max index, then will be segmented into 4 groups: 0-25% as Low class, 25%-50% as Lower-middle class, 50%-75% as Upper-middle class, 75%-100% as High class."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#translate-column-names",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#translate-column-names",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "4.4 Translate column names",
+    "text": "4.4 Translate column names\nFor better understanding on each variable, we will change the column names to the ones everyone is easy to read and understand.\nUse mutate() to segment values into different groups and change column names.\n\n\nCode\n#translate column names\nschool_map &lt;- c(\"SGP01\" = \"Public/Secondary\",\n                \"SGP02\" = \"Public/Post-secondary\",\n                \"SGP03\" = \"Private/Secondary\",\n                \"SGP97\" = \"Undisclosed\")\ngender_map &lt;- c(\"1\" = \"Female\",\n                \"2\" = \"Male\")\nclean_df &lt;- combined_long_df %&gt;%\n  mutate(SCHOOL = school_map[STRATUM],\n         GENDER = gender_map[ST004D01T],\n         Math = as.numeric(MATH_score),\n         Read = as.numeric(READ_score),\n         Science = as.numeric(SCIENCE_score),\n         ESC_status = round(((ESCS - min(ESCS, na.rm = TRUE))/\n                              (max(ESCS, na.rm = TRUE)-min(ESCS, na.rm = TRUE)))*100, digits = 0),\n         ESC_status = case_when(\n           ESC_status &gt;= 0 & ESC_status &lt; 25 ~ \"Low\",\n           ESC_status &gt;= 25 & ESC_status &lt; 50 ~ \"Lower-Middle\",\n           ESC_status &gt;= 50 & ESC_status &lt; 75 ~ \"Upper-Middle\",\n           ESC_status &gt;= 75 & ESC_status &lt;= 100 ~ \"High\",\n           TRUE ~ as.character(ESC_status)\n         ))\n\n#remove columns which are not used to plot\nclean_short_df &lt;- clean_df %&gt;%\n  select(-c(CNTSCHID, STRATUM, ST004D01T, ESCS, MATH_score, READ_score, SCIENCE_score))"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#distribution-of-performance-on-each-subject",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#distribution-of-performance-on-each-subject",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "5.1 Distribution of Performance on each subject",
+    "text": "5.1 Distribution of Performance on each subject\nUse ggplot() and geom_histogram to plot distribution of performance on each subject. In addition, draw lines of median, 1st quantile, 3rd quantile and outliers on each histogram to reveal statistics summary of each distribution.\n\n\nCode\n#Calculate median,Q1,Q3,outliers for Math\nmedian_math &lt;- median(clean_short_df$Math)\nquantiles_math &lt;- quantile(clean_short_df$Math, probs = c(0.25, 0.75))\niqr_math &lt;- quantiles_math[2] - quantiles_math[1]\nupper_bound_math &lt;- quantiles_math[2] + 1.5 * iqr_math\nlower_bound_math &lt;- quantiles_math[1] - 1.5 * iqr_math\noutliers_math &lt;- subset(clean_short_df, Math &gt; upper_bound_math | Math &lt; lower_bound_math)\n#Calculate median,Q1,Q3,outliers for Read\nmedian_read &lt;- median(clean_short_df$Read)\nquantiles_read &lt;- quantile(clean_short_df$Read, probs = c(0.25, 0.75))\niqr_read &lt;- quantiles_read[2] - quantiles_read[1]\nupper_bound_read &lt;- quantiles_read[2] + 1.5 * iqr_read\nlower_bound_read &lt;- quantiles_read[1] - 1.5 * iqr_read\noutliers_read &lt;- subset(clean_short_df, Read &gt; upper_bound_read | Read &lt; lower_bound_read)\n#Calculate median,Q1,Q3,outliers for Science\nmedian_science &lt;- median(clean_short_df$Science)\nquantiles_science &lt;- quantile(clean_short_df$Science, probs = c(0.25, 0.75))\niqr_science &lt;- quantiles_science[2] - quantiles_science[1]\nupper_bound_science &lt;- quantiles_science[2] + 1.5 * iqr_science\nlower_bound_science &lt;- quantiles_science[1] - 1.5 * iqr_science\noutliers_science &lt;- subset(clean_short_df, Science &gt; upper_bound_science | Science &lt; lower_bound_science)\n\n#Plot composite histograms for Math, Read, Science\np1 &lt;- ggplot(data = clean_short_df,\n             aes(x= Math))+\n  geom_histogram(bins=15,\n                 color = \"grey40\",\n                 fill=\"grey95\",\n                 size = 0.5)+\n  geom_vline(aes(xintercept=median_math), \n             color=c(\"#660000\"), \n             size=0.5, \n             linetype=\"dashed\") +\n  geom_text(x = median_math, \n            y = 400, \n            label = paste(\"Median=581\"), \n            color = c(\"#660000\"),\n            size = 2) +\n  geom_vline(xintercept = quantiles_math, \n             color = c(\"#FF6666\"), \n             size = 0.5, \n             linetype = \"dashed\") +\n  geom_text(x = quantiles_math[1], \n            y = -300, \n            label = paste(\"Q1=504\"), \n            hjust = 1, \n            color = c(\"#FF6666\"),\n            size = 2) +\n  geom_text(x = quantiles_math[2], \n            y = -300, \n            label = paste(\"Q3=648\"), \n            hjust = 0, \n            color = c(\"#FF6666\"),\n            size = 2) +\n  geom_point(data = outliers_math, \n             aes(x = Math, y = 0), \n             color = c(\"#FFCC99\"), \n             size = 0.8)+\n  ylab(\"\")+\n  theme_minimal(base_size=8)\n\np2 &lt;- ggplot(data = clean_short_df,\n             aes(x= Read))+\n  geom_histogram(bins=15,\n                 color = \"grey40\",\n                 fill=\"grey95\",\n                 size = 0.5)+\n  geom_vline(aes(xintercept=median_read), \n             color=c(\"#660000\"), \n             size=0.5, \n             linetype=\"dashed\") +\n  geom_text(x = median_read, \n            y = 450, \n            label = paste(\"Median=551\"), \n            color = c(\"#660000\"),\n            size = 1.8) +\n  geom_vline(xintercept = quantiles_read, \n             color = c(\"#FF6666\"), \n             size = 0.5, \n             linetype = \"dashed\") +\n  geom_text(x = quantiles_read[1], \n            y = -350, \n            label = paste(\"Q1=473\"), \n            hjust = 1, \n            color = c(\"#FF6666\"),\n            size = 1.8) +\n  geom_text(x = quantiles_read[2], \n            y = -350, \n            label = paste(\"Q3=618\"), \n            hjust = 0, \n            color = c(\"#FF6666\"),\n            size = 1.8) +\n  geom_point(data = outliers_read, \n             aes(x = Read, y = 0), \n             color = c(\"#FFCC99\"), \n             size = 0.8)+\n  labs(y=\"\",title=\"Distribution of Performance\")+\n  theme_minimal(base_size=8)\n\np3 &lt;- ggplot(data = clean_short_df,\n             aes(x= Science))+\n  geom_histogram(bins=15,\n                 color = \"grey40\",\n                 fill=\"grey95\",\n                 size = 0.5)+\n  geom_vline(aes(xintercept=median_science), \n             color=c(\"#660000\"), \n             size=0.5, \n             linetype=\"dashed\") +\n  geom_text(x = median_science, \n            y = 450, \n            label = paste(\"Median=568\"), \n            color = c(\"#660000\"),\n            size = 1.8) +\n  geom_vline(xintercept = quantiles_science, \n             color = c(\"#FF6666\"), \n             size = 0.5, \n             linetype = \"dashed\") +\n  geom_text(x = quantiles_science[1], \n            y = -350, \n            label = paste(\"Q1=495\"), \n            hjust = 1, \n            color = c(\"#FF6666\"),\n            size = 1.8) +\n  geom_text(x = quantiles_science[2], \n            y = -350, \n            label = paste(\"Q3=631\"), \n            hjust = 0, \n            color = c(\"#FF6666\"),\n            size = 1.8) +\n  geom_point(data = outliers_science, \n             aes(x = Science, y = 0), \n             color = c(\"#FFCC99\"), \n             size = 0.8)+\n  ylab(\"\")+\n  theme_minimal(base_size=8)\n\n(p2/p3)|p1\n\n\n\n\n\n\n\n\n\n\n\nAnalysis\n\n\n\n\nPerformance of most students in three subjects is all around 600 (max score is 1000).\nMost students performance well in math, followed by science, then reading.\nAll the distribution of performance shows relatively normal, without significant skewness."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#relationship-bw-gender-and-performance",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#relationship-bw-gender-and-performance",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "5.2 Relationship b/w Gender and Performance",
+    "text": "5.2 Relationship b/w Gender and Performance\nUse ggplot() and geom_density to plot distribution of performance on each subject in terms of gender.\n\n\nCode\n##Gender and Subject\n#1. Math\n#1.1 Create two ribbon areas for Math\nfemale_dens_math_1 &lt;- density(clean_short_df$Math[clean_short_df$GENDER == \"Female\"], from = 420, to = 635, n = 512)\nmale_dens_math_1 &lt;- density(clean_short_df$Math[clean_short_df$GENDER == \"Male\"], from = 420, to = 635, n = 512)\nribbon_data_1 &lt;- data.frame(\n  x = female_dens_math_1$x,\n  ymin = pmin(female_dens_math_1$y, male_dens_math_1$y),\n  ymax = pmax(female_dens_math_1$y, male_dens_math_1$y)\n)\n\nfemale_dens_math_2 &lt;- density(clean_short_df$Math[clean_short_df$GENDER == \"Female\"], from = 640, to = 850, n = 512)\nmale_dens_math_2 &lt;- density(clean_short_df$Math[clean_short_df$GENDER == \"Male\"], from = 640, to = 850, n = 512)\nribbon_data_2 &lt;- data.frame(\n  x = female_dens_math_2$x,\n  ymin = pmin(male_dens_math_2$y, female_dens_math_2$y),\n  ymax = pmax(male_dens_math_2$y, female_dens_math_2$y)\n)\n\n#1.2 Plot density graph with marked ribbon areas for Math\np4 &lt;- ggplot(data = clean_short_df, \n             aes(x = Math,\n                 fill = GENDER)) +\n  geom_density(alpha=0.4) +\n  coord_cartesian(xlim = c(0, 1000), ylim = c(0, 0.005)) +\n  labs(y = \"Density\", x = \"Math\") +\n  theme_minimal(base_size = 8) +\n  geom_ribbon_pattern(data = subset(ribbon_data_1, x &gt;= 420 & x &lt;= 635),\n                      aes(x = x, ymin = ymin, ymax = ymax),\n                      pattern = 'stripe', pattern_angle = 45, pattern_density = 0.1,\n                      pattern_spacing = 0.02, pattern_key_scale_factor = 0.5,\n                      fill = \"orange\",alpha=0.01, pattern_colour =c(\"#CC0066\"))+\n  geom_text(aes(x = 350, \n                y = 0.0042, \n                label = \"Femals lead mid scores↓\"), \n            color = c(\"#CC0066\"), \n            angle = 0, \n            vjust = 0.5,\n            size = 2.2)+\n  geom_ribbon_pattern(data = subset(ribbon_data_2, x &gt;= 640 & x &lt;= 850),\n                      aes(x = x, ymin = ymin, ymax = ymax),\n                      pattern = 'stripe', pattern_angle = 135, pattern_density = 0.1,\n                      pattern_spacing = 0.02, pattern_key_scale_factor = 0.5,\n                      fill = \"orange\",alpha=0.01, pattern_colour =c(\"#003366\"))+\n  geom_text(aes(x = 790, \n                y = 0.0035, \n                label = \"Males lead \n                ↙high scores\"), \n            color = c(\"#003366\"), \n            angle = 0, \n            vjust = 0.5,\n            size = 2.2)\n\n#2. Science\np5 &lt;- ggplot(data = clean_short_df, \n             aes(x = Science,\n                 fill = GENDER)) +\n  geom_density(alpha=0.4) +\n  coord_cartesian(xlim = c(0, 1000)) +\n  labs(y = \"Density\", x = \"Science\", title = \"Relationship: Gender and Performance\") +\n  theme_minimal(base_size = 8) +\n  theme(legend.position = \"none\")\n\n#3. Read\np6 &lt;- ggplot(data = clean_short_df, \n             aes(x = Read,\n                 fill = GENDER)) +\n  geom_density(alpha=0.4) +\n  coord_cartesian(xlim = c(0, 1000)) +\n  labs(y = \"Density\", x = \"Read\") +\n  theme_minimal(base_size = 8)+\n  theme(legend.position = \"none\")\n\n(p5/p6)|p4\n\n\n\n\n\n\n\n\n\n\n\nAnalysis\n\n\n\n\nAmong all subjects, performance of females is all above males in mid scores.\nFor math and science, males perform better in high scores than females.\nFor reading, females perform better in high scores than males.\nMales tend to be good at science, while females are good at arts."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#relationship-bw-school-types-and-performance",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#relationship-bw-school-types-and-performance",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "5.3 Relationship b/w school types and performance",
+    "text": "5.3 Relationship b/w school types and performance\nUse ggplot() and geom_boxplot to plot statistics summary of performance on each subject in terms of school types.\n\n\nCode\n##School and Subject\np7 &lt;- ggplot(data = clean_short_df, \n             aes(y = Math, \n                 x= SCHOOL)) +\n  geom_boxplot(notch=TRUE)+\n  theme_minimal(base_size=7)+\n  labs(x=\"\",title=\"Relationship: School Type and Performance\")\np8 &lt;- ggplot(data = clean_short_df, \n             aes(y = Science, \n                 x= SCHOOL)) +\n  geom_boxplot(notch=TRUE)+\n  theme_minimal(base_size=7)+\n  labs(x=\"School Type\")\np9 &lt;- ggplot(data = clean_short_df, \n             aes(y = Read, \n                 x= SCHOOL)) +\n  geom_boxplot(notch=TRUE)+\n  theme_minimal(base_size=7)+\n  labs(x=\"\")\np7+p8+p9\n\n\n\n\n\n\n\n\n\n\n\nAnalysis\n\n\n\n\nOn average, students from private school perform better than those from public school in all the subjects.\nStudents from public school show a greater level of difference on performance than those from private school.\nPrivate school tend to have better teaching quality."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#relationship-bw-socioeconomic-status-and-performance",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#relationship-bw-socioeconomic-status-and-performance",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "5.4 Relationship b/w socioeconomic status and performance",
+    "text": "5.4 Relationship b/w socioeconomic status and performance\nUse ggplot() and geom_boxplot to plot statistics summary of performance on each subject in terms of socioeconomic status.\nPreviously in data overview stage, it’s found that ESC_status variable has 47 missing data point. Since the missing percentage is rather small, we will ignore the missing in this analysis stage. Use na.omit() to ignore missing data.\n\n\nCode\n##ESC Status and Subject\np10&lt;-ggplot(data = na.omit(clean_short_df), \n       aes(y = Math, \n           x= ESC_status)) +\n  geom_boxplot(notch=TRUE)+\n  theme_minimal(base_size=6)+\n  labs(x=\"ESC status\", title=\"Relationship: ESC status and Performance\")\np11&lt;-ggplot(data = na.omit(clean_short_df), \n            aes(y = Read, \n                x= ESC_status)) +\n  geom_boxplot(notch=TRUE)+\n  theme_minimal(base_size=6)+\n  labs(x=\"\")\n\np12&lt;-ggplot(data = na.omit(clean_short_df), \n       aes(y = Science, \n           x= ESC_status)) +\n  geom_boxplot(notch=TRUE)+\n  theme_minimal(base_size=6)+\n  labs(x=\"\")\np10+p11+p12\n\n\n\n\n\n\n\n\n\n\n\nAnalysis\n\n\n\n\nStudents from high class perform significantly well among those from other 3 classes.\nStudents from upper-middle class are ranked in the second place, followed by lower-middle class, then low class.\nStudents from a higher class tend to perform better in all subjects."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#data-limitation",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#data-limitation",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "6.1 Data Limitation",
+    "text": "6.1 Data Limitation\nSince this study relies on only one dataset, it’s important to acknowledge some limitations:\n\nTemporal Specificity: The data is specific to the year 2022 and may not represent the current and long-term tendency occurred or after this period. Therefore, the findings are limited to this specific year.\nSampling Bias: PISA collected data from a sample of 15-year-old students, which may not represent all the population of students in Singapore. Therefore, this could influence the generalizability of the results to all students.\nVariable selection: The analysis is based on selected variables related to student performance, school, gender and ESC status. Other potentially relevant factors may not be included in the dataset."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#study-summary",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#study-summary",
+    "title": "Take-home Exercise 1: Study on Singapore students’ performance",
+    "section": "6.2 Study Summary",
+    "text": "6.2 Study Summary\nAfter applying the exploratory data analysis methods to the dataset, there are several insights gained from it which may arouse the attention to the governers and the public of Singapore:\n\nMost students perform well in math, followed by science, then reading.\nMales tend to be good at science, while females are good at arts.\nPrivate school tend to have better teaching quality.\nStudents with a higher socioeconomic status tend to perform better in all subjects."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "",
+    "text": "In this hands-on exercise, 4 R packages will be used, they are:\n\nggrepel: provides geoms for ggplot2 to repel overlapping text labels\nggthemes: provides some extra themes, geoms, and scales for ‘ggplot2’\nhrbrthemes: provides typography-centric themes and theme components for ggplot2\npatchwork: prepare composite figure created using ggplot2\n\n\n\nCode\npacman::p_load(ggrepel, patchwork, \n               ggthemes, hrbrthemes,\n               tidyverse) \n\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\nIf installed, then load; If not installed, then install+load\nThey are packages independent from ggplot2\n\n\n\n\n\n\nUse read_csv() to import data\n\n\nCode\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\n\n\n\n\n\n\nCode Notes\n\n\n\nNote to get the right file path and change “\\” to “/” or “\\\\” for Window user"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#loading-r-packages",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#loading-r-packages",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "",
+    "text": "In this hands-on exercise, 4 R packages will be used, they are:\n\nggrepel: provides geoms for ggplot2 to repel overlapping text labels\nggthemes: provides some extra themes, geoms, and scales for ‘ggplot2’\nhrbrthemes: provides typography-centric themes and theme components for ggplot2\npatchwork: prepare composite figure created using ggplot2\n\n\n\nCode\npacman::p_load(ggrepel, patchwork, \n               ggthemes, hrbrthemes,\n               tidyverse) \n\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\nIf installed, then load; If not installed, then install+load\nThey are packages independent from ggplot2"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#importing-data",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#importing-data",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "",
+    "text": "Use read_csv() to import data\n\n\nCode\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\n\n\n\n\n\n\nCode Notes\n\n\n\nNote to get the right file path and change “\\” to “/” or “\\\\” for Window user"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#scenario-bad-outlook-of-labels",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#scenario-bad-outlook-of-labels",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "2.1 Scenario: Bad outlook of labels",
+    "text": "2.1 Scenario: Bad outlook of labels\n\nFor a dataset with large number of observations or data points, it’s hard to use ggplot2 (geom_label()) to add labels because it will add labels to all data points which will cause overlapping on text and difficulty in viewing graphs.\n\n\nCode\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  geom_label(aes(label = ID), \n             hjust = .5, \n             vjust = -.5) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"English scores versus Maths scores for Primary 3\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#solution-ggrepel",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#solution-ggrepel",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "2.2 Solution: ggrepel",
+    "text": "2.2 Solution: ggrepel\nggrepel\n\nextension of ggplot2 package\navoid overlapping text, show labels of selective data points with significance"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#usage-of-ggrepel",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#usage-of-ggrepel",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "2.3 Usage of ggrepel",
+    "text": "2.3 Usage of ggrepel\n\ngeom_text_repel()\ngeom_label_repel()\n\n\n\nCode\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  geom_label_repel(aes(label = ID), \n                   fontface = \"bold\") +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"English scores versus Maths scores for Primary 3\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#scenario-limited-themes",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#scenario-limited-themes",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "3.1 Scenario: Limited themes",
+    "text": "3.1 Scenario: Limited themes\n\n8 built-in themes in ggplot2: theme_gray(), theme_bw(), theme_classic(), theme_dark(), theme_light(), theme_linedraw(), theme_minimal(), and theme_void()\n\n\nCode\nggplot(data=exam_data,\n       aes(x=MATHS))+\n  geom_histogram(bins=20,\n                 boundary=100,\n                 color=\"grey25\",\n                 fill=\"grey90\")+\n  theme_gray()+\n  ggtitle(\"Distribution of Maths scores\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#solution1-ggthemes",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#solution1-ggthemes",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "3.2 Solution1: ggthemes",
+    "text": "3.2 Solution1: ggthemes\nggthemes\n\nMore themes with similar styles of famous publications"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#usage-of-ggthemes",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#usage-of-ggthemes",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "3.3 Usage of ggthemes",
+    "text": "3.3 Usage of ggthemes\ntheme_economist(), theme_stata(), theme_excel(), theme_tufte(), theme_fivethirtyeight(), theme_wsj()\n\n\nCode\nggplot(data=exam_data,\n       aes(x=MATHS))+\n  geom_histogram(bins=20,\n                 boundary=100,\n                 color=\"grey25\",\n                 fill=\"grey90\")+\n  theme_wsj()+\n  ggtitle(\"Distribution of Maths scores\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#solution-2-hrbrthemes",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#solution-2-hrbrthemes",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "3.4 Solution 2: hrbrthemes",
+    "text": "3.4 Solution 2: hrbrthemes\nhrbrthemes\n\nMore themes with similar style of professional reports"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#usage-of-hrbrthemes",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#usage-of-hrbrthemes",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "3.5 Usage of hrbrthemes",
+    "text": "3.5 Usage of hrbrthemes\ntheme_ipsum(), theme_ipsum_tw(), theme_ipsum_ps()\n\n\nCode\nggplot(data=exam_data,\n       aes(x=MATHS))+\n  geom_histogram(bins=20,\n                 boundary=100,\n                 color=\"grey25\",\n                 fill=\"grey90\")+\n  theme_ipsum()+\n  ggtitle(\"Distribution of Math scores\")\n\n\n\n\n\n\n\nCode\nggplot(data=exam_data,\n       aes(x=MATHS))+\n  geom_histogram(bins=20,\n                 boundary=100,\n                 color=\"grey25\",\n                 fill=\"grey90\")+\n  ggtitle(\"Distribution of Math scores\")+\n  theme_ipsum(axis_title_size=18,\n              base_size=15,\n              grid=\"Y\")\n\n\n\n\n\n\n\n\n\n\n\nCode Notes\n\n\n\naxis_title_size: adjust font size of X and Y axis titles (e.g. MATHS, count)\nbase_size: adjust basic font size of the plot, including plot title, labels and scales\ngrid: remove the x-axis grid lines (vertical lines)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#scenario",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#scenario",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "4.1 Scenario:",
+    "text": "4.1 Scenario:\n\nMultiple graphs combined in one plot are more useful to tell a compelling visual story than one graph in one plot\n\n\nCode\np1 &lt;- ggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") + \n  coord_cartesian(xlim=c(0,100)) +\n  ggtitle(\"Distribution of Maths scores\")\np1\n\n\n\n\n\n\n\nCode\np2 &lt;- ggplot(data=exam_data,\n             aes(x=ENGLISH))+\n  geom_histogram(bins=20,\n                 boundary=100,\n                 color=\"grey25\",\n                 fill=\"grey90\")+\n  coord_cartesian(xlim=c(0,100))+\n  ggtitle(\"Distribution of English scores\")\np2\n\n\n\n\n\n\n\nCode\np3 &lt;- ggplot(data=exam_data,\n             aes(x=MATHS,\n                 y=ENGLISH))+\n  geom_point()+\n  geom_smooth(method=lm,\n              size=0.5)+\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))+\n  ggtitle(\"English scores versus Maths scores for Primary 3\")\np3"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#solution-pathwork",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#solution-pathwork",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "4.2 Solution: pathwork",
+    "text": "4.2 Solution: pathwork\npathwork\n\ncombining separate ggplot2 graphs into a single figure"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#usage-of-pathwork",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#usage-of-pathwork",
+    "title": "Hands-on Exercise 2: Beyond ggplot2 Fundamentals",
+    "section": "4.3 Usage of pathwork",
+    "text": "4.3 Usage of pathwork\n\n4.3.1 Combining two graphs\n\n“+”: two-column layout\n\n\nCode\np1+p2\n\n\n\n\n\n\n\n\n4.3.2 Combining three graphs\n\n“()”: define the sequence of the plotting\n“/”: beside\n“|” stack\n\n\nCode\n(p1/p2)|p3\n\n\n\n\n\n\n\n\n4.3.3 Creating figure with insert\n\ninset_element()\n\n\nCode\np3 + inset_element(p2,\n                   left=0.02,\n                   bottom=0.7,\n                   right=0.5,\n                   top=1)\n\n\n\n\n\n\n\n\n4.3.4 Creating a composite figure with theme\n\n“&”: add theme to composite figure\n\n\nCode\npatchwork &lt;- (p1/p2)|p3\npatchwork & theme_economist()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
+    "title": "Hands-on Exercise 1",
+    "section": "",
+    "text": "The code chunk below uses p_load() of pacman package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R.\n\npacman::p_load(tidyverse)\n\n\n\n\n\nLocal file of full path\n\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\nLocal file of short path\n2.1 check the short path folder and check if the file is in the same folder\n\n\ngetwd()\n\n[1] \"D:/yanrui-w/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex01\"\n\n\n2.2 import file\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\n\n\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) \n\n\n\n  geom_boxplot(notch=TRUE)\n\ngeom_boxplot: outlier.colour = NULL, outlier.fill = NULL, outlier.shape = 19, outlier.size = 1.5, outlier.stroke = 0.5, outlier.alpha = NULL, notch = TRUE, notchwidth = 0.5, varwidth = FALSE, na.rm = FALSE, orientation = NA\nstat_boxplot: na.rm = FALSE, orientation = NA\nposition_dodge2"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#install-and-launching-r-packages",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#install-and-launching-r-packages",
+    "title": "Hands-on Exercise 1",
+    "section": "",
+    "text": "The code chunk below uses p_load() of pacman package to check if tidyverse packages are installed in the computer. If they are, then they will be launched into R.\n\npacman::p_load(tidyverse)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#importing-the-data",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#importing-the-data",
+    "title": "Hands-on Exercise 1",
+    "section": "",
+    "text": "Local file of full path\n\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")\n\n\nLocal file of short path\n2.1 check the short path folder and check if the file is in the same folder\n\n\ngetwd()\n\n[1] \"D:/yanrui-w/ISSS608-VAA/Hands-on_Ex/Hands-on_Ex01\"\n\n\n2.2 import file\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#plotting-a-simple-bar-chart",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#plotting-a-simple-bar-chart",
+    "title": "Hands-on Exercise 1",
+    "section": "",
+    "text": "ggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) \n\n\n\n  geom_boxplot(notch=TRUE)\n\ngeom_boxplot: outlier.colour = NULL, outlier.fill = NULL, outlier.shape = 19, outlier.size = 1.5, outlier.stroke = 0.5, outlier.alpha = NULL, notch = TRUE, notchwidth = 0.5, varwidth = FALSE, na.rm = FALSE, orientation = NA\nstat_boxplot: na.rm = FALSE, orientation = NA\nposition_dodge2"
+  },
+  {
+    "objectID": "In-Class_Ex/In-Class_Ex01/In-Class_Ex01.html",
+    "href": "In-Class_Ex/In-Class_Ex01/In-Class_Ex01.html",
+    "title": "In-Class Exercise 1: Now You See It!",
+    "section": "",
+    "text": "In this hands-on exercise, two R packages will be used. They are:\n\ntidyverse, and\nhaven\n\nThe code chunk used is as follows:\n\npacman::p_load(tidyverse, haven)"
+  },
+  {
+    "objectID": "In-Class_Ex/In-Class_Ex01/In-Class_Ex01.html#loading-r-packages",
+    "href": "In-Class_Ex/In-Class_Ex01/In-Class_Ex01.html#loading-r-packages",
+    "title": "In-Class Exercise 1: Now You See It!",
+    "section": "",
+    "text": "In this hands-on exercise, two R packages will be used. They are:\n\ntidyverse, and\nhaven\n\nThe code chunk used is as follows:\n\npacman::p_load(tidyverse, haven)"
+  },
+  {
+    "objectID": "In-Class_Ex/In-Class_Ex01/In-Class_Ex01.html#importing-pisa-data",
+    "href": "In-Class_Ex/In-Class_Ex01/In-Class_Ex01.html#importing-pisa-data",
+    "title": "In-Class Exercise 1: Now You See It!",
+    "section": "Importing PISA data",
+    "text": "Importing PISA data\nThe code chunk below uses read_sas() of haven to import PISA data into R environment.\n\nstu_qqq &lt;- read_sas(\"data/cy08msp_stu_qqq.sas7bdat\")\n\n\nstu_qqq_SG &lt;- stu_qqq %&gt;%\n  filter(CNT == \"SGP\")\n\n\nwrite_rds(stu_qqq_SG,\n          \"data/stu_qqq_SG.rds\")\n\n\nstu_qqq_SG &lt;- read_rds(\"data/stu_qqq_SG.rds\")"
   }
 ]
