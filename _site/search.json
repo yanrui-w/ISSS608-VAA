@@ -390,5 +390,96 @@
     "title": "In-Class Exercise 1: Now You See It!",
     "section": "Importing PISA data",
     "text": "Importing PISA data\nThe code chunk below uses read_sas() of haven to import PISA data into R environment.\n\nstu_qqq &lt;- read_sas(\"data/cy08msp_stu_qqq.sas7bdat\")\n\n\nstu_qqq_SG &lt;- stu_qqq %&gt;%\n  filter(CNT == \"SGP\")\n\n\nwrite_rds(stu_qqq_SG,\n          \"data/stu_qqq_SG.rds\")\n\n\nstu_qqq_SG &lt;- read_rds(\"data/stu_qqq_SG.rds\")"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "",
+    "text": "In this take-home exercise, I will continue the topic on take-home exercise 1, select one of the outcome from my classmates, critic it in terms of clarity and aesthetics, prepare a sketch for the alternative design and remake the original design by using relevant R packages.\nFind the works I select from one of my classmates: Take-home Exercise 1 from ZHENG KAIXIN"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#original-design",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#original-design",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "3.1 Original Design",
+    "text": "3.1 Original Design\nThe original design is shown as below:  The 3 histograms show the distribution of average score of Math, Reading and Science."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#clarity",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#clarity",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "3.2 Clarity",
+    "text": "3.2 Clarity\n\n3.2.1 X axis Label\nThe x-axis scales on the three graphs are not aligned. While the Average Math Score has the highest mean and median values, the lines representing the mean and median are positioned to the left when compared to the lines for Average Reading Score and Average Science Score.\n\n\n3.2.2 Y axis Title\nThe Y axis title named as “Count” without specifying what is being counted might be a little vague.\n\n\n3.2.3 Graph Title\nGraph title could be enhanced to be more eye-catching for readers. Sometimes, an attention-grabbing title together with a descriptive subtitle can bring better understanding to readers."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#aesthetic",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#aesthetic",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "3.3 Aesthetic",
+    "text": "3.3 Aesthetic\n\n3.3.1 Font Size\nIn comparison to the graphs, the font size of x and y axis title is slightly larger, which might somehow divert people’s attention away from the graphs.\n\n\n3.3.2 Display of graph and key numbers\nIn this plot, 3 histograms are arranged vertically, leading to compression of each histogram. As a result, the differences in histogram presentations, including the comparison between the median and mean reference lines, appear less distinct due to the compression.\nI try to retain all the information my classmate want to convey (distribution graph, as well as key statistics: mean and median) and change the layout to better present all the parts: put 3 distributions together in one graph and show the statistics in another graph beside it by using boxplot."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#sketch-of-proposed-design",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#sketch-of-proposed-design",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "3.4 Sketch of proposed design",
+    "text": "3.4 Sketch of proposed design\n\n\n\ncritique1_after"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#data-wrangling",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#data-wrangling",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "3.5 Data Wrangling",
+    "text": "3.5 Data Wrangling\nTo display 3 density distributions in one graph, I need to create a new column called “Subject” to capture all the subject names of each student and a new column called “Score” to capture all the score values of each student. I use pivot_longer() to convert the dataframe from wide format into long format.\n\nnew_combined &lt;- combined[c(\"CNTSTUID\",\"Avg_Math\",\"Avg_Reading\",\"Avg_Science\")]\n# change to long format\nscore_combined &lt;- new_combined %&gt;%\n  pivot_longer(cols = starts_with(\"Avg_\"), \n               names_to = \"Subject\", \n               values_to = \"Score\")"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#final-design",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#final-design",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "3.6 Final Design",
+    "text": "3.6 Final Design\n\n\nCode\nmedian_values &lt;- aggregate(Score ~ Subject, data = score_combined, FUN = median)\nmean_values &lt;- aggregate(Score ~ Subject, data = score_combined, FUN = mean)\n\nplot1 &lt;- ggplot(data=score_combined, \n                aes(x = Score, \n                    colour = Subject)) +\n  geom_density()+\n  labs(x = \"Score\",y=\"No.% of\\nStudents\",\n       title = \"Insights from Performance in Math, Reading and Science\",\n       subtitle= \"Singaporean 15-year-olds excel in Science, with scores concentrated around 571 points, and demonstrate strong\\nMath performance, with many students exceeding the 574-point mean. Reading scores are slightly lower in comparison.\\n\")+\n  theme_minimal(base_size = 7)+\n  theme(legend.position = \"bottom\",\n        panel.grid.major.x = element_blank(),\n        panel.grid.minor.x = element_blank(),\n        panel.grid.minor.y = element_blank(),\n        axis.title.y= element_text(angle=0),\n        plot.title = element_text(size=10, face=\"bold\", hjust = 0.2),\n        plot.subtitle = element_text(size=7, hjust = 0.2))+\n  scale_color_manual(\n    breaks = c(\"Avg_Math\", \"Avg_Reading\", \"Avg_Science\"),\n    labels = c(\"Math\", \"Reading\", \"Science\"),\n    values = c(\"lightpink3\",\"seagreen3\",\"royalblue3\"))\n\nplot2 &lt;- ggplot(data=score_combined, \n                aes(y = Score, x= Subject,\n                    colour = Subject)) +\n  geom_boxplot() +\n  stat_summary(geom = \"point\",       \n               fun.y=\"mean\",         \n               colour =\"orangered\",        \n               size=1)+\n  geom_text(\n    data = median_values,\n    aes(x = Subject, y = Score, label = paste(\"Median:\",round(Score, 2))),\n    vjust = -0.5,  \n    colour = \"orangered3\",  \n    size = 1.8)+\n  geom_text(\n    data = mean_values,\n    aes(x = Subject, y = Score, label = paste(\"Mean:\",round(Score, 2))),\n    vjust = 1.2,  \n    colour = \"orangered\",  \n    size = 1.8)+\n  theme_minimal(base_size = 7)+\n  labs(caption = \"Source: PISA 2022\")+\n  guides(color = guide_legend(\n    title = \"Subject\",\n    label.hjust = 0,   \n    label.vjust = 0,  \n    nrow = 1))+\n  theme(legend.position = \"bottom\",\n        axis.text.x = element_blank(),\n        axis.title.y= element_text(angle=0))+\n  scale_color_manual(\n    breaks = c(\"Avg_Math\", \"Avg_Reading\", \"Avg_Science\",\"Median:\",\"Mean:\"),\n    labels = c(\"Math\", \"Reading\", \"Science\",\"Median:\",\"Mean:\"),\n    values = c(\"lightpink3\",\"seagreen3\",\"royalblue3\",\"orangered3\",\"orangered\"))\n\nplot1+plot2"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#original-design-1",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#original-design-1",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "4.1 Original Design",
+    "text": "4.1 Original Design\nThe original design is shown as below:  This graph shows the distributions of average score of all the 3 subjects across all socioeconomic groups."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#clarity-1",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#clarity-1",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "4.2 Clarity",
+    "text": "4.2 Clarity\n\n4.2.1 Y axis label\nY axis is labelled as something like “1e-03”, “5e-04” might cause confusing to readers.\n\n\n4.2.2 Socioeconomic Groups\nThe socioeconomic hierarchy is divided into 5 levels: 1-5. It might be more user-friendly to rename them by verbal description such as “Lower Group”, “Mid-Lower Group”, “Middle Group”, “Upper-Middle Group”, “Higher Group”.\n\n\n4.2.3 Graph Title\nGraph title could be enhanced to be more eye-catching for readers. Sometimes, an attention-grabbing title together with a descriptive subtitle can bring better understanding to readers."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#aesthetic-1",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#aesthetic-1",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "4.3 Aesthetic",
+    "text": "4.3 Aesthetic\n\n4.3.1 Display of graph\nSince the graphs of 5 groups are listed vertically and slightly similar at the first glance, it would be a little hard for readers to tell the difference by tracing the movement of the peak point of 5 graphs.\nI try to convert the graphs by showing the 90% confident interval of the mean of each graph. In addition, I will use interactive tool to show the value of mean so that the slight difference might be more distinct by directly presenting the mean and showing the value."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#sketch-of-proposed-design-1",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#sketch-of-proposed-design-1",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "4.4 Sketch of proposed design",
+    "text": "4.4 Sketch of proposed design\n\n\n\ncritique2_after"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#data-wrangling-1",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#data-wrangling-1",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "4.5 Data Wrangling",
+    "text": "4.5 Data Wrangling\nBefore plotting, I need to rename the socioeconomic groups.\n\ncombined$socioeconomic_group &lt;- factor(combined$socioeconomic_group,\n                                       levels = c(1, 2, 3, 4, 5),\n                                       labels = c(\"Lower\\nGroup\", \"Mid-Lower\\nGroup\", \"Middle\\nGroup\", \"Upper-Middle\\nGroup\", \"Higher\\nGroup\"))"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#final-design-1",
+    "href": "Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html#final-design-1",
+    "title": "Take-Home Exercise 2: DataVis Makeover",
+    "section": "4.6 Final Design",
+    "text": "4.6 Final Design\n\n\nCode\npacman::p_load(ggiraph, plotly, \n               patchwork, DT)\ntooltip &lt;- function(y, ymax, accuracy = .01) {\n  mean &lt;- scales::number(y, accuracy = accuracy)\n  sem &lt;- scales::number(ymax - y, accuracy = accuracy)\n  paste(\"Mean scores:\", mean, \"+/-\", sem)\n}\n  \ngg_point &lt;- ggplot(data=combined, \n                    aes(x = socioeconomic_group)) +\n  stat_summary(aes(y = Total_Avg, \n                   tooltip = after_stat(\n                     tooltip(y, ymax))),  \n               fun.data = \"mean_se\", \n               geom = GeomInteractiveCol,  \n               fill = \"light blue\") +\n  stat_summary(aes(y = Total_Avg),\n               fun.data = mean_se,\n               geom = \"errorbar\", width = 0.2,\n               size = 0.2)+\n  coord_cartesian(ylim = c(0,2000))+\n  labs(y= 'Mean\\nScore', x= 'Socioeconomic Group',\n       title = \"Educational Equity is Bridging Socioeconomic Divides in Education\",\n       subtitle= \"Over 6,000 15-year-old Singaporean students across socioeconomic groups displayed consistent academic\\nperformance with the Upper-Middle Group slightly outshining the rest yet the Lower Group lagging a little.\",\n       caption = \"Source: PISA 2022\")+\n  theme_minimal(base_size = 10)+\n  theme(plot.title = element_text(size=15, face=\"bold\", hjust = 0.5),\n        plot.subtitle = element_text(size=10, hjust = 0.5),\n        axis.title.y = element_text(angle = 0, vjust = 0.5),\n        panel.background = element_blank(),\n        panel.grid.major = element_line(color = \"grey90\"),\n        panel.grid.minor = element_blank(),\n        plot.caption = element_text(hjust = 1))\n  \ngirafe(ggobj = gg_point,\n       width_svg = 8,\n       height_svg = 8*0.618)"
   }
 ]
