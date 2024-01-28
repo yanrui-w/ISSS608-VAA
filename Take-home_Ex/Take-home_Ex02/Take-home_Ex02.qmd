@@ -18,7 +18,9 @@ Find the works I select from one of my classmates: [Take-home Exercise 1 from ZH
 
 # 2. Data Preparation
 
-First of all, I'll follow the steps my classmate has done. - Install relevant R packages:
+First of all, I'll follow the steps my classmate has done.
+
+-   Install relevant R packages:
 
 ```{r}
 #| code-fold: true
@@ -109,8 +111,7 @@ combined <- combined %>%
 
 ## 3.1 Original Design
 
-The original design is shown as below: ![critique1_original](image/critique1_original.png)
-The 3 histograms show the distribution of average score of Math, Reading and Science.
+The original design is shown as below: ![critique1_original](image/critique1_original.png) The 3 histograms show the distribution of average score of Math, Reading and Science.
 
 ## 3.2 Clarity
 
@@ -130,7 +131,7 @@ Graph title could be enhanced to be more eye-catching for readers. Sometimes, an
 
 ### 3.3.1 Font Size
 
-In comparison to the graphs, the font size of x and y axis title is slightly larger, which might somehow divert people's attention away from the graphs.  
+In comparison to the graphs, the font size of x and y axis title is slightly larger, which might somehow divert people's attention away from the graphs.
 
 ### 3.3.2 Display of graph and key numbers
 
@@ -144,8 +145,7 @@ I try to retain all the information my classmate want to convey (distribution gr
 
 ## 3.5 Data Wrangling
 
-To display 3 density distributions in one graph, I need to create a new column called "Subject" to capture all the subject names of each student and a new column called "Score" to capture all the score values of each student. 
-I use `pivot_longer()` to convert the dataframe from wide format into long format.
+To display 3 density distributions in one graph, I need to create a new column called "Subject" to capture all the subject names of each student and a new column called "Score" to capture all the score values of each student. I use `pivot_longer()` to convert the dataframe from wide format into long format.
 
 ```{r}
 new_combined <- combined[c("CNTSTUID","Avg_Math","Avg_Reading","Avg_Science")]
@@ -157,6 +157,7 @@ score_combined <- new_combined %>%
 ```
 
 ## 3.6 Final Design
+
 ```{r}
 #| code-fold: true
 median_values <- aggregate(Score ~ Subject, data = score_combined, FUN = median)
@@ -224,8 +225,7 @@ plot1+plot2
 
 ## 4.1 Original Design
 
-The original design is shown as below: ![critique2_original](image/critique2_original.png)
-This graph shows the distributions of average score of all the 3 subjects across all socioeconomic groups.
+The original design is shown as below: ![critique2_original](image/critique2_original.png) This graph shows the distributions of average score of all the 3 subjects across all socioeconomic groups.
 
 ## 4.2 Clarity
 
@@ -256,6 +256,7 @@ I try to convert the graphs by showing the 90% confident interval of the mean of
 ## 4.5 Data Wrangling
 
 Before plotting, I need to rename the socioeconomic groups.
+
 ```{r}
 combined$socioeconomic_group <- factor(combined$socioeconomic_group,
                                        levels = c(1, 2, 3, 4, 5),
@@ -263,6 +264,7 @@ combined$socioeconomic_group <- factor(combined$socioeconomic_group,
 ```
 
 ## 4.6 Final Design
+
 ```{r}
 #| code-fold: true
 pacman::p_load(ggiraph, plotly, 
