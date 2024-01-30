@@ -13,6 +13,8 @@ website:
             href: "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html"
           - text: "Hands-on Exercise 3_1"
             href: "Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html"
+          - text: "Hands-on Exercise 3_2"
+            href: "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html"
       - text: "In-Class Exercise"
         menu:
           - text: "In-Class Exercise 1"

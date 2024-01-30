@@ -481,5 +481,75 @@
     "title": "Take-Home Exercise 2: DataVis Makeover",
     "section": "4.6 Final Design",
     "text": "4.6 Final Design\n\n\nCode\npacman::p_load(ggiraph, plotly, \n               patchwork, DT)\ntooltip &lt;- function(y, ymax, accuracy = .01) {\n  mean &lt;- scales::number(y, accuracy = accuracy)\n  sem &lt;- scales::number(ymax - y, accuracy = accuracy)\n  paste(\"Mean scores:\", mean, \"+/-\", sem)\n}\n  \ngg_point &lt;- ggplot(data=combined, \n                    aes(x = socioeconomic_group)) +\n  stat_summary(aes(y = Total_Avg, \n                   tooltip = after_stat(\n                     tooltip(y, ymax))),  \n               fun.data = \"mean_se\", \n               geom = GeomInteractiveCol,  \n               fill = \"light blue\") +\n  stat_summary(aes(y = Total_Avg),\n               fun.data = mean_se,\n               geom = \"errorbar\", width = 0.2,\n               size = 0.2)+\n  coord_cartesian(ylim = c(0,2000))+\n  labs(y= 'Mean\\nScore', x= 'Socioeconomic Group',\n       title = \"Educational Equity is Bridging Socioeconomic Divides in Education\",\n       subtitle= \"Over 6,000 15-year-old Singaporean students across socioeconomic groups displayed consistent academic\\nperformance with the Upper-Middle Group slightly outshining the rest yet the Lower Group lagging a little.\",\n       caption = \"Source: PISA 2022\")+\n  theme_minimal(base_size = 10)+\n  theme(plot.title = element_text(size=15, face=\"bold\", hjust = 0.5),\n        plot.subtitle = element_text(size=10, hjust = 0.5),\n        axis.title.y = element_text(angle = 0, vjust = 0.5),\n        panel.background = element_blank(),\n        panel.grid.major = element_line(color = \"grey90\"),\n        panel.grid.minor = element_blank(),\n        plot.caption = element_text(hjust = 1))\n  \ngirafe(ggobj = gg_point,\n       width_svg = 8,\n       height_svg = 8*0.618)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html",
+    "href": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html",
+    "title": "Hands-on Exercise 3_2: Programming Animated Statistical Graphics with R",
+    "section": "",
+    "text": "The workflow of animations:\nDataset -&gt; Many Data subsets by animated variable(i.e. time horizons) -&gt; Create many individual plots by subsets -&gt; Render motion by stitching the plots into frames and displaying them sequentially over time\n\n\n\n\nFrame: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data\nAnimation Attributes: The animation attributes are the settings that control how the animation behaves."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#concepts",
+    "href": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#concepts",
+    "title": "Hands-on Exercise 3_2: Programming Animated Statistical Graphics with R",
+    "section": "",
+    "text": "The workflow of animations:\nDataset -&gt; Many Data subsets by animated variable(i.e. time horizons) -&gt; Create many individual plots by subsets -&gt; Render motion by stitching the plots into frames and displaying them sequentially over time"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#terminology",
+    "href": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#terminology",
+    "title": "Hands-on Exercise 3_2: Programming Animated Statistical Graphics with R",
+    "section": "",
+    "text": "Frame: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data\nAnimation Attributes: The animation attributes are the settings that control how the animation behaves."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#install-r-packages",
+    "href": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#install-r-packages",
+    "title": "Hands-on Exercise 3_2: Programming Animated Statistical Graphics with R",
+    "section": "2.1 Install R Packages",
+    "text": "2.1 Install R Packages\nIn this hand-on exercise, 5 R packages will be used, they are:\n\nplotly: for plotting interactive statistical graphs\ngganimate: an ggplot extension for creating animated statistical graphs\ngifski: converts video frames to GIF animations\ngapminder: An excerpt of the data available at Gapminder.org\ntidyverse: designed to support data science, analysis and communication task including creating static statistical graphs\n\n\npacman::p_load(readxl, gifski, gapminder, plotly, gganimate, tidyverse)\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\nreadxl: is used to read Microsoft Excel file (.xls and .xlsx), and convert it into dataframe in R"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#import-data",
+    "href": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#import-data",
+    "title": "Hands-on Exercise 3_2: Programming Animated Statistical Graphics with R",
+    "section": "2.2 Import data",
+    "text": "2.2 Import data\n\ncol &lt;- c(\"Country\", \"Continent\")\nglobalPop &lt;- read_xls(\"data/GlobalPopulation.xls\",\n                      sheet = \"Data\") %&gt;%\n  mutate_at(col, as.factor) %&gt;%\n  mutate(Year = as.integer(Year))\n\nThe “Data” sheet shows the population for specific year in some countries with the percentage of Young and Old.\n\n\n\n\n\n\nCode Notes\n\n\n\n\ncol &lt;- c(\"Country\",\"Continent\"): create a string vector, including 2 string elements “Country” and “Continent”\nread_xls(\"file path\",sheet=\"sheet name\"): read excel file from specific file path, and choose specific sheet inside this file, assign it to a dataframe called “globalPop”\n%&gt;%: pipe operator. A %&gt;% B: pass the result from process A to B for further processing in B\nmutate:\n4.1 mutate_at() transform data of specified column,mutate_at()=mutate(across())\n4.2 mutate() modify current columns or create new columns\nas.factor: convert the data type of one column into factor\nas.integer(): convert the data type of one column into integer"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#functions-inside-gganimate",
+    "href": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#functions-inside-gganimate",
+    "title": "Hands-on Exercise 3_2: Programming Animated Statistical Graphics with R",
+    "section": "3.1 Functions inside gganimate",
+    "text": "3.1 Functions inside gganimate\n\ntransition_*(): defines how the data should be spread out and how it relates to itself across time\nview_*(): defines how the positional scales should change along the animation\nshadow_*(): defines how data from other points in time should be presented in the given point in time\nenter_*()/exit_*(): defines how data from other points in time should be presented in the given point in time\nease_aes(): defines how different aesthetics should be eased during transitions"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#build-a-static-population-bubble-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#build-a-static-population-bubble-plot",
+    "title": "Hands-on Exercise 3_2: Programming Animated Statistical Graphics with R",
+    "section": "3.2 Build a static population bubble plot",
+    "text": "3.2 Build a static population bubble plot\nUse basic ggplot2 functions to create a static bubble plot.\n\nggplot(globalPop, aes(x=Old, y=Young,\n                      size=Population,\n                      colour=Country))+\n  geom_point(alpha=0.7,\n             show.legend=FALSE)+\n  scale_colour_manual(values=country_colors)+\n  scale_size(range = c(2,12))+\n  labs(title = 'Year: {frame_time}',\n       x='% Aged',\n       y='% Young')\n\n\n\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\nshow.legend=FALSE: it’s being used inside geom_point() to hide the legend of points. If you want to hide the legend of the whole graph, apply theme(legend.position=\"none\") to ggplot() object.\nscale_colour_manual(): defines color mapping which allows you assign a specific color to each country.\n2.1 values accepts a color vector including colors reflecting to each country.\n2.2 country_colors: built-in gapminder color schemes for the countries and continents in the Gapminder data\nscale_size(): here defines the size range of points\naes(size=Population): defines the size of each point in the scatter plot according to the population of this data point\nrange = c(2,12): size from 2 to 12, including 2 and 12"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#build-the-animated-bubble-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#build-the-animated-bubble-plot",
+    "title": "Hands-on Exercise 3_2: Programming Animated Statistical Graphics with R",
+    "section": "3.3 Build the animated bubble plot",
+    "text": "3.3 Build the animated bubble plot\nCreate animated bubble plot by using:\n\ntransition time(): to create transition through distinct states in time (i.e. Year)\nease_aes(): to control easing of aesthetics. The default is linear. Other methods are: quadratic, cubic, quartic, quintic, sine, circular, exponential, elastic, back, and bounce.\n\n\nggplot(globalPop, aes(x=Old,y=Young,\n                      size=Population,\n                      colour=Country))+\n  geom_point(alpha=0.7,\n             show.legend = FALSE)+\n  scale_colour_manual(values = country_colors)+\n  scale_size(range=c(2,12))+\n  labs(title=\"Year:{frame_time}\",\n       x=\"% Aged\",\n       y=\"% Young\")+\n  transition_time(Year)+\n  ease_aes(\"linear\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#build-an-animated-bubble-plot-with-ggplotly",
+    "href": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#build-an-animated-bubble-plot-with-ggplotly",
+    "title": "Hands-on Exercise 3_2: Programming Animated Statistical Graphics with R",
+    "section": "4.1 Build an animated bubble plot with ggplotly()",
+    "text": "4.1 Build an animated bubble plot with ggplotly()\n\ngg &lt;- ggplot(globalPop,\n             aes(x=Old,\n                 y=Young,\n                 size=Population,\n                 colour=Country))+\n  geom_point(aes(size=Population,\n                 frame=Year),\n             alpha=0.7,\n             show.legend=FALSE)+\n  scale_colour_manual(values=country_colors)+\n  scale_size(range=c(2,12))+\n  labs(x=\"% Aged\",y=\"% Yound\")\n\nggplotly(gg)\n\n\n\n\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\n1st size=Population: is in the global aes() mapping, which applies this mapping across all layers, meaning that all layers that support size mapping will adjust the size of their elements based on the ‘Population’ variable\n2nd size=Population: is in the local aes() mapping with geom_point(). This is usually unnecessary because if size mapping is already defined in the global aes(), it would automatically apply to all layers unless a different setting is required for a specific layer. However, in some cases, if you were to change the size mapping in subsequent layers, redefining size within geom_point() ensures that the size mapping for the scatter plot is not affected by later changes.\nNote that although show.legend = FALSE argument was used, the legend still appears on the plot. To overcome this problem, theme(legend.position='none') should be used as shown in the plot and code chunk below.\n\n\n\n\ngg &lt;- ggplot(globalPop,\n             aes(x=Old,\n                 y=Young,\n                 size=Population,\n                 colour=Country))+\n  geom_point(aes(size=Population,\n                 frame=Year),\n             alpha=0.7,\n             show.legend=FALSE)+\n  scale_colour_manual(values=country_colors)+\n  scale_size(range=c(2,12))+\n  labs(x=\"% Aged\",y=\"% Yound\")+\n  theme(legend.position =\"none\")\n\nggplotly(gg)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#build-an-animated-bubble-plot-with-plot_ly",
+    "href": "Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html#build-an-animated-bubble-plot-with-plot_ly",
+    "title": "Hands-on Exercise 3_2: Programming Animated Statistical Graphics with R",
+    "section": "4.2 Build an animated bubble plot with plot_ly()",
+    "text": "4.2 Build an animated bubble plot with plot_ly()\n\nbp &lt;- globalPop %&gt;%\n  plot_ly(x=~Old,\n          y=~Young,\n          size=~Population,\n          color=~Continent,\n          sizes=c(2,100),\n          frame=~Year,\n          text=~Country,\n          hoverinfo=\"text\",\n          type=\"scatter\",\n          mode=\"markers\") %&gt;%\n  layout(showlegend=FALSE)\nbp"
   }
 ]
