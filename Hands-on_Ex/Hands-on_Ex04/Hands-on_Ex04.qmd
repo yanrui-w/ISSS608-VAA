@@ -1,0 +1,659 @@
+---
+title: "Hands-on Exercise 4: Fundamentals Statistics of Visual Analytics"
+author: Wei Yanrui
+date: "January 30, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+editor: visual
+---
+
+# 1. Roadmap for Studying
+
+![roadmap_4](image/roadmap_4.png)
+
+# 2. Visualize Distribution
+
+## 2.1 Getting Started
+
+### 2.1.1 Install and Load R packages
+
+-   **tidyverse** for data science process
+
+-   **ggridges** a ggplot2 extension specially designed for plotting ridgeline plots
+
+-   **ggdist** for visualising distribution and uncertainty
+
+```{r}
+pacman::p_load(ggdist, ggridges, tidyverse,
+               ggthemes,colorspace)
+```
+
+### 2.1.2 Import data
+
+*Exam_data.csv* will be used in this exercise.
+
+```{r}
+exam <- read_csv("data/Exam_data.csv")
+```
+
+## 2.2 Visualize Distribution with Ridgeline Plot
+
+*Ridgeline plot*(also called *Joyplot*): for revealing the distribution of a numeric value for several groups
+
+-   is used when the number of group is large
+
+-   is used when the number of group to represent is medium to high
+
+-   use space more efficiently
+
+-   is used when there is a clear pattern in the result, an obvious ranking in groups
+
+### 2.2.1 ggridges package
+
+-   **geom_ridgeline()**: creates plots that look like a series of mountain ridges. creates a line that represents the density of the distribution of your data.
+
+-   **geom_density_ridges()**: In addition to what `geom_ridgeline()` does, `geom_density_ridges()` adds a shaded area under the lines, which represents the same density information in a more visually filled way
+
+The ridgeline plot below is plotted by using `geom_density_ridges()`
+
+```{r}
+ggplot(exam,
+       aes(x=ENGLISH,
+           y=CLASS))+
+  geom_density_ridges(
+    scale=3,
+    rel_min_height=0.01,
+    bandwidth=3.4,
+    fill=lighten("#7097BB",.3),
+    color="white"
+  )+
+  scale_x_continuous(
+    name="English grades",
+    expand=c(0,0)
+  )+
+  scale_y_discrete(name=NULL,
+                   expand=expansion(add=c(0.2,2.6)))+
+  theme_ridges()
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `scale`: controls the vertical scaling of the density curves for each category, a larger value increases the vertical spacing between the curves, making them easier to distinguish from one another
+
+2.  `rel_min_height`: sets a minimum relative height for each density curve. It's a way to ensure that curves representing very small density values don't become invisible
+
+3.  `bandwith`: controls the degree of smoothness in the density estimation. A larger bandwidth results in smoother curves with less detail, while a smaller bandwidth leads to more jagged curves with more detail
+
+4.  `fill`: color of shade
+
+5.  `color`: color of outline
+
+6.  `lighten()`: gives a lighter color of the specific color
+
+7.  `scale_x_continuous()`: sets the scale for the x-axis as continuous 7.1 `name="English grades"`: title of x axis. If you want to remove the label of axis, then use `name=NULL` 7.2 `expand=c(0,0)`: 7.2.1 1st 0: the multiplier that determines how much space to add around both of the axis based on the range of the data, e.g.`expand=c(0.1,0)` will look at the range of data points in terms of x axis and add a space equal to 10% of that range on both sides of the axis. Same as y axis. 7.2.2 2nd 0: the fixed value adding blank space beyond the min and max of your actual data on y axis, e.g. y-axis goes from 20 to 80, your plot might show just that range, if with `expand=c(0,10)`, y-axis starts from 10 and ends at 90, but the data points themselves don't change at all.
+
+8.  `scale_y_discrete()`: sets the scale for the y-axis as discrete
+:::
+
+### 2.2.2 Change fill colors
+
+-   **geom_ridgeline_gradient()**: make the area under a ridgeline filled with colors that vary in some form along the x axis (do not allow for alpha transparency in the fill)
+
+-   **geom_density_ridges_gradient()**: make the area under a ridgeline filled with colors that vary in some form along the x axis (do not allow for alpha transparency in the fill)
+
+```{r}
+ggplot(exam,
+       aes(x=ENGLISH,
+           y=CLASS,
+           fill=stat(x)))+
+  geom_density_ridges_gradient(
+    scale=3,
+    rel_min_height=0.01)+
+  scale_fill_viridis_c(name="Temp. [F]",
+                       option="C")+
+  scale_x_continuous(
+    name="English grades",
+    expand=c(0,0))+
+  scale_y_discrete(name=NULL,
+                   expand=expansion(add=c(0.2,2.6)))+
+  theme_ridges()
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `fill=stat(x)`: fills the ridges based on the statistical transformation of the x, in the context of `geom_density_ridges()`, it fills the ridges based on the density of the English scores
+
+2.  `scale_fill_viridis_c()`: applies a color scale from the viridis palette to the `fill` aesthetic 2.1 `name="Temp. [F]"`: sets the name for the color scale in the legend 2.2 `option="C"`: allows for variations in the color mapping. The `C` option stands for one of the color maps available in the viridis package. Each option (A, B, C, D, E) provides a different color scheme.
+:::
+
+### 2.2.3 Map the probabilities onto color
+
+-   **stat_density_ridges()**: provides a stat function
+
+```{r}
+ggplot(exam,
+       aes(x=ENGLISH,
+           y=CLASS,
+           fill=0.5-abs(0.5-stat(ecdf))))+
+  stat_density_ridges(geom="density_ridges_gradient",
+                      calc_ecdf=TRUE)+
+  scale_fill_viridis_c(name="Tail probability",
+                       direction = -1)+
+  theme_ridges()
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `stat(ecdf)`: computes the empirical cumulative distribution function 1.1 `0.5-abs(0.5-stat(ecdf))`: This is a way to visualize how far each value is from the median. The closer the fill color is to the center of the color scale, the closer the ECDF at that point is to 0.5, indicating values near the median.
+
+2.  `stat_density_ridges()`: adds a statistical transformation layer that calculates the density ridgelines and also the empirical cumulative distribution function (when `calc_ecdf=TRUE`) 2.1 `geom="density_ridges_gradient"`: indicates that a gradient fill will be used, which will reflect the fill aesthetic defined earlier 2.2 `calc_ecdf=TRUE`: indicates that the function should calculate the empirical cumulative distribution function for each group of data.
+
+3.  `direction = -1`: reverses the color scale, so that high values are colored with what would normally be low-end colors and vice versa. This is commonly done to match intuitive color associations (e.g., red for higher values, blue for lower values)
+:::
+
+### 2.2.4 Add quantile lines to ridgeline plots
+
+```{r}
+ggplot(exam,
+       aes(x = ENGLISH, 
+           y = CLASS, 
+           fill = factor(stat(quantile))
+           )) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE, 
+    quantiles = 4,
+    quantile_lines = TRUE) +
+  scale_fill_viridis_d(name = "Quartiles") +
+  theme_ridges()
+```
+
+Instead of using number to define the quantiles, we can also specify quantiles by cut points such as 2.5% and 97.5% tails to colour the ridgeline plot as shown in the figure below.
+
+```{r}
+ggplot(exam,
+       aes(x=ENGLISH,
+           y=CLASS,
+           fill=factor(stat(quantile))))+
+  stat_density_ridges(
+    geom="density_ridges_gradient",
+    calc_ecdf=TRUE,
+    quantiles=c(0.025,0.975))+
+  scale_fill_manual(
+    name="Probability",
+    values=c("#FF0000A0", "#A0A0A0A0", "#0000FFA0"),
+    labels=c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]"))+
+  theme_ridges()
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `factor(stat(quantile))`: computes quantiles and be treated as discrete factors, so each quantile will get a different color in the plot.
+
+2.  `quantiles=c(0.025,0.975)`: specifies which quantiles to calculate for the fill aesthetic.
+:::
+
+## 2.3 Visualize Distribution with Raincloud Plot
+
+*Raincloud Plot* produces a half-density to a distribution plot.
+
+-   used to compare the distribution of a continuous variable in terms of different groups
+-   highlight multiple modalities (an indicator that groups may exist)
+
+### 2.3.1 Plot a Half Eye graph
+
+-   **stat_halfeye()**: produces a Half Eye visualization, which is contains a half-density and a slab-interval.
+
+```{r}
+ggplot(exam,
+       aes(x=RACE,
+           y=ENGLISH))+
+  stat_halfeye(adjust=0.5,
+               justification=-0.2,
+               .width=0,
+               point_colour=NA)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `adjust=0.5`: control the bandwidth of the kernel density estimate, which affects the smoothness of the density shape. A smaller value would make the shape more sensitive to small changes.
+
+2.  `justification=-0.2`: control the alignment or positioning of the "half-eye" in relation to the categorical axis. A negative value suggests it is shifted to the right of each category
+
+3.  `.width=0`: remove the slab interval (data distribution and confidence interval).
+
+4.  `point_colour=NA`: set the color of the individual points within the "half-eye". Setting it to 'NA' means that the points will not be colored.
+:::
+
+### 2.3.2 Add the boxplot with geom_boxplot()
+
+```{r}
+ggplot(exam,
+       aes(x=RACE,
+           y=ENGLISH))+
+  stat_halfeye(adjust=0.5,
+               justification=-0.2,
+               .width=0,
+               point_colour=NA)+
+  geom_boxplot(width=.20,
+               outlier.shape=NA)
+```
+
+### 2.3.3 Add the dot plot with geom_dots()
+
+-   **stat_dots()**: produces a half-dotplot, which is similar to a histogram that indicates the number of data points in each bin
+
+```{r}
+ggplot(exam,
+       aes(x=RACE,
+           y=ENGLISH))+
+  stat_halfeye(adjust=0.5,
+               justification=-0.2,
+               .width=0,
+               point_colour=NA)+
+  geom_boxplot(width=.20,
+               outlier.shape=NA)+
+  stat_dots(side="left",
+            justification=1.2,
+            binwidth=.5,
+            dotsize=2)
+```
+
+::: {.callout-note icon="false"}
+## Notes
+
+1.  Halfeye alone just shows the distribution, check the amount of dots by using `stat_dots()` can have a better understanding of each group.
+:::
+
+### 2.3.4 Flip horizontally
+
+```{r}
+ggplot(exam,
+       aes(x=RACE,
+           y=ENGLISH))+
+  stat_halfeye(adjust=0.5,
+               justification=-0.2,
+               .width=0,
+               point_colour=NA)+
+  geom_boxplot(width=.20,
+               outlier.shape=NA)+
+  stat_dots(side="left",
+            justification=1.2,
+            binwidth=.5,
+            dotsize=2)+
+  coord_flip()+
+  theme_economist()
+```
+
+# 3. Visual Statistical Analysis
+
+## 3.1 Getting Started
+
+### 3.1.1 Install and Launch R package
+
+-   **ggstatsplot**: create graphics with details from statistical tests included in the information-rich plots themselves
+
+```{r}
+pacman::p_load(ggstatsplot, tidyverse)
+```
+
+### 3.1.2 Import Data
+
+```{r}
+exam <- read.csv("Data/Exam_data.csv")
+```
+
+## 3.2 One-sample test: gghistostats() method
+
+```{r}
+set.seed(1234)
+
+gghistostats(
+  data=exam,
+  x=ENGLISH,
+  type="bayes",
+  test.value=60,
+  xlab="English scores"
+)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `set.seed(1234)`: sets a seed for random number generation to ensures that if the code involves any randomness (like random sampling), it will produce the same results every time you run it. The number 1234 is just a starting point for generating random numbers.
+
+2.  `type="bayes`: the type of analysis this code wants to perform. Bayesian statistics is a different approach than traditional statistics, allowing you to update your beliefs about something based on new evidence.
+
+3.  `test.value=60`: hypothesis test related to English score: how the data supports or contradicts a value of 60
+:::
+
+::: {.callout-note icon="false"}
+## Analysis
+
+1.  **log(BF01) = -31.45**: The Bayes Factor comparing the null hypothesis to the alternative is given in log scale. A negative value suggests that the data are more likely under the alternative hypothesis.
+
+2.  **Posterior difference = 7.16**: After analyzing the data and taking into account any prior knowledge, the analysis estimates that the difference we are interested in (like the average score) is about 7.16 units. This is not a fixed number but an estimate that can change with more information.
+
+3.  **ETI 95% \[5.44, 8.75\]**: ETI stands for "Equal-Tailed Interval," which is a range of values that the true difference is likely to fall within. The "95%" part means we can be 95% confident that the true value is somewhere between 5.44 and 8.75. It's like saying, "We're pretty sure the true value is in this range, but we don't know exactly where."
+
+4.  **µMAP = 74.74**: This is the maximum a posteriori estimate, which is the most credible value for the mean score given the data.
+
+5.  **Conclusion**: there is evidence to suggest that the mean English score is not 60.
+:::
+
+## 3.3 Bayes Factor
+
+A *Bayes factor* is the ratio (positive number) of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favor of one theory among two competing theories
+
+***Example:***
+
+1.  You have two competing options or hypotheses. Let's call them Option A and Option B.
+2.  You collect some data or evidence. The Bayes Factor helps you assess how well the data supports Option A versus Option B.
+3.  The Bayes Factor gives you a ratio. If the Bayes Factor is greater than 1, it means the data supports Option A more than Option B. If it's less than 1, it means the data supports Option B more than Option A.
+4.  The bigger the Bayes Factor, the stronger the evidence in favor of one option. [A Bayes Factor of 10]{.underline} means the data strongly supports one option over the other.
+5.  The smaller the Bayes Factor, the weaker the evidence. [A Bayes Factor of 0.1]{.underline} means the data weakly supports one option over the other.
+
+## 3.4 Two-sample mean test: ggbetweenstats() method
+
+```{r}
+ggbetweenstats(
+  data=exam,
+  x=GENDER,
+  y=MATHS,
+  type="np",
+  message=FALSE
+)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `type="np"`: refer to "non-parametric," suggesting that you're doing a type of analysis that doesn't assume your data follows a specific mathematical distribution.
+
+2.  `message=FALSE`: is used to control whether or not you want informational messages to be displayed while creating the plot.
+:::
+
+::: {.callout-note icon="false"}
+## Analysis
+
+1.  **Mann-Whitney U test**: This is a statistical test comparing the two groups. The value W = 13011.00, p = 0.91 indicates the test statistic and the p-value. A p-value higher than 0.05 (like 0.91 here) typically means that there's no statistical evidence of a difference in math scores between females and males.
+
+2.  **Rank-biserial correlation**: r = 7.04e-03 is very close to zero, suggesting a very small effect size, if any, means almost no correlation between gender and score.
+
+3.  **Confidence Interval: CI95% \[-0.12, 0.13\]**: indicates the 95% confidence interval for the rank-biserial correlation coefficient, which includes zero, suggesting no effect.
+
+4.  **n_obs = 322**: Number of Observations tells us the total number of observations (students) included in the analysis.
+
+5.  **Conclusion**: there does not appear to be a significant difference in math scores between female and male students in this particular sample.
+:::
+
+## 3.5 Oneway ANOVA test: ggbetweenstats() method
+
+```{r}
+ggbetweenstats(
+  data=exam,
+  x=RACE,
+  y=ENGLISH,
+  type="p",
+  mean.ci=TRUE,
+  pairwise.comparisons=TRUE,
+  pairwise.display = "s",
+  pairwise.method="fdr",
+  messages=FALSE
+)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `type="p"`: refer to "parametric," suggesting that you're doing an analysis that assumes your data follows a specific mathematical distribution.
+
+2.  `mean.ci=TRUE`: indicates that you want to include confidence intervals around the mean values in your plot.
+
+3.  `pairwise.comparisons=TRUE`: means that you want to compare the groups pairwise, which allows you to see if there are statistically significant differences between any two racial groups.
+
+4.  `pairwise.display = "s"`: specify how you want the pairwise comparisons to be displayed. "s" might stand for "summary," indicating that you want a summarized view of the comparisons.
+
+    4.1 “ns” → only non-significant
+
+    4.2 “s” → only significant
+
+    4.3 “all” → everything
+
+5.  `pairwise.method="fdr"`: specifying the method for adjusting for multiple comparisons. "fdr" might refer to the "False Discovery Rate," which is a way to control for the risk of making false discoveries when you're comparing multiple groups.
+:::
+
+::: {.callout-note icon="false"}
+## Analysis
+
+1.  **F(3, 23.8) = 10.15, p = 1.71e-04**: indicates that there are statistically significant differences between the groups' means. The F statistic is 10.15, and the p-value is 0.000171, which is well below the common threshold of 0.05 for significance.
+
+2.  **the omega squared effect size=0.50**: suggests a moderate to large effect size. However, the confidence interval for this effect size includes 0, which can introduce some uncertainty about the effect size estimate.
+
+3.  **P_FDR-adj**: The pairwise test results are indicated by lines connecting the groups. The presence of lines (with p-value annotations) suggests that specific group comparisons were made. The pink dots on the lines indicate that the differences were statistically significant after adjusting for multiple comparisons using the False Discovery Rate (FDR) method.
+
+4.  **Conclusion**: Mean score of "Others" shows significant difference with mean score of "Chinese","Indian" and "Malay".(as denoted by the pink dots and lines)
+:::
+
+## 3.6 Significant test of Correlation: ggscatterstats()
+
+```{r}
+ggscatterstats(
+  data=exam,
+  x=MATHS,
+  y=ENGLISH,
+  marginal=TRUE
+)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `marginal`: extra plots or histograms along the sides of the scatter plot.
+:::
+
+::: {.callout-note icon="false"}
+## Analysis
+
+1.  **CI 95% \[0.79, 0.86\]**: A coefficient of 0.83 indicates a strong positive relationship between math and English scores.
+
+2.  **t(320) = 26.72, p = 1.70e-83**: indicates the results of a t-test that tests the hypothesis of no correlation. The t-statistic is 26.72 and the p-value is extremely small (1.70 x 10\^-83), which provides strong evidence against the null hypothesis of no correlation.
+
+3.  **log(BF01) = -183.55**: provides the Bayes factor for testing the null hypothesis of no relationship (which is the alternative hypothesis here). The negative value is very large, suggesting strong evidence against the null hypothesis.
+
+4.  **(eta squared) = 1.41**: effect size, the value being greater than 1 is unusual for eta squared, which should be between 0 and 1. This might be a typographical error in the annotation.
+
+5.  **Conclusion**: the plot suggests a strong positive relationship between math and English scores, meaning students who score high in math also tend to score high in English, and this relationship is statistically significant.
+:::
+
+## 3.7 Significant test of Association: ggbarstats()
+
+-   data wrangling: the Maths scores is binned into a 4-class variable by using `cut()`
+
+```{r}
+exam1 <- exam %>%
+  mutate(MATHS_bins = 
+           cut(MATHS, 
+               breaks = c(0,60,75,85,100)))
+```
+
+-   Association test
+
+```{r}
+ggbarstats(exam1,
+           x=MATHS_bins,
+           y=GENDER)
+```
+
+::: {.callout-note icon="false"}
+## Analysis
+
+1.  **Chi-Squared(3),p = 0.79,Cramér's V = 0.00**: suggests a test of independence was performed to see if there's a relationship between gender and math score bins. The p-value of 0.79 is high, indicating there's no statistical evidence of association between the two variables, which is further supported by a Cramér's V value of 0, showing no effect size.
+
+2.  **log_e(BF01) = 4.73**: A positive value suggests evidence for the null hypothesis.
+
+3.  **p = 0.62 for Females, p = 0.83 for Males**: both for male and female, the distribution across the score bins appears to be random or as expected, not showing any particular trend or bias.
+
+4.  **Conclusion**: that there is no significant association between gender and math scores.
+:::
+
+# 4. Visualize model diagnostic and model parameters
+
+## 4.1 Getting Started
+
+### 4.1.1 Install and load R packages
+
+-   **performance**: for assessing and checking the quality of statistical models. It contains functions for computing various performance metrics, model diagnostics, and checks for regression models, among others.
+
+-   **parameters**: for processing the parameters of statistical models. It provides functions to summarize, manipulate, and plot model parameters and supports a wide range of models.
+
+-   **see**: to create plots and visualizations for statistical models and data structures. It works well with the `performance` and `parameters` packages, among others, to create attractive and informative plots.
+
+```{r}
+pacman::p_load(readxl,performance,parameters,see)
+```
+
+### 4.1.2 Import Data
+
+```{r}
+car_resale <- read_xls("Data/ToyotaCorolla.xls","data")
+car_resale
+```
+
+## 4.2 Build Multiple Regression Model using lm()
+
+```{r}
+model <- lm(Price ~ Age_08_04 + Mfg_Year + KM + Weight + Guarantee_Period, data = car_resale)
+model
+```
+
+The output equation is: Price = -14.09Age_08_04+1315Mfg_Year-232.3KM+19.03Weight+27.7Guarantee_Period
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `lm()`: to create linear regression model, lm(y\~x1+x2+x3+..., data=...).
+:::
+
+## 4.3 Model Diagnostic: check multicolinearity
+
+*Multicolinearity*: several independent varaiables in a model are correlated
+
+```{r}
+check_collinearity(model)
+```
+
+::: {.callout-note icon="false"}
+## Analysis
+
+1.  **Term**: predictor variables.
+
+2.  **VIF**: Variance Inflation Factor. This measures how much the variance of the estimated regression coefficients is increased due to multicollinearity. A VIF value of 1 means there is no correlation among the *k*th predictor and the remaining predictor variables, and hence, no multicollinearity. As a rule of thumb, a VIF greater than 5 or 10 indicates a problematic amount of multicollinearity.
+
+3.  **Tolerance**: the inverse of VIF (1/VIF) and indicates the proportion of variance of the predictor that is not explained by the other predictors. A small tolerance (close to 0) indicates that the variable is highly correlated with other variables.
+
+4.  **Conclusion**: *Age_08_04* and *Mfg_Year* are highly correlated, can consider removing one of the highly correlated variables or combining them into a single variable.
+:::
+
+Plot the collinearity in terms of VIF
+
+```{r}
+check_c <- check_collinearity(model)
+plot(check_c)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  **why the function can be plotted directly?**: some functions from statistics model can return an object of a specific type. `check_collinearity()` here returns a list of multiple components. One of them is dataframe, others might be metadata used for plotting or model summary.
+:::
+
+## 4.4 Model Diagnostic: Check normality assumption
+
+*Normality assumption*: when performing statistical tests that rely on the assumption of normally distributed residuals (like t-tests for coefficients), it is required to check if the data points follow a standard normal distribution in advance.
+
+```{r}
+model1 <- lm(Price ~ Age_08_04+KM+Weight+Guarantee_Period,
+             data=car_resale)
+check_n <- check_normality(model1)
+plot(check_n)
+```
+
+::: {.callout-note icon="false"}
+## Analysis
+
+1.  **Q-Q plot**: quantile-quantile plot, to assess if a set of data plausibly came from some theoretical distribution such as a Normal distribution.
+
+2.  **x-axis**: represents the quantiles from a standard normal distribution, which is the theoretical distribution we are comparing the data against.
+
+3.  **y-axis**: shows the quantiles from the data being analyzed—in this case, the residuals from the linear regression model.
+
+4.  **residuals**: the differences between the observed values and the values predicted by the model. Each data point has one residual. On the Q-Q plot, each dot represents one of these residuals, not the actual data points. The purpose of this plot is to see how the residuals compare to a normal distribution.
+
+5.  **reference line**: x-axis is theoretical distribution quantiles (standard normal distribution quantiles), y-axis is sample quantile deviations. If sample data follows standard normal distribution, it should be a horizontal line at y=0, which is the reference line in this case.
+
+6.  **Conclusion**: the normality assumption of the linear regression model is not fully met.
+
+-   **Middle Range**: In the middle range of the data (between about -2 and 2 on the x-axis), the residuals mostly follow the reference line. This suggests that in this range, the residuals are behaving as we would expect if they were normally distributed.
+
+-   **Tails**: at both ends of the plot (the tails), the residuals deviate from the reference line. This is indicated by the points curving away from the line. In the left tail, the residuals are lower than expected for a normal distribution, and in the right tail, they are higher than expected. The residuals have heavier tails than a normal distribution, which means there are more extreme values (outliers) than we would expect if the residuals were truly normal.
+
+-   It might still be okay to use the model for predictions or to understand relationships between variables, especially if it's for exploratory purposes or the sample size is large. However, if you are performing statistical tests that rely on the assumption of normally distributed residuals (like t-tests for coefficients), the results of those tests might not be entirely reliable. You might need to consider transformations of the data, robust statistical methods, or other models that do not assume normality of residuals.
+:::
+
+## 4.5 Model Diagnostic: Check homogeneity of variances
+
+*homogeneity of variances* means "equal spread" or "equal variability" of different groups. It refers to the [consistency of the spread]{.underline} or variance of the residuals [across all levels of the independent variables]{.underline}.
+
+when you are doing an experiment or a study, you often want to make sure that the groups you are comparing are similar in terms of how spread out their data is. If one group has data that is all over the place and another group's data is very tightly packed, it could be a problem for certain types of statistical tests which assume that the variances are equal across all groups being compared.
+
+***Example:***
+
+Imagine you're trying to predict the scores of students on a math test using the number of hours they studied. After everyone takes the test, you compare your predictions to the actual scores—the differences are called "residuals."
+
+If your predictions are equally reliable for students who studied a little and students who studied a lot, then the spread of those residuals will be pretty consistent. This is like saying whether a student studied for 2 hours or 10 hours, your prediction might be off by about 3 points on average either way. This consistency in prediction error is what we mean by "homogeneity of variance."
+
+If you notice that for students who studied a little, your predictions are really close, but for students who studied a lot, your predictions are way off—maybe you're underestimating their scores. This means the spread of the residuals isn't consistent. For those who studied a little, the residuals are small and clustered close together. For those who studied a lot, the residuals are large and spread out. This inconsistency is what we'd call "heteroscedasticity."
+
+"homogeneity of variance" means your prediction mistakes are about the same size no matter how much someone studied. If that's not the case, and your mistakes vary a lot depending on how much they studied, then there's a problem with "heteroscedasticity".
+
+***Reasons for heteroscedasticity:***
+
+1.  Non-Linear Relationship: The relationship between study time and scores isn't straight-line (linear).
+2.  Missing Factors: There could be other factors that affect scores in addition to study time.
+3.  Study Time Measurement: Perhaps "study time" isn't measured in the best way. For example, just counting hours might not take into account the quality of the study.
+4.  Extreme Values: There might be students with very high or very low study times that are affecting the prediction errors. These could be outliers, and they might need special attention in your analysis.
+5.  Incorrect Model: You might be using the wrong type of model to make your predictions. Maybe the relationship between study time and scores is more complex than the model you're using can handle.
+
+```{r}
+check_h <- check_heteroscedasticity(model1)
+plot(check_h)
+```
+
+::: {.callout-note icon="false"}
+## Analysis
+
+1.  **x-axis (Fitted Values)**: the predicted values by your regression model.
+
+2.  **y-axis (Standardized residuals)**: the residuals from your model that have been standardized. Standardization typically means subtracting the mean and dividing by the standard deviation, so these values are expressed in terms of how many standard deviations they are from the mean residual (which is typically 0).
+
+3.  **Conclusion**: the plot shows a pattern where the spread of residuals seems to increase with the fitted values — the residuals are quite close together on the left (for smaller fitted values) and spread out more on the right (for larger fitted values). This pattern is called heteroscedasticity, which means the variability of the errors is not consistent across the range of data. This can be problematic for regression models because they assume that the residuals are equally spread across all levels of the independent variables (homoscedasticity).
+:::
+
+## 4.6 Model Diagnostic: Complete check
+
+## 4.7 Visualize Regression Parameters: see methods
+
+## 4.8 Visualize Regression Parameters: ggcoefstats() methods
+
+# 5. Visualize Uncertainty
+
+# 6. Build Funnel Plot
