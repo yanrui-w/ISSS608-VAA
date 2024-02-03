@@ -282,7 +282,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">January 31, 2024</p>
+      <p class="date-modified">February 3, 2024</p>
     </div>
   </div>
     
@@ -326,7 +326,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="visualize-distribution-with-ridgeline-plot" class="level2">
 <h2 class="anchored" data-anchor-id="visualize-distribution-with-ridgeline-plot">2.2 Visualize Distribution with Ridgeline Plot</h2>
-<p><em>Ridgeline plot</em>(also called <em>Joyplot</em>): for revealing the distribution of a numeric value for several groups</p>
+<p><em>Ridgeline plot</em>(also called <em>Joyplot</em>): for revealing the distribution of a <u>numeric value</u> for several <u>groups</u></p>
 <ul>
 <li><p>is used when the number of group is large</p></li>
 <li><p>is used when the number of group to represent is medium to high</p></li>
@@ -379,7 +379,11 @@ Code Notes
 <li><p><code>fill</code>: color of shade</p></li>
 <li><p><code>color</code>: color of outline</p></li>
 <li><p><code>lighten()</code>: gives a lighter color of the specific color</p></li>
-<li><p><code>scale_x_continuous()</code>: sets the scale for the x-axis as continuous 7.1 <code>name="English grades"</code>: title of x axis. If you want to remove the label of axis, then use <code>name=NULL</code> 7.2 <code>expand=c(0,0)</code>: 7.2.1 1st 0: the multiplier that determines how much space to add around both of the axis based on the range of the data, e.g.<code>expand=c(0.1,0)</code> will look at the range of data points in terms of x axis and add a space equal to 10% of that range on both sides of the axis. Same as y axis. 7.2.2 2nd 0: the fixed value adding blank space beyond the min and max of your actual data on y axis, e.g.&nbsp;y-axis goes from 20 to 80, your plot might show just that range, if with <code>expand=c(0,10)</code>, y-axis starts from 10 and ends at 90, but the data points themselves don’t change at all.</p></li>
+<li><p><code>scale_x_continuous()</code>: sets the scale for the x-axis as continuous</p>
+<p>7.1 <code>name="English grades"</code>: title of x axis. If you want to remove the label of axis, then use <code>name=NULL</code></p>
+<p>7.2 <code>expand=c(0,0)</code>:</p>
+<p>7.2.1 1st 0: the multiplier that determines how much space to add around both of the axis based on the range of the data, e.g.<code>expand=c(0.1,0)</code> will look at the range of data points in terms of x axis and add a space equal to 10% of that range on both sides of the axis. Same as y axis.</p>
+<p>7.2.2 2nd 0: the fixed value adding blank space beyond the min and max of your actual data on y axis, e.g.&nbsp;y-axis goes from 20 to 80, your plot might show just that range, if with <code>expand=c(0,10)</code>, y-axis starts from 10 and ends at 90, but the data points themselves don’t change at all.</p></li>
 <li><p><code>scale_y_discrete()</code>: sets the scale for the y-axis as discrete</p></li>
 </ol>
 </div>
@@ -1155,12 +1159,75 @@ Analysis
 </section>
 <section id="model-diagnostic-complete-check" class="level2">
 <h2 class="anchored" data-anchor-id="model-diagnostic-complete-check">4.6 Model Diagnostic: Complete check</h2>
+<p>To create a composite checks on a statistical model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_model</span>(model1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex04_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Analysis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>Linearity</strong>: The reference line should be flat and horizontal if the relationship between the independent variables and the dependent variable is linear. If the residuals are randomly dispersed around the horizontal line, it suggests linearity. A pattern or systematic structure in the residuals would suggest non-linearity.</p></li>
+<li><p><strong>Posterior Predictive Check</strong>: This plot compares the distribution of observed data against the distribution of data predicted by the model. Ideally, the model-predicted data should closely match the observed data, which would mean the model is accurately capturing the data’s distribution. In the plot, if the lines for observed and predicted data are close together, it indicates a good fit.</p></li>
+<li><p><strong>Influential Observations</strong>: This plot, often called a Cook’s distance plot, helps identify influential observations. Points that fall outside the dashed lines (contour lines of Cook’s distance) can have a disproportionate influence on the model’s parameters.</p></li>
+</ol>
+</div>
+</div>
 </section>
 <section id="visualize-regression-parameters-see-methods" class="level2">
 <h2 class="anchored" data-anchor-id="visualize-regression-parameters-see-methods">4.7 Visualize Regression Parameters: see methods</h2>
+<p>To display the point estimates and confidence intervals of the parameters (coefficients) from a statistical model.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">parameters</span>(model1))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex04_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Analysis
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>dot-and-whisker plot</strong>: to display the point estimates and confidence intervals of the parameters (coefficients) from a statistical model.</p></li>
+<li><p><strong>x-axis</strong>: represents the value of the estimated coefficients for each variable. These coefficients indicate the expected change in the dependent variable for a one-unit change in the predictor, assuming all other variables are held constant.</p></li>
+<li><p><strong>Dots</strong>: Each dot represents the estimated coefficient for the corresponding variable. The position on the horizontal axis shows whether the effect is positive or negative and the size of the effect.(relationship between this independent variable and the dependent variable)</p></li>
+<li><p><strong>Whiskers (Horizontal Lines)</strong>: lines extending from the dots represent the confidence intervals for these estimates, often at a 95% confidence level. If a line crosses the vertical zero line (the dashed line), it suggests that we cannot be confident that the variable has a statistically significant effect on the dependent variable at the chosen confidence level.(either negative or positive is ok, only when crossing the zero line means insignificant effect)</p></li>
+<li><p><strong>Conclusion</strong>:</p>
+<ul>
+<li><strong>Age_08_04</strong>: negative and does not cross the zero line, meaning negative relationship (the dependent variable decreases as “Age_08_04” increases)</li>
+<li><strong>Weight</strong>: positive relationship</li>
+<li><strong>Guarantee Period</strong>: the coefficient is positive, but its confidence interval does cross the zero line, suggesting that the relationship between ‘Guarantee Period’ and the dependent variable is not statistically significant at the given level of confidence.</li>
+<li><strong>KM</strong>: dot is at zero line, estimated effect is very small or negligible.</li>
+</ul></li>
+</ol>
+</div>
+</div>
 </section>
 <section id="visualize-regression-parameters-ggcoefstats-methods" class="level2">
 <h2 class="anchored" data-anchor-id="visualize-regression-parameters-ggcoefstats-methods">4.8 Visualize Regression Parameters: ggcoefstats() methods</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggstatsplot)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggcoefstats</span>(model1, <span class="at">output=</span><span class="st">"plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex04_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 </section>
 <section id="visualize-uncertainty" class="level1">

@@ -76,18 +76,28 @@ girafe(
 
 Hover the mouse pointer on an data point of interest, the student’s ID will be displayed.
 
+Note that the graph is in svg format not png format in local folder.
+
 ::: {.callout-note icon="false"}
 ## Code Notes
 
 1.  `aes(tooltip = ID)`: when you hover the mouse over the dots, the corresponding ID values will be displayed as tooltips
+
 2.  `stackgroups`: determines whether the dots should be stacked
+
 3.  `binwidth`: specifies the width of the bins(interval value)
+
 4.  `method`: specifies the plotting method used
+
 5.  `scale_y_continuous()`: sets the continuous scale for the y-axis\
     5.1 `labels=NULL`: no custom labels will be displayed on the y-axis (e.g."count")\
     5.2 `breaks=NULL`: no custom tick positions (breaks) will be displayed on the y-axis (e.g.0,100,200)
+
 6.  `width_svg`: specifies the appearance(width) of the output graphics(svg)
+
 7.  `height_svg`: specifies the appearance(height) of the output graphics(svg)
+
+8.  `***_interactive()`: add it behind the element which you want it to be interactive, then should be followed by `aes(interactive arguments)`
 :::
 
 ## 3.2 Display multiple information on tooltip
@@ -214,6 +224,8 @@ Hover the mouse pointer on each bar, we can see the 90% confident interval of th
 
     1.2 `scales::number(number, accuracy)`: formats numbers with specified accuracy, and then creates a string that combines these values
 
+    1.3 `paste0()` vs. `paste()`: `paste()` uses white space as seperator by default, while `paste0()` contains no seperator
+
 2.  `fun.data = "mean_se"`: argument in the 'stat_summary' function, calculates y(mean), ymin(mean-se), ymax(mean+se). Note the mean and standard error is for the "MATHS" variable for each racial group specified in the 'aes' mapping
 
     2.1 `"mean_se"` and `mean_se`: defined function in statistics package under ggplot2. As long as you install and launch ggplot2, you can call this function in 2 ways. One is directly call the function object `mean_se`, the other one is to call the string of the function `"mean_se"`.
@@ -237,7 +249,8 @@ How to display all the other data points with same defined parameter when hoveri
 p <- ggplot(data=exam_data, 
        aes(x = MATHS)) +
   geom_dotplot_interactive(           
-    aes(data_id = CLASS),             
+    aes(data_id = CLASS,
+        tooltip = CLASS),             
     stackgroups = TRUE,               
     binwidth = 1,                        
     method = "histodot") +               
@@ -406,13 +419,19 @@ girafe(code = print(p1+p2),
 
 Now when you select a data point of one graph, the corresponding data point ID on the second data visualization will be highlighted too.
 
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `code=print()`: Note that the patchwork used in ggiraph should add "print" in front of ggobjects
+:::
+
 # 4. Intro to plotly
 
 It is to create interactive web graphics from ggplot2 graphs and/or a custom interface to the (MIT-licensed) JavaScript library plotly.js inspired by the grammar of graphics.
 
 Two ways to create interactive graph by using plotly:
 
--   by using *plot_ly()*
+-   by using *plot_ly()*
 
 -   by using *ggplotly()*
 
@@ -453,13 +472,17 @@ plot_ly(data = exam_data,
         color = ~RACE)
 ```
 
-Now you can get 3 information based on the scatter plot:
+Now you can get 5 information based on the scatter plot:
 
 -   the correlation between the two continuous data (math and english score)
 
 -   when you hover the mouse pointer to one data point, you can see math score and english score of each student (frist math score, then english score)
 
 -   the race of each student marked in different color
+
+-   the legend can be filtered: click on one race, all dots representing it will be hided, so that others will be highlighted
+
+-   can brush: click "zoom", use mouse to select a square, then graph will show the zoomed in plot (click "zoom out" to return to the orignal plot)
 
 ## 5.3 Create an interactive scatter plot with *ggplotly()*
 
@@ -523,6 +546,8 @@ subplot(ggplotly(p1),
 ## Code Notes
 
 1.  `highlight_key()`: adds unique identifiers to each row of the dataset exam_data. This will make it easy and clear when specifying which data points or rows to include in the plots.
+
+2.  `subplot()`: way to combine ggobjects in plotly
 :::
 
 # 6. Intro to crosstalk
@@ -569,13 +594,15 @@ crosstalk::bscols(gg,
                   widths = 5)
 ```
 
-Now you can see a side-by-side plot with a scatter plot on the left and a data table on the right, there are 3 interactive function in this plot:
+Now you can see a side-by-side plot with a scatter plot on the left and a data table on the right, there are 4 interactive function in this plot:
 
 -   when hovering mouse pointer on the point of scatter plot, both english and math scores of this student will be shown
 
 -   datatable can be filtered and sorted
 
 -   when clicking on one line of the datatable, the english and math score of this student will be highlighted both on scatter plot and datatable
+
+-   use "lasso select" select any space of points, the table will show detail info of these points
 
 ::: {.callout-note icon="false"}
 ## Code Notes
