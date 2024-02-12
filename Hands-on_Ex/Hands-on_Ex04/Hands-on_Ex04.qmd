@@ -79,6 +79,8 @@ ggplot(exam,
   theme_ridges()
 ```
 
+observation: each peak point of each group, the spread of each group and the tendency of the line linking all peak points
+
 ::: {.callout-note icon="false"}
 ## Code Notes
 
@@ -136,7 +138,7 @@ ggplot(exam,
 
 1.  `fill=stat(x)`: fills the ridges based on the statistical transformation of the x, in the context of `geom_density_ridges()`, it fills the ridges based on the density of the English scores
 
-2.  `scale_fill_viridis_c()`: applies a color scale from the viridis palette to the `fill` aesthetic 2.1 `name="Temp. [F]"`: sets the name for the color scale in the legend 2.2 `option="C"`: allows for variations in the color mapping. The `C` option stands for one of the color maps available in the viridis package. Each option (A, B, C, D, E) provides a different color scheme.
+2.  `scale_fill_viridis_c()`: applies a color scale from the viridis palette to the `fill` aesthetic 2.1 `name="Temp. [F]"`: sets the name for the color scale in the legend 2.2 `option="C"`: allows for variations in the color mapping. The `C` option stands for one of the color maps available in the viridis package. Each option (A, B, C, D, E) provides a different color scheme. Note the color used representing quantile across all group so that we can observe the difference of distribution of all groups by color without checking the absolute numbers.
 :::
 
 ### 2.2.3 Map the probabilities onto color
@@ -278,7 +280,7 @@ ggplot(exam,
 ::: {.callout-note icon="false"}
 ## Notes
 
-1.  Halfeye alone just shows the distribution, check the amount of dots by using `stat_dots()` can have a better understanding of each group.
+1.  Halfeye alone just shows the distribution, check the amount of dots by using `stat_dots()` can have a better understanding of each group, it shows the size of exact dataset.
 :::
 
 ### 2.3.4 Flip horizontally
@@ -308,6 +310,8 @@ ggplot(exam,
 ### 3.1.1 Install and Launch R package
 
 -   **ggstatsplot**: create graphics with details from statistical tests included in the information-rich plots themselves
+
+Learn more about *ggstatsplot* on [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/)
 
 ```{r}
 pacman::p_load(ggstatsplot, tidyverse)
@@ -708,6 +712,564 @@ pacman::p_load(ggstatsplot)
 ggcoefstats(model1, output="plot")
 ```
 
+::: {.callout-note icon="false"}
+## Analysis
+
+1.  **values next to the dots**: 1.1 **estimated β**: estimated coefficient. These values are the "effect sizes," showing how much the dependent variable is expected to change with a one-unit change in the predictor, holding other variables constant. 1.2 **t-value**: the coefficient divided by its standard error 1.3 **degrees of freedom**: suggests the sample size 1.4 **p-value**: indicates the probability of observing the data if the null hypothesis were true. A p-value less than 0.05 typically indicates statistical significance.
+
+2.  **conclusion**: 2.1 **intercept**: The intercept is significant with a large negative coefficient 2.2 **Age_08_04**: has the most substantial negative effect on the dependent variable, with a highly significant p-value (almost 0). 2.3 **Weight**: has a significant positive effect on the dependent variable, with a very low p-value, indicating strong evidence against the null hypothesis. 2.4 **KM**: has a small, but significant, negative effect. 2.5 **Guarantee_Period**: has a negative effect, though smaller in magnitude than "KM". 2.6 **AIC/BIC**: measures of the model's quality, with lower values generally indicating a better fit.
+:::
+
 # 5. Visualize Uncertainty
 
-# 6. Build Funnel Plot
+## 5.1 Concept
+
+**Estimate**: a best guess. In order to learn something about the whole population, we take a smaller group (sample), collect data, look at that, and then make an educated guess or estimate about the larger population based on what we see in the sample.
+
+-   **Point Estimate**: the single best guess.
+-   **Interval Estimate**: a range of numbers where the true answer might fall.
+
+**Uncertainty**: about how confident we are in our estimates after multiple sampling tests.
+
+-   **Confidence Interval**: indicate the uncertainty of estimated value, meaning whether the results will point to a certain range after many times of sampling test.
+    -   Large confidence interval: the result of multiple tests is more discrete which is pointing to a large range, so the uncertainty of that estimate is large
+    -   Small confidence interval: the result of multiple tests is more concentrated which is pointing to a small range, so the uncertainty of that estimate is small
+    -   Note: uncertainty of estimated value [**is not equal to**]{.underline} accuracy of estimated value to the actual value.
+
+**Accuracy**: how close is the distance between estimated values or ranges and the actual values.
+
+-   **Confidence Level**: indicate the accuracy of estimated value to the actual value, meaning how many times the estimated results of sampling tests include the actual values
+    -   High confidence level: the actual values fall in almost every estimated ranges of each test
+    -   Low confidence level: the actual values fall in few estimated ranges of tests
+
+**Confidence Level vs Confidence Interval**:
+
+-   The higher the confidence level, the wider the confidence interval
+
+-   Confidence level of 99% doesn't mean to be better than that of 95%
+
+## 5.2 Getting Started
+
+### 5.2.1 Install and load packages
+
+The packages used for this exercise include:
+
+-   **tidyverse**, a family of R packages for data science process
+
+-   **plotly** for creating interactive plot
+
+-   **gganimate** for creating animation plot
+
+-   **DT** for displaying interactive html table
+
+-   **crosstalk** for for implementing cross-widget interactions (currently, linked brushing and filtering)
+
+-   **ggdist** for visualising distribution and uncertainty
+
+```{r}
+devtools::install_github("wilkelab/ungeviz")
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `devtools`: package to install another package from other sources, meaning the package is not available on the Comprehensive R Archive Network (CRAN).
+
+2.  `install_github()`: to install R packages that are hosted on GitHub
+
+3.  `"wilkelab/ungeviz"`: specifies the GitHub repository where the package is located. The format is "username/repository", so in this case, "wilkelab" is the username or account name on GitHub, and "ungeviz" is the name of the repository where the package code resides.
+:::
+
+```{r}
+pacman::p_load(ungeviz,plotly,crosstalk,DT,
+               ggdist,ggridges,colorspace,
+               gganimate,tidyverse)
+```
+
+### 5.2.2 Import data
+
+```{r}
+exam <- read_csv("data/Exam_data.csv")
+```
+
+## 5.3 Visualize uncertainty: ggplot2 methods
+
+**Uncertainty of point estimate** is not equal to **confidence interval**. **Uncertainty of point estimate** is not equal to **Variation in the sample**.
+
+-   Uncertainty of point estimate: quantifies how much the estimate might vary if different samples were taken from the same population.
+
+-   Confidence interval: quantifies the uncertainty about the true parameter value by providing a range of plausible values.
+
+-   Variation in the sample: is commonly measured by standard deviation.
+
+### 5.3.1 Derive necessary summary statistics from data
+
+Calculate mean, standard deviation and standard error of the mean from data.
+
+```{r}
+my_sum <- exam %>%
+  group_by(RACE) %>%
+  summarise(
+    n=n(),
+    mean=mean(MATHS),
+    sd=sd(MATHS)
+  ) %>%
+  mutate(se=sd/sqrt(n-1))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `summarise()`: is used to compute the count of observations, mean, standard deviation. It can be used to created new columns of specified summary statistics: n, mean, sd
+
+2.  `n=n()`: the number of observations (or rows) in each group.
+:::
+
+Display tibble data frame in an html table format.
+
+An HTML table format refers to the way tables are structured and displayed in HTML (Hypertext Markup Language), which is the standard markup language for creating web pages and web applications. Different from tables created in non-web-based environments, HTML tables can be styled extensively with CSS and manipulated with JavaScript, serves as interactive components in forms, data visualizations, and more.
+
+```{r}
+knitr::kable(head(my_sum),format = 'html')
+```
+
+### 5.3.2 Plot standard error bars of point estimates
+
+```{r}
+ggplot(my_sum)+
+  geom_errorbar(
+    aes(x=RACE,
+        ymin=mean-se,
+        ymax=mean+se),
+    width=0.2,
+    colour="black",
+    alpha=0.9,
+    size=0.5)+
+  geom_point(aes(x=RACE,y=mean),
+             stat="identity",
+             color="red",
+             size=1.5,
+             alpha=1)+
+  ggtitle("Standard error of mean maths score by race")
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  **Graphs**: standard error of mean can be considered as two graphs combined in one plot: graph of standard error and graph of mean. Defination of Y axis value of these two graphs is different, so we put `aes()` inside each `geom_()` instead of putting it in `ggplot()`
+
+2.  `stat="identity"`: This argument within `geom_point` specifies that the values for x and y should be taken directly from the data without any additional statistical transformation. It is the default statistical transformation for `geom_point()`. If you want to change the default behavior with a different statistical transformation (e.g., counting occurrences of discrete values), you need to define it within `geom_point()` by using `stat="count"`
+:::
+
+### 5.3.3 Plot confidence interval
+
+```{r}
+ggplot(my_sum)+
+  geom_errorbar(
+    aes(x=reorder(RACE,-mean),
+        ymin=mean-1.96*se,
+        ymax=mean+1.96*se),
+    width=0.2,
+    colour="black",
+    alpha=0.9,
+    size=0.5)+
+  geom_point(aes(x=RACE,y=mean),
+             stat="identity",
+             color="red",
+             size=1.5,
+             alpha=1)+
+  labs(x="Math score",title="95% confidence interval of mean maths score by race")
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `reorder(RACE,-mean)`: is used to change the order of levels of a factor based on the values of another variable. In this case, it reorders the levels of RACE based on the values of mean in descending order.
+:::
+
+### 5.3.4 Plot confidence interval interactive with table
+
+```{r}
+shared_df = SharedData$new(my_sum)
+
+bscols(widths = c(4,8),
+       ggplotly((ggplot(shared_df) +
+                   geom_errorbar(aes(
+                     x=reorder(RACE, -mean),
+                     ymin=mean-2.58*se, 
+                     ymax=mean+2.58*se), 
+                     width=0.2, 
+                     colour="black", 
+                     alpha=0.9, 
+                     size=0.5) +
+                   geom_point(aes(
+                     x=RACE, 
+                     y=mean, 
+                     text = paste("Race:", `RACE`, 
+                                  "<br>N:", `n`,
+                                  "<br>Avg. Scores:", round(mean, digits = 2),
+                                  "<br>95% CI:[", 
+                                  round((mean-2.58*se), digits = 2), ",",
+                                  round((mean+2.58*se), digits = 2),"]")),
+                     stat="identity", 
+                     color="red", 
+                     size = 1.5, 
+                     alpha=1) + 
+                   xlab("Race") + 
+                   ylab("Average Scores") + 
+                   theme_minimal() + 
+                   theme(axis.text.x = element_text(
+                     angle = 45, vjust = 0.5, hjust=1)) +
+                   ggtitle("99% Confidence interval of average /<br>maths scores by race")), 
+                tooltip = "text"), 
+       DT::datatable(shared_df, 
+                     rownames = FALSE, 
+                     class="compact", 
+                     width="100%", 
+                     options = list(pageLength = 10,
+                                    scrollX=T), 
+                     colnames = c("No. of pupils", 
+                                  "Avg Scores",
+                                  "Std Dev",
+                                  "Std Error")) %>%
+         formatRound(columns=c('mean', 'sd', 'se'),
+                     digits=2))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `shared_df = SharedData$new(my_sum)`: to wrap the 'my_sum' data frame into an object that can be shared between different interactive visualizations or data presentations, maintain synchronization between them or to manage data more efficiently.
+
+2.  `bscols()`: is used to create a column layout within a Shiny application. It allows you to specify the width proportions of the columns in a Bootstrap grid layout.
+
+3.  `widths=c(4,8)`: the first column will occupy 4 units of width which is used for ggplotly, while the second column will occupy 8 units of width used for datatable in the Bootstrap grid system.
+
+4.  `formatRound(columns=c('mean', 'sd', 'se'), digits=2)`: used within the DT package to format numerical columns in the DataTable with values rounded to 2 decimal places.
+:::
+
+## 5.4 Visualize uncertainty: ggdist methods
+
+**ggdist** is designed for both frequentist and Bayesian uncertainty visualization, taking the view that uncertainty visualization can be unified through the perspective of distribution visualization.
+
+-   Frequentist Model: probabilities are based on the frequency of events. It relies on the idea that if you repeat an experiment infinitely many times, the relative frequency of an event will converge to its true probability. It relies solely on observed data for inference.
+
+-   Bayesian Model: probabilities represent a degree of belief or uncertainty. It incorporates prior beliefs about the parameters being estimated along with the observed data to update and refine those beliefs. It incorporates both prior beliefs and observed data, updating beliefs as new data becomes available.
+
+### 5.4.1 Visualize confidence interval of mean: ggdist methods (stat_pointinterval)
+
+```{r}
+exam %>%
+  ggplot(aes(x=RACE,
+             y=MATHS))+
+  stat_pointinterval()+
+  labs(
+    title="Visualizing confidence intervals of mean maths score",
+    subtitle="Mean Point + Multiple-interval plot")
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `stat_pointinterval()`: is used to build a visual for displaying distribution of mean with confidence intervals
+:::
+
+Add arguments within `stat_pointinterval()`
+
+```{r}
+exam %>%
+  ggplot(aes(x=RACE,
+             y=MATHS))+
+  stat_pointinterval(.width=0.95,
+                     .point=median,
+                     .interval=qi)+
+  labs(
+    title="Visualizing confidence intervals of median maths score",
+    subtitle="Median Point + Multiple-interval plot")
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `.interval=qi`: specifies the method used to calculate the confidence intervals for the median math score. `qi` is a method for calculating quantile intervals, computing the confidence intervals by taking the 2.5th and 97.5th percentiles of the sample distribution. This corresponds to a 95% confidence interval, which is the default when no specific confidence level is specified.
+:::
+
+### 5.4.2 Visualize confidence interval of mean in different confidence level: ggdist methods (stat_pointinterval)
+
+```{r}
+exam %>%
+  ggplot(aes(x = RACE, 
+             y = MATHS)) +
+  stat_pointinterval(
+    conf.level = 0.90,
+    show.legend = FALSE) +   
+  labs(
+    title = "Visualising confidence intervals of mean math score",
+    subtitle = "Mean Point + Multiple-interval plot")
+```
+
+### 5.4.3 Visualize confidence interval of mean: ggdist methods (stat_gradientinterval)
+
+```{r}
+exam %>%
+  ggplot(aes(x = RACE, 
+             y = MATHS)) +
+  stat_gradientinterval(   
+    fill = "skyblue",      
+    show.legend = TRUE     
+  ) +                        
+  labs(
+    title = "Visualising confidence intervals of mean math score",
+    subtitle = "Gradient + interval plot")
+```
+
+## 5.5 Visualize uncertainty: Hypothetical Outcome Plots (HOPs)
+
+Hypothetical Outcome Plots (HOPs) are a way of showing how different decisions or actions might lead to different outcomes. They're often used in decision-making or scenario analysis. They're useful for exploring scenarios, making decisions, and understanding the potential consequences of our choices.
+
+```{r}
+library(ungeviz)
+
+ggplot(data = exam, 
+       (aes(x = factor(RACE), y = MATHS))) +
+  geom_point(position = position_jitter(
+    height = 0.3, width = 0.05), 
+    size = 0.4, color = "#0072B2", alpha = 1/2) +
+  geom_hpline(data = sampler(25, group = RACE), height = 0.6, color = "#D55E00") +
+  theme_bw() + 
+  # `.draw` is a generated column indicating the sample draw
+  transition_states(.draw, 1, 3)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `position_jitter()`: is used to jitter the points slightly along the x-axis and y-axis to prevent overplotting, making it easier to see the density of points. Note that `position_jitter()` is different from normal point plot. Normal point plot adds points to the plot representing actual individual data points, while `position_jitter()` add points with randomly moving each point a small distance along the x-axis and/or y-axis. In other words, `position_jitter()` doesn't represent the actual data points, instead, it represents the data points with slight "error".
+
+2.  `geom_hpline()`: adds horizontal lines to the plot. These lines are generated from the `sampler()` function, which creates samples of the dataset exam. `sampler(25, group = RACE)` means that it will create a subset of the original dataset 'exam' with 25 observations from each group defined by the 'RACE'variable.
+
+3.  `height = 0.6`: sets the height of horizontal lines
+
+4.  `transition_states(.draw, 1, 3)`: This sets up animation using gganimate. It specifies that the animation should transition between different states based on the column .draw in the dataset, going from draw 1 to draw 3. This means the animation will cycle through different subsets of the data, creating the effect of movement or change over time. In this case, it will go like 1,2,3,1,2,3,1,2,3...
+
+5.  `draw`: In statistical or simulation contexts, a "draw" or "iteration" usually refers to a single execution or realization of a process or simulation. Each draw represents one instance of the simulation or resampling procedure.
+:::
+
+# 6. Build Funnel Plot for fair comparisons
+
+**Funnel plot** is a specially designed data visualisation for conducting unbiased comparison between outlets, stores or business entities.
+
+## 6.1 Getting Started
+
+### 6.1.1 Install and load packages
+
+The packages used in this exercise include:
+
+-   **readr** for importing csv into R.
+
+-   **FunnelPlotR** for creating funnel plot.
+
+-   **ggplot2** for creating funnel plot manually.
+
+-   **knitr** for building static html table.
+
+-   **plotly** for creating interactive funnel plot.
+
+```{r}
+pacman::p_load(tidyverse,FunnelPlotR,plotly,knitr)
+```
+
+### 6.1.2 Import data
+
+```{r}
+covid19 <- read_csv("data/COVID-19_DKI_Jakarta.csv") %>%
+  mutate_if(is.character, as.factor)
+```
+
+For this hands-on exercise, we are going to compare the cumulative COVID-19 cases and death by sub-district (i.e. kelurahan) as at 31st July 2021, DKI Jakarta.
+
+## 6.2 FunnelPlotR methods
+
+**FunnelPlotR** package uses ggplot to generate funnel plots. It requires a `numerator` (events of interest), `denominator` (population to be considered) and `group`. The key arguments selected for customisation are:
+
+-   `limit`: specify the plot limits, either at the 95% confidence level or the 99% confidence level. This determines the width of the funnel plot and the corresponding confidence intervals around the summary measure.
+
+-   `label_outliers`: When set to true, this argument will label outliers on the funnel plot.
+
+-   `Poisson_limits`: Setting this argument to true adds Poisson limits to the plot. Poisson limits are calculated based on the assumption that the events of interest follow a Poisson distribution. These limits help assess whether observed variation in event rates is within the range of random chance.
+
+-   **Poisson Distribution**: describe the number of events that occur within a fixed interval of time or space, given a known average rate of occurrence and the assumption that the events happen independently of each other. When dealing with funnel plots, we often want to assess whether observed variations in event rates (like mortality rates, complication rates, etc.) are within the range of random chance or if they might indicate something significant. Poisson limits in the context of funnel plots help us with this assessment by setting boundaries to check whether the observed data points are within what we'd expect from random variation alone. If data points fall outside these Poisson limits, it suggests that there might be factors other than chance affecting the event rates and warrants further investigation.
+
+-   `OD_adjust`: This argument adds overdispersed limits to the plot when set to true. Overdispersion occurs when there is more variability in the data than expected based on a Poisson distribution.
+
+-   `xrange` and `yrange`: specify the range to display for the x-axis and y-axis, respectively. They act as a zoom function, allowing you to focus on a specific region of interest within the funnel plot.
+
+### 6.2.1 FunnelPlotR methods: The basic plot
+
+```{r}
+funnel_plot(
+  numerator = covid19$Positive,
+  denominator = covid19$Death,
+  group = covid19$`Sub-district`
+)
+```
+
+### 6.2.2 FunnelPlotR methods: Makeover 1
+
+```{r}
+funnel_plot(
+  numerator = covid19$Death,
+  denominator = covid19$Positive,
+  group = covid19$`Sub-district`,
+  data_type = "PR",     #<<
+  xrange = c(0, 6500),  #<<
+  yrange = c(0, 0.05)   #<<
+)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `data_type = "PR"`: determines the type of data being plotted. 
+
+2.   `PR` stands for "Proportion" or "Prevalence Rate", while `SR`(by default) stands for "Standardized Rate" or "Standardized Ratio".
+
+**Example:**
+
+City A:
+
+Total population: 100,000; Number of people with diabetes: 10,000.
+
+City B:
+
+Total population: 200,000; Number of people with diabetes: 20,000.
+
+Prevalence Rate (PR):
+
+-   City A: (Number of people with diabetes in City A) / (Total population of City A) = 10,000 / 100,000 = 0.1 or 10%
+-   City B: (Number of people with diabetes in City A) / (Total population of City A) = 10,000 / 100,000 = 0.1 or 10%
+
+Standardized Rate (SR):
+
+-   Standard Population: Total population of City A + Total population of City B = 100,000 + 200,000 = 300,000
+-   City A: (Number of people with diabetes in City A) / (Total standard population) * 100,000 = (10,000 / 300,000) * 100,000 = 3,333.33 cases per 100,000 population
+-   City B:  (Number of people with diabetes in City B) / (Total standard population) * 100,000 = (20,000 / 300,000) * 100,000 = 6,666.67 cases per 100,000 population
+:::
+
+### 6.2.3 FunnelPlotR methods: Makeover 2
+
+```{r}
+funnel_plot(
+  numerator = covid19$Death,
+  denominator = covid19$Positive,
+  group = covid19$`Sub-district`,
+  data_type = "PR",   
+  xrange = c(0, 6500),  
+  yrange = c(0, 0.05),
+  label = NA,
+  title = "Cumulative COVID-19 Fatality Rate by Cumulative Total Number of COVID-19 Positive Cases", #<<           
+  x_label = "Cumulative COVID-19 Positive Cases", #<<
+  y_label = "Cumulative Fatality Rate"  #<<
+)
+```
+
+## 6.3 Funnel Plot for Fair Visual Comparison: ggplot2 methods
+
+### 6.3.1 Compute the basic derived fields
+
+Derive cumulative death rate and standard error of cumulative death rate.
+
+```{r}
+df <- covid19 %>%
+  mutate(rate = Death / Positive) %>%
+  mutate(rate.se = sqrt((rate*(1-rate)) / (Positive))) %>%
+  filter(rate > 0)
+```
+
+Derive weighted mean of death rate.
+
+```{r}
+fit.mean <- weighted.mean(df$rate, 1/df$rate.se^2)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `weighted.mean(df$rate, 1/df$rate.se^2)`: computes the weighted mean of the rates in the "rate" column, where the weights are given by the inverses of the squared standard errors. This means that rates with smaller standard errors contribute more to the weighted mean, reflecting higher confidence in those estimates, while rates with larger standard errors contribute less.
+:::
+
+### 6.3.2 Calculate lower and upper limits for 95% and 99.9% CI
+
+```{r}
+number.seq <- seq(1, max(df$Positive), 1)
+number.ll95 <- fit.mean - 1.96 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) 
+number.ul95 <- fit.mean + 1.96 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) 
+number.ll999 <- fit.mean - 3.29 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) 
+number.ul999 <- fit.mean + 3.29 * sqrt((fit.mean*(1-fit.mean)) / (number.seq)) 
+dfCI <- data.frame(number.ll95, number.ul95, number.ll999, 
+                   number.ul999, number.seq, fit.mean)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `seq(1, max(df$Positive), 1)`: creates a sequence of numbers from 1 to the maximum value of the "Positive" column in the data frame 'df', with a step size of 1. It seems to be generating a sequence of numbers representing potential counts or sample sizes.
+:::
+
+### 6.3.3 Plot a static funnel plot
+
+```{r}
+p <- ggplot(df, aes(x = Positive, y = rate)) +
+  geom_point(aes(label=`Sub-district`), 
+             alpha=0.4) +
+  geom_line(data = dfCI, 
+            aes(x = number.seq, 
+                y = number.ll95), 
+            size = 0.4, 
+            colour = "grey40", 
+            linetype = "dashed") +
+  geom_line(data = dfCI, 
+            aes(x = number.seq, 
+                y = number.ul95), 
+            size = 0.4, 
+            colour = "grey40", 
+            linetype = "dashed") +
+  geom_line(data = dfCI, 
+            aes(x = number.seq, 
+                y = number.ll999), 
+            size = 0.4, 
+            colour = "grey40") +
+  geom_line(data = dfCI, 
+            aes(x = number.seq, 
+                y = number.ul999), 
+            size = 0.4, 
+            colour = "grey40") +
+  geom_hline(data = dfCI, 
+             aes(yintercept = fit.mean), 
+             size = 0.4, 
+             colour = "grey40") +
+  coord_cartesian(ylim=c(0,0.05)) +
+  annotate("text", x = 1, y = -0.13, label = "95%", size = 3, colour = "grey40") + 
+  annotate("text", x = 4.5, y = -0.18, label = "99%", size = 3, colour = "grey40") + 
+  ggtitle("Cumulative Fatality Rate by Cumulative Number of COVID-19 Cases") +
+  xlab("Cumulative Number of COVID-19 Cases") + 
+  ylab("Cumulative Fatality Rate") +
+  theme_light() +
+  theme(plot.title = element_text(size=12),
+        legend.position = c(0.91,0.85), 
+        legend.title = element_text(size=7),
+        legend.text = element_text(size=7),
+        legend.background = element_rect(colour = "grey60", linetype = "dotted"),
+        legend.key.height = unit(0.3, "cm"))
+p
+```
+
+### 6.3.4 Interactive Funnel Plot: plotly + ggplot2
+
+```{r}
+fp_ggplotly <- ggplotly(p,
+  tooltip = c("label", 
+              "x", 
+              "y"))
+fp_ggplotly
+```
