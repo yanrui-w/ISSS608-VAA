@@ -446,5 +446,12 @@
     "title": "Take-home Exercise 1: Study on Singapore students’ performance",
     "section": "6.2 Study Summary",
     "text": "6.2 Study Summary\nAfter applying the exploratory data analysis methods to the dataset, there are several insights gained from it which may arouse the attention to the governers and the public of Singapore:\n\nMost students perform well in math, followed by science, then reading.\nMales tend to be good at science, while females are good at arts.\nPrivate school tend to have better teaching quality.\nStudents with a higher socioeconomic status tend to perform better in all subjects."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ISSS608-VAA",
+    "section": "",
+    "text": "Welcome to ISSS608 Visual Analytics and Applications! I’m Yanrui.\nIn this website, you will find my learning journey of Visual Analytics taught by Prof Kam Tin Seong."
   }
 ]
