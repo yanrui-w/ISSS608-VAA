@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Wei Yanrui">
+<meta name="dcterms.date" content="2024-01-28">
+
+<title>ISSS608-VAA - Take-Home Exercise 2: DataVis Makeover</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="../../site_libs/d3-bundle-5.16.0/d3-bundle.min.js"></script>
+<script src="../../site_libs/d3-lasso-0.0.5/d3-lasso.min.js"></script>
+<script src="../../site_libs/save-svg-as-png-1.4.17/save-svg-as-png.min.js"></script>
+<script src="../../site_libs/flatbush-4.0.0/flatbush.min.js"></script>
+<link href="../../site_libs/ggiraphjs-0.4.6/ggiraphjs.min.css" rel="stylesheet">
+<script src="../../site_libs/ggiraphjs-0.4.6/ggiraphjs.min.js"></script>
+<script src="../../site_libs/girafe-binding-0.8.8/girafe.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">ISSS608-VAA</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-hands-on-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Hands-on Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03_1/Hands-on_Ex03_1.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 3_1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex03_2/Hands-on_Ex03_2.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 3_2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Hands-on_Ex/Hands-on_Ex04/Hands-on_Ex04.html" rel="" target="">
+ <span class="dropdown-text">Hands-on Exercise 4</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-in-class-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">In-Class Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../In-Class_Ex/In-Class_Ex01/In-Class_Ex01.html" rel="" target="">
+ <span class="dropdown-text">In-Class Exercise 1</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-take-home-exercise" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Take-Home Exercise</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-exercise">    
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html" rel="" target="">
+ <span class="dropdown-text">Take-Home Exercise 1</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex02/Take-home_Ex02.html" rel="" target="">
+ <span class="dropdown-text">Take-Home Exercise 2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html" rel="" target="">
+ <span class="dropdown-text">Take-Home Exercise 3</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#brief-introduction" id="toc-brief-introduction" class="nav-link active" data-scroll-target="#brief-introduction">1. Brief Introduction</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">2. Data Preparation</a></li>
+  <li><a href="#critique-1" id="toc-critique-1" class="nav-link" data-scroll-target="#critique-1">3. Critique 1</a>
+  <ul class="collapse">
+  <li><a href="#original-design" id="toc-original-design" class="nav-link" data-scroll-target="#original-design">3.1 Original Design</a></li>
+  <li><a href="#clarity" id="toc-clarity" class="nav-link" data-scroll-target="#clarity">3.2 Clarity</a>
+  <ul class="collapse">
+  <li><a href="#x-axis-label" id="toc-x-axis-label" class="nav-link" data-scroll-target="#x-axis-label">3.2.1 X axis Label</a></li>
+  <li><a href="#y-axis-title" id="toc-y-axis-title" class="nav-link" data-scroll-target="#y-axis-title">3.2.2 Y axis Title</a></li>
+  <li><a href="#graph-title" id="toc-graph-title" class="nav-link" data-scroll-target="#graph-title">3.2.3 Graph Title</a></li>
+  </ul></li>
+  <li><a href="#aesthetic" id="toc-aesthetic" class="nav-link" data-scroll-target="#aesthetic">3.3 Aesthetic</a>
+  <ul class="collapse">
+  <li><a href="#font-size" id="toc-font-size" class="nav-link" data-scroll-target="#font-size">3.3.1 Font Size</a></li>
+  <li><a href="#display-of-graph-and-key-numbers" id="toc-display-of-graph-and-key-numbers" class="nav-link" data-scroll-target="#display-of-graph-and-key-numbers">3.3.2 Display of graph and key numbers</a></li>
+  </ul></li>
+  <li><a href="#sketch-of-proposed-design" id="toc-sketch-of-proposed-design" class="nav-link" data-scroll-target="#sketch-of-proposed-design">3.4 Sketch of proposed design</a></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">3.5 Data Wrangling</a></li>
+  <li><a href="#final-design" id="toc-final-design" class="nav-link" data-scroll-target="#final-design">3.6 Final Design</a></li>
+  </ul></li>
+  <li><a href="#critique-2" id="toc-critique-2" class="nav-link" data-scroll-target="#critique-2">4. Critique 2</a>
+  <ul class="collapse">
+  <li><a href="#original-design-1" id="toc-original-design-1" class="nav-link" data-scroll-target="#original-design-1">4.1 Original Design</a></li>
+  <li><a href="#clarity-1" id="toc-clarity-1" class="nav-link" data-scroll-target="#clarity-1">4.2 Clarity</a>
+  <ul class="collapse">
+  <li><a href="#y-axis-label" id="toc-y-axis-label" class="nav-link" data-scroll-target="#y-axis-label">4.2.1 Y axis label</a></li>
+  <li><a href="#socioeconomic-groups" id="toc-socioeconomic-groups" class="nav-link" data-scroll-target="#socioeconomic-groups">4.2.2 Socioeconomic Groups</a></li>
+  <li><a href="#graph-title-1" id="toc-graph-title-1" class="nav-link" data-scroll-target="#graph-title-1">4.2.3 Graph Title</a></li>
+  </ul></li>
+  <li><a href="#aesthetic-1" id="toc-aesthetic-1" class="nav-link" data-scroll-target="#aesthetic-1">4.3 Aesthetic</a>
+  <ul class="collapse">
+  <li><a href="#display-of-graph" id="toc-display-of-graph" class="nav-link" data-scroll-target="#display-of-graph">4.3.1 Display of graph</a></li>
+  </ul></li>
+  <li><a href="#sketch-of-proposed-design-1" id="toc-sketch-of-proposed-design-1" class="nav-link" data-scroll-target="#sketch-of-proposed-design-1">4.4 Sketch of proposed design</a></li>
+  <li><a href="#data-wrangling-1" id="toc-data-wrangling-1" class="nav-link" data-scroll-target="#data-wrangling-1">4.5 Data Wrangling</a></li>
+  <li><a href="#final-design-1" id="toc-final-design-1" class="nav-link" data-scroll-target="#final-design-1">4.6 Final Design</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Take-Home Exercise 2: DataVis Makeover</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Wei Yanrui </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 28, 2024</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">January 28, 2024</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<section id="brief-introduction" class="level1">
+<h1>1. Brief Introduction</h1>
+<p>In this take-home exercise, I will continue the topic on take-home exercise 1, select one of the outcome from my classmates, critic it in terms of clarity and aesthetics, prepare a sketch for the alternative design and remake the original design by using relevant R packages.</p>
+<p>Find the works I select from one of my classmates: <a href="https://isss608-kaixin.netlify.app/take-home_ex/take-home_ex01/take-home_ex01">Take-home Exercise 1 from ZHENG KAIXIN</a></p>
+</section>
+<section id="data-preparation" class="level1">
+<h1>2. Data Preparation</h1>
+<p>First of all, I’ll follow the steps my classmate has done.</p>
+<ul>
+<li>Install relevant R packages:</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggrepel, ggthemes, </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               hrbrthemes, patchwork, </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               tidyverse, haven, gridExtra, </span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>               ggplot2, plotly, ggridges) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>Import the file:</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>stu_qqq_SG <span class="ot">&lt;-</span> <span class="fu">read_rds</span>(<span class="st">"data/stu_qqq_SG.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>Create new dataframe including relevant record of performance, schools, gender and and socioeconomic status</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mathematics <span class="ot">&lt;-</span> stu_qqq_SG[, <span class="fu">c</span>(<span class="st">"PV1MATH"</span>, <span class="st">"PV2MATH"</span>, <span class="st">"PV3MATH"</span>, <span class="st">"PV4MATH"</span>, <span class="st">"PV5MATH"</span>, <span class="st">"PV6MATH"</span>, <span class="st">"PV7MATH"</span>, <span class="st">"PV8MATH"</span>, <span class="st">"PV9MATH"</span>, <span class="st">"PV10MATH"</span>)]</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>reading <span class="ot">&lt;-</span> stu_qqq_SG[, <span class="fu">c</span>(<span class="st">"PV1READ"</span>, <span class="st">"PV2READ"</span>, <span class="st">"PV3READ"</span>, <span class="st">"PV4READ"</span>, <span class="st">"PV5READ"</span>, <span class="st">"PV6READ"</span>, <span class="st">"PV7READ"</span>, <span class="st">"PV8READ"</span>, <span class="st">"PV9READ"</span>, <span class="st">"PV10READ"</span>)]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>science <span class="ot">&lt;-</span> stu_qqq_SG[, <span class="fu">c</span>(<span class="st">"PV1SCIE"</span>, <span class="st">"PV2SCIE"</span>, <span class="st">"PV3SCIE"</span>, <span class="st">"PV4SCIE"</span>, <span class="st">"PV5SCIE"</span>, <span class="st">"PV6SCIE"</span>, <span class="st">"PV7SCIE"</span>, <span class="st">"PV8SCIE"</span>, <span class="st">"PV9SCIE"</span>, <span class="st">"PV10SCIE"</span>)]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>school <span class="ot">&lt;-</span> stu_qqq_SG[, <span class="fu">c</span>(<span class="st">"CNTSCHID"</span>)]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>gender <span class="ot">&lt;-</span> stu_qqq_SG[, <span class="fu">c</span>(<span class="st">"ST004D01T"</span>)]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>school_education <span class="ot">&lt;-</span> stu_qqq_SG[, <span class="fu">grep</span>(<span class="st">"ST005|ST007"</span>, <span class="fu">names</span>(stu_qqq_SG), <span class="at">value =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>vocational_training <span class="ot">&lt;-</span> stu_qqq_SG[, <span class="fu">grep</span>(<span class="st">"ST006|ST008"</span>, <span class="fu">names</span>(stu_qqq_SG), <span class="at">value =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>home_possessions <span class="ot">&lt;-</span> stu_qqq_SG[, <span class="fu">grep</span>(<span class="st">"ST250|ST251|ST253|ST254|ST255|ST256"</span>, <span class="fu">names</span>(stu_qqq_SG), <span class="at">value =</span> <span class="cn">TRUE</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>Calculate the mean and median for maths, reading, science and all subjects</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean values</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>Avg_Math <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(mathematics, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>Avg_Reading <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(reading, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>Avg_Science <span class="ot">&lt;-</span> <span class="fu">rowMeans</span>(science, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate total sum of mean</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>Total_Avg <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">cbind</span>(Avg_Math, Avg_Reading, Avg_Science), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate median values</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>Median_Math <span class="ot">&lt;-</span> <span class="fu">apply</span>(mathematics, <span class="dv">1</span>, median, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>Median_Reading <span class="ot">&lt;-</span> <span class="fu">apply</span>(reading, <span class="dv">1</span>, median, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>Median_Science <span class="ot">&lt;-</span> <span class="fu">apply</span>(science, <span class="dv">1</span>, median, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate total sum of mean</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>Total_Median <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">cbind</span>(Median_Math, Median_Reading, Median_Science), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>Merge into a new table</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>combined <span class="ot">&lt;-</span> <span class="fu">cbind</span>(stu_qqq_SG[<span class="st">"CNTSTUID"</span>], Avg_Math, Avg_Reading, Avg_Science, Total_Avg, Median_Math, Median_Reading, Median_Science, Total_Median, school, gender, school_education, vocational_training, home_possessions)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(combined)[<span class="fu">colnames</span>(combined) <span class="sc">==</span> <span class="st">"CNTSCHID"</span>] <span class="ot">&lt;-</span> <span class="st">"School"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(combined)[<span class="fu">colnames</span>(combined) <span class="sc">==</span> <span class="st">"ST004D01T"</span>] <span class="ot">&lt;-</span> <span class="st">"Gender"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>Assign names to variables</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>School <span class="ot">&lt;-</span> combined<span class="sc">$</span>School</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>Gender <span class="ot">&lt;-</span> combined<span class="sc">$</span>Gender</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>school_education <span class="ot">&lt;-</span> combined[, <span class="fu">grep</span>(<span class="st">"ST005|ST007"</span>, <span class="fu">names</span>(combined), <span class="at">value =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>vocational_training <span class="ot">&lt;-</span> combined[, <span class="fu">grep</span>(<span class="st">"ST006|ST008"</span>, <span class="fu">names</span>(combined), <span class="at">value =</span> <span class="cn">TRUE</span>)]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>home_possessions <span class="ot">&lt;-</span> combined[, <span class="fu">grep</span>(<span class="st">"ST250|ST251|ST253|ST254|ST255|ST256"</span>, <span class="fu">names</span>(combined), <span class="at">value =</span> <span class="cn">TRUE</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<ul>
+<li>Calculate the socioeconomic status</li>
+</ul>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate sum values</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>sum_school_education <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(school_education, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>sum_vocational_training <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(vocational_training, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate sum of home possessions</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>home_possessions <span class="ot">&lt;-</span> home_possessions <span class="sc">%&gt;%</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sum_home_possessions =</span> <span class="fu">rowSums</span>(<span class="fu">select</span>(., <span class="fu">starts_with</span>(<span class="st">"ST251Q"</span>), <span class="sc">-</span><span class="fu">matches</span>(<span class="st">"ST251Q05JA|ST251Q08JA"</span>)), <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>sum_home_possessions <span class="ot">&lt;-</span> home_possessions<span class="sc">$</span>sum_home_possessions</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate socioeconomic status</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>socioeconomic_status <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(<span class="fu">cbind</span>(sum_school_education, sum_vocational_training, sum_home_possessions), <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>combined <span class="ot">&lt;-</span> combined <span class="sc">%&gt;%</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">socioeconomic_group =</span> <span class="fu">ntile</span>(socioeconomic_status, <span class="dv">5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="critique-1" class="level1">
+<h1>3. Critique 1</h1>
+<section id="original-design" class="level2">
+<h2 class="anchored" data-anchor-id="original-design">3.1 Original Design</h2>
+<p>The original design is shown as below: <img src="image/critique1_original.png" class="img-fluid" alt="critique1_original"> The 3 histograms show the distribution of average score of Math, Reading and Science.</p>
+</section>
+<section id="clarity" class="level2">
+<h2 class="anchored" data-anchor-id="clarity">3.2 Clarity</h2>
+<section id="x-axis-label" class="level3">
+<h3 class="anchored" data-anchor-id="x-axis-label">3.2.1 X axis Label</h3>
+<p>The x-axis scales on the three graphs are not aligned. While the Average Math Score has the highest mean and median values, the lines representing the mean and median are positioned to the left when compared to the lines for Average Reading Score and Average Science Score.</p>
+</section>
+<section id="y-axis-title" class="level3">
+<h3 class="anchored" data-anchor-id="y-axis-title">3.2.2 Y axis Title</h3>
+<p>The Y axis title named as “Count” without specifying what is being counted might be a little vague.</p>
+</section>
+<section id="graph-title" class="level3">
+<h3 class="anchored" data-anchor-id="graph-title">3.2.3 Graph Title</h3>
+<p>Graph title could be enhanced to be more eye-catching for readers. Sometimes, an attention-grabbing title together with a descriptive subtitle can bring better understanding to readers.</p>
+</section>
+</section>
+<section id="aesthetic" class="level2">
+<h2 class="anchored" data-anchor-id="aesthetic">3.3 Aesthetic</h2>
+<section id="font-size" class="level3">
+<h3 class="anchored" data-anchor-id="font-size">3.3.1 Font Size</h3>
+<p>In comparison to the graphs, the font size of x and y axis title is slightly larger, which might somehow divert people’s attention away from the graphs.</p>
+</section>
+<section id="display-of-graph-and-key-numbers" class="level3">
+<h3 class="anchored" data-anchor-id="display-of-graph-and-key-numbers">3.3.2 Display of graph and key numbers</h3>
+<p>In this plot, 3 histograms are arranged vertically, leading to compression of each histogram. As a result, the differences in histogram presentations, including the comparison between the median and mean reference lines, appear less distinct due to the compression.</p>
+<p>I try to retain all the information my classmate want to convey (distribution graph, as well as key statistics: mean and median) and change the layout to better present all the parts: put 3 distributions together in one graph and show the statistics in another graph beside it by using boxplot.</p>
+</section>
+</section>
+<section id="sketch-of-proposed-design" class="level2">
+<h2 class="anchored" data-anchor-id="sketch-of-proposed-design">3.4 Sketch of proposed design</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="image/critique1_after.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">critique1_after</figcaption>
+</figure>
+</div>
+</section>
+<section id="data-wrangling" class="level2">
+<h2 class="anchored" data-anchor-id="data-wrangling">3.5 Data Wrangling</h2>
+<p>To display 3 density distributions in one graph, I need to create a new column called “Subject” to capture all the subject names of each student and a new column called “Score” to capture all the score values of each student. I use <code>pivot_longer()</code> to convert the dataframe from wide format into long format.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>new_combined <span class="ot">&lt;-</span> combined[<span class="fu">c</span>(<span class="st">"CNTSTUID"</span>,<span class="st">"Avg_Math"</span>,<span class="st">"Avg_Reading"</span>,<span class="st">"Avg_Science"</span>)]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># change to long format</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>score_combined <span class="ot">&lt;-</span> new_combined <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"Avg_"</span>), </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"Subject"</span>, </span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"Score"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="final-design" class="level2">
+<h2 class="anchored" data-anchor-id="final-design">3.6 Final Design</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>median_values <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(Score <span class="sc">~</span> Subject, <span class="at">data =</span> score_combined, <span class="at">FUN =</span> median)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>mean_values <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(Score <span class="sc">~</span> Subject, <span class="at">data =</span> score_combined, <span class="at">FUN =</span> mean)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>score_combined, </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                <span class="fu">aes</span>(<span class="at">x =</span> Score, </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">colour =</span> Subject)) <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>()<span class="sc">+</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Score"</span>,<span class="at">y=</span><span class="st">"No.% of</span><span class="sc">\n</span><span class="st">Students"</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Insights from Performance in Math, Reading and Science"</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle=</span> <span class="st">"Singaporean 15-year-olds excel in Science, with scores concentrated around 571 points, and demonstrate strong</span><span class="sc">\n</span><span class="st">Math performance, with many students exceeding the 574-point mean. Reading scores are slightly lower in comparison.</span><span class="sc">\n</span><span class="st">"</span>)<span class="sc">+</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">7</span>)<span class="sc">+</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y=</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>),</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">10</span>, <span class="at">face=</span><span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.2</span>),</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">7</span>, <span class="at">hjust =</span> <span class="fl">0.2</span>))<span class="sc">+</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="st">"Avg_Math"</span>, <span class="st">"Avg_Reading"</span>, <span class="st">"Avg_Science"</span>),</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Math"</span>, <span class="st">"Reading"</span>, <span class="st">"Science"</span>),</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"lightpink3"</span>,<span class="st">"seagreen3"</span>,<span class="st">"royalblue3"</span>))</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>plot2 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>score_combined, </span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>                <span class="fu">aes</span>(<span class="at">y =</span> Score, <span class="at">x=</span> Subject,</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>                    <span class="at">colour =</span> Subject)) <span class="sc">+</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="at">geom =</span> <span class="st">"point"</span>,       </span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>               <span class="at">fun.y=</span><span class="st">"mean"</span>,         </span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>               <span class="at">colour =</span><span class="st">"orangered"</span>,        </span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>               <span class="at">size=</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> median_values,</span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> Subject, <span class="at">y =</span> Score, <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"Median:"</span>,<span class="fu">round</span>(Score, <span class="dv">2</span>))),</span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>,  </span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"orangered3"</span>,  </span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">1.8</span>)<span class="sc">+</span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> mean_values,</span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> Subject, <span class="at">y =</span> Score, <span class="at">label =</span> <span class="fu">paste</span>(<span class="st">"Mean:"</span>,<span class="fu">round</span>(Score, <span class="dv">2</span>))),</span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="fl">1.2</span>,  </span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"orangered"</span>,  </span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">1.8</span>)<span class="sc">+</span></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">7</span>)<span class="sc">+</span></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">"Source: PISA 2022"</span>)<span class="sc">+</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">color =</span> <span class="fu">guide_legend</span>(</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Subject"</span>,</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">label.hjust =</span> <span class="dv">0</span>,   </span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">label.vjust =</span> <span class="dv">0</span>,  </span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">nrow =</span> <span class="dv">1</span>))<span class="sc">+</span></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>,</span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y=</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">0</span>))<span class="sc">+</span></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">c</span>(<span class="st">"Avg_Math"</span>, <span class="st">"Avg_Reading"</span>, <span class="st">"Avg_Science"</span>,<span class="st">"Median:"</span>,<span class="st">"Mean:"</span>),</span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Math"</span>, <span class="st">"Reading"</span>, <span class="st">"Science"</span>,<span class="st">"Median:"</span>,<span class="st">"Mean:"</span>),</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"lightpink3"</span>,<span class="st">"seagreen3"</span>,<span class="st">"royalblue3"</span>,<span class="st">"orangered3"</span>,<span class="st">"orangered"</span>))</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>plot1<span class="sc">+</span>plot2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="Take-home_Ex02_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="critique-2" class="level1">
+<h1>4. Critique 2</h1>
+<section id="original-design-1" class="level2">
+<h2 class="anchored" data-anchor-id="original-design-1">4.1 Original Design</h2>
+<p>The original design is shown as below: <img src="image/critique2_original.png" class="img-fluid" alt="critique2_original"> This graph shows the distributions of average score of all the 3 subjects across all socioeconomic groups.</p>
+</section>
+<section id="clarity-1" class="level2">
+<h2 class="anchored" data-anchor-id="clarity-1">4.2 Clarity</h2>
+<section id="y-axis-label" class="level3">
+<h3 class="anchored" data-anchor-id="y-axis-label">4.2.1 Y axis label</h3>
+<p>Y axis is labelled as something like “1e-03”, “5e-04” might cause confusing to readers.</p>
+</section>
+<section id="socioeconomic-groups" class="level3">
+<h3 class="anchored" data-anchor-id="socioeconomic-groups">4.2.2 Socioeconomic Groups</h3>
+<p>The socioeconomic hierarchy is divided into 5 levels: 1-5. It might be more user-friendly to rename them by verbal description such as “Lower Group”, “Mid-Lower Group”, “Middle Group”, “Upper-Middle Group”, “Higher Group”.</p>
+</section>
+<section id="graph-title-1" class="level3">
+<h3 class="anchored" data-anchor-id="graph-title-1">4.2.3 Graph Title</h3>
+<p>Graph title could be enhanced to be more eye-catching for readers. Sometimes, an attention-grabbing title together with a descriptive subtitle can bring better understanding to readers.</p>
+</section>
+</section>
+<section id="aesthetic-1" class="level2">
+<h2 class="anchored" data-anchor-id="aesthetic-1">4.3 Aesthetic</h2>
+<section id="display-of-graph" class="level3">
+<h3 class="anchored" data-anchor-id="display-of-graph">4.3.1 Display of graph</h3>
+<p>Since the graphs of 5 groups are listed vertically and slightly similar at the first glance, it would be a little hard for readers to tell the difference by tracing the movement of the peak point of 5 graphs.</p>
+<p>I try to convert the graphs by showing the 90% confident interval of the mean of each graph. In addition, I will use interactive tool to show the value of mean so that the slight difference might be more distinct by directly presenting the mean and showing the value.</p>
+</section>
+</section>
+<section id="sketch-of-proposed-design-1" class="level2">
+<h2 class="anchored" data-anchor-id="sketch-of-proposed-design-1">4.4 Sketch of proposed design</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="image/critique2_after.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">critique2_after</figcaption>
+</figure>
+</div>
+</section>
+<section id="data-wrangling-1" class="level2">
+<h2 class="anchored" data-anchor-id="data-wrangling-1">4.5 Data Wrangling</h2>
+<p>Before plotting, I need to rename the socioeconomic groups.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>combined<span class="sc">$</span>socioeconomic_group <span class="ot">&lt;-</span> <span class="fu">factor</span>(combined<span class="sc">$</span>socioeconomic_group,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                                       <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Lower</span><span class="sc">\n</span><span class="st">Group"</span>, <span class="st">"Mid-Lower</span><span class="sc">\n</span><span class="st">Group"</span>, <span class="st">"Middle</span><span class="sc">\n</span><span class="st">Group"</span>, <span class="st">"Upper-Middle</span><span class="sc">\n</span><span class="st">Group"</span>, <span class="st">"Higher</span><span class="sc">\n</span><span class="st">Group"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="final-design-1" class="level2">
+<h2 class="anchored" data-anchor-id="final-design-1">4.6 Final Design</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(ggiraph, plotly, </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>               patchwork, DT)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>tooltip <span class="ot">&lt;-</span> <span class="cf">function</span>(y, ymax, <span class="at">accuracy =</span> .<span class="dv">01</span>) {</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  mean <span class="ot">&lt;-</span> scales<span class="sc">::</span><span class="fu">number</span>(y, <span class="at">accuracy =</span> accuracy)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  sem <span class="ot">&lt;-</span> scales<span class="sc">::</span><span class="fu">number</span>(ymax <span class="sc">-</span> y, <span class="at">accuracy =</span> accuracy)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="st">"Mean scores:"</span>, mean, <span class="st">"+/-"</span>, sem)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>gg_point <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>combined, </span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">aes</span>(<span class="at">x =</span> socioeconomic_group)) <span class="sc">+</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="fu">aes</span>(<span class="at">y =</span> Total_Avg, </span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tooltip =</span> <span class="fu">after_stat</span>(</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">tooltip</span>(y, ymax))),  </span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">fun.data =</span> <span class="st">"mean_se"</span>, </span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>               <span class="at">geom =</span> GeomInteractiveCol,  </span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>               <span class="at">fill =</span> <span class="st">"light blue"</span>) <span class="sc">+</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_summary</span>(<span class="fu">aes</span>(<span class="at">y =</span> Total_Avg),</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>               <span class="at">fun.data =</span> mean_se,</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>               <span class="at">geom =</span> <span class="st">"errorbar"</span>, <span class="at">width =</span> <span class="fl">0.2</span>,</span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>               <span class="at">size =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_cartesian</span>(<span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">2000</span>))<span class="sc">+</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y=</span> <span class="st">'Mean</span><span class="sc">\n</span><span class="st">Score'</span>, <span class="at">x=</span> <span class="st">'Socioeconomic Group'</span>,</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Educational Equity is Bridging Socioeconomic Divides in Education"</span>,</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle=</span> <span class="st">"Over 6,000 15-year-old Singaporean students across socioeconomic groups displayed consistent academic</span><span class="sc">\n</span><span class="st">performance with the Upper-Middle Group slightly outshining the rest yet the Lower Group lagging a little."</span>,</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"Source: PISA 2022"</span>)<span class="sc">+</span></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">10</span>)<span class="sc">+</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">15</span>, <span class="at">face=</span><span class="st">"bold"</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">10</span>, <span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">0</span>, <span class="at">vjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.major =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"grey90"</span>),</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="fu">girafe</span>(<span class="at">ggobj =</span> gg_point,</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a>       <span class="at">width_svg =</span> <span class="dv">8</span>,</span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a>       <span class="at">height_svg =</span> <span class="dv">8</span><span class="sc">*</span><span class="fl">0.618</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="girafe html-widget html-fill-item" id="htmlwidget-8df7ace8660261b619a4" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-8df7ace8660261b619a4">{"x":{"html":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' class='ggiraph-svg' role='img' id='svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd' viewBox='0 0 576 355.97'>\n <defs id='svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_defs'>\n  <clipPath id='svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_c1'>\n   <rect x='0' y='0' width='576' height='355.97'/>\n  <\/clipPath>\n  <clipPath id='svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_c2'>\n   <rect x='55.89' y='48.91' width='515.13' height='257.38'/>\n  <\/clipPath>\n <\/defs>\n <g id='svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_rootg' class='ggiraph-svg-rootg'>\n  <g clip-path='url(#svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_c1)'>\n   <rect x='0' y='0' width='576' height='355.97' fill='#FFFFFF' fill-opacity='1' stroke='#FFFFFF' stroke-opacity='1' stroke-width='0.75' stroke-linejoin='round' stroke-linecap='round' class='ggiraph-svg-bg'/>\n  <\/g>\n  <g clip-path='url(#svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_c2)'>\n   <polyline points='55.89,294.59 571.02,294.59' fill='none' stroke='#E5E5E5' stroke-opacity='1' stroke-width='0.97' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='55.89,236.10 571.02,236.10' fill='none' stroke='#E5E5E5' stroke-opacity='1' stroke-width='0.97' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='55.89,177.60 571.02,177.60' fill='none' stroke='#E5E5E5' stroke-opacity='1' stroke-width='0.97' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='55.89,119.11 571.02,119.11' fill='none' stroke='#E5E5E5' stroke-opacity='1' stroke-width='0.97' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='55.89,60.61 571.02,60.61' fill='none' stroke='#E5E5E5' stroke-opacity='1' stroke-width='0.97' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='115.33,306.29 115.33,48.91' fill='none' stroke='#E5E5E5' stroke-opacity='1' stroke-width='0.97' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='214.39,306.29 214.39,48.91' fill='none' stroke='#E5E5E5' stroke-opacity='1' stroke-width='0.97' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='313.45,306.29 313.45,48.91' fill='none' stroke='#E5E5E5' stroke-opacity='1' stroke-width='0.97' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='412.52,306.29 412.52,48.91' fill='none' stroke='#E5E5E5' stroke-opacity='1' stroke-width='0.97' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='511.58,306.29 511.58,48.91' fill='none' stroke='#E5E5E5' stroke-opacity='1' stroke-width='0.97' stroke-linejoin='round' stroke-linecap='butt'/>\n   <rect id='svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_e1' x='70.75' y='105.23' width='89.16' height='189.36' fill='#ADD8E6' fill-opacity='1' stroke='none' title='Mean scores: 1 618.59 +/- 7.84'/>\n   <rect id='svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_e2' x='169.81' y='98.49' width='89.16' height='196.11' fill='#ADD8E6' fill-opacity='1' stroke='none' title='Mean scores: 1 676.26 +/- 8.10'/>\n   <rect id='svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_e3' x='268.88' y='96' width='89.16' height='198.6' fill='#ADD8E6' fill-opacity='1' stroke='none' title='Mean scores: 1 697.54 +/- 7.64'/>\n   <rect id='svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_e4' x='367.94' y='95.11' width='89.16' height='199.49' fill='#ADD8E6' fill-opacity='1' stroke='none' title='Mean scores: 1 705.14 +/- 7.52'/>\n   <rect id='svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_e5' x='467' y='96.91' width='89.16' height='197.68' fill='#ADD8E6' fill-opacity='1' stroke='none' title='Mean scores: 1 689.73 +/- 7.49'/>\n   <polyline points='105.42,104.32 125.23,104.32' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='115.33,104.32 115.33,106.15' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='105.42,106.15 125.23,106.15' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='204.48,97.54 224.30,97.54' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='214.39,97.54 214.39,99.44' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='204.48,99.44 224.30,99.44' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='303.55,95.10 323.36,95.10' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='313.45,95.10 313.45,96.89' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='303.55,96.89 323.36,96.89' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='402.61,94.23 422.42,94.23' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='412.52,94.23 412.52,95.99' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='402.61,95.99 422.42,95.99' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='501.67,96.04 521.49,96.04' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='511.58,96.04 511.58,97.79' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n   <polyline points='501.67,97.79 521.49,97.79' fill='none' stroke='#000000' stroke-opacity='1' stroke-width='0.43' stroke-linejoin='round' stroke-linecap='butt'/>\n  <\/g>\n  <g clip-path='url(#svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd_c1)'>\n   <text x='46.96' y='297.46' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>0<\/text>\n   <text x='38.06' y='238.96' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>500<\/text>\n   <text x='33.61' y='180.47' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>1000<\/text>\n   <text x='33.61' y='121.97' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>1500<\/text>\n   <text x='33.61' y='63.48' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>2000<\/text>\n   <text x='104.43' y='316.51' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>Lower<\/text>\n   <text x='104.21' y='325.15' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>Group<\/text>\n   <text x='195.72' y='316.51' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>Mid-Lower<\/text>\n   <text x='203.27' y='325.15' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>Group<\/text>\n   <text x='301.67' y='316.51' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>Middle<\/text>\n   <text x='302.34' y='325.15' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>Group<\/text>\n   <text x='388.51' y='316.51' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>Upper-Middle<\/text>\n   <text x='401.4' y='325.15' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>Group<\/text>\n   <text x='499.8' y='316.51' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>Higher<\/text>\n   <text x='500.46' y='325.15' font-size='6pt' font-family='Arial' fill='#4D4D4D' fill-opacity='1'>Group<\/text>\n   <text x='264.23' y='336.49' font-size='7.5pt' font-family='Arial'>Socioeconomic Group<\/text>\n   <text x='5.54' y='175.79' font-size='7.5pt' font-family='Arial'>Mean<\/text>\n   <text x='4.98' y='186.59' font-size='7.5pt' font-family='Arial'>Score<\/text>\n   <text x='75.38' y='31.03' font-size='7.5pt' font-family='Arial'>Over 6,000 15-year-old Singaporean students across socioeconomic groups displayed consistent academic<\/text>\n   <text x='80.96' y='41.83' font-size='7.5pt' font-family='Arial'>performance with the Upper-Middle Group slightly outshining the rest yet the Lower Group lagging a little.<\/text>\n   <text x='71.41' y='15.72' font-size='11.25pt' font-weight='bold' font-family='Arial'>Educational Equity is Bridging Socioeconomic Divides in Education<\/text>\n   <text x='503.4' y='349.3' font-size='6pt' font-family='Arial'>Source: PISA 2022<\/text>\n  <\/g>\n <\/g>\n<\/svg>","js":null,"uid":"svg_24f9b350_e3e7_4a14_bcfc_76e4bf985ccd","ratio":1.618122977346278,"settings":{"tooltip":{"css":".tooltip_SVGID_ { padding:5px;background:black;color:white;border-radius:2px;text-align:left; ; position:absolute;pointer-events:none;z-index:999;}","placement":"doc","opacity":0.9,"offx":10,"offy":10,"use_cursor_pos":true,"use_fill":false,"use_stroke":false,"delay_over":200,"delay_out":500},"hover":{"css":".hover_data_SVGID_ { fill:orange;stroke:black;cursor:pointer; }\ntext.hover_data_SVGID_ { stroke:none;fill:orange; }\ncircle.hover_data_SVGID_ { fill:orange;stroke:black; }\nline.hover_data_SVGID_, polyline.hover_data_SVGID_ { fill:none;stroke:orange; }\nrect.hover_data_SVGID_, polygon.hover_data_SVGID_, path.hover_data_SVGID_ { fill:orange;stroke:none; }\nimage.hover_data_SVGID_ { stroke:orange; }","reactive":true,"nearest_distance":null},"hover_inv":{"css":""},"hover_key":{"css":".hover_key_SVGID_ { fill:orange;stroke:black;cursor:pointer; }\ntext.hover_key_SVGID_ { stroke:none;fill:orange; }\ncircle.hover_key_SVGID_ { fill:orange;stroke:black; }\nline.hover_key_SVGID_, polyline.hover_key_SVGID_ { fill:none;stroke:orange; }\nrect.hover_key_SVGID_, polygon.hover_key_SVGID_, path.hover_key_SVGID_ { fill:orange;stroke:none; }\nimage.hover_key_SVGID_ { stroke:orange; }","reactive":true},"hover_theme":{"css":".hover_theme_SVGID_ { fill:orange;stroke:black;cursor:pointer; }\ntext.hover_theme_SVGID_ { stroke:none;fill:orange; }\ncircle.hover_theme_SVGID_ { fill:orange;stroke:black; }\nline.hover_theme_SVGID_, polyline.hover_theme_SVGID_ { fill:none;stroke:orange; }\nrect.hover_theme_SVGID_, polygon.hover_theme_SVGID_, path.hover_theme_SVGID_ { fill:orange;stroke:none; }\nimage.hover_theme_SVGID_ { stroke:orange; }","reactive":true},"select":{"css":".select_data_SVGID_ { fill:red;stroke:black;cursor:pointer; }\ntext.select_data_SVGID_ { stroke:none;fill:red; }\ncircle.select_data_SVGID_ { fill:red;stroke:black; }\nline.select_data_SVGID_, polyline.select_data_SVGID_ { fill:none;stroke:red; }\nrect.select_data_SVGID_, polygon.select_data_SVGID_, path.select_data_SVGID_ { fill:red;stroke:none; }\nimage.select_data_SVGID_ { stroke:red; }","type":"multiple","only_shiny":true,"selected":[]},"select_inv":{"css":""},"select_key":{"css":".select_key_SVGID_ { fill:red;stroke:black;cursor:pointer; }\ntext.select_key_SVGID_ { stroke:none;fill:red; }\ncircle.select_key_SVGID_ { fill:red;stroke:black; }\nline.select_key_SVGID_, polyline.select_key_SVGID_ { fill:none;stroke:red; }\nrect.select_key_SVGID_, polygon.select_key_SVGID_, path.select_key_SVGID_ { fill:red;stroke:none; }\nimage.select_key_SVGID_ { stroke:red; }","type":"single","only_shiny":true,"selected":[]},"select_theme":{"css":".select_theme_SVGID_ { fill:red;stroke:black;cursor:pointer; }\ntext.select_theme_SVGID_ { stroke:none;fill:red; }\ncircle.select_theme_SVGID_ { fill:red;stroke:black; }\nline.select_theme_SVGID_, polyline.select_theme_SVGID_ { fill:none;stroke:red; }\nrect.select_theme_SVGID_, polygon.select_theme_SVGID_, path.select_theme_SVGID_ { fill:red;stroke:none; }\nimage.select_theme_SVGID_ { stroke:red; }","type":"single","only_shiny":true,"selected":[]},"zoom":{"min":1,"max":1,"duration":300},"toolbar":{"position":"topright","pngname":"diagram","tooltips":null,"hidden":[],"delay_over":200,"delay_out":500},"sizing":{"rescale":true,"width":1}}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

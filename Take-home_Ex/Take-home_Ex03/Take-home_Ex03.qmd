@@ -75,15 +75,11 @@ Upon reviewing the data, there are some issues need to be addressed.
 
 **1. Re-match the values with the correct column**
 
-```         
 For the year 1983, 1993, 2003, 2013, the values of "Mean Temperature" are wrongly listed in column "Highest 30 Min Rainfall (mm)" due to the missing values on "Highest 30 Min Rainfall (mm)" in these years and the treatment of missing values when imported into R. The values need to be re-matched to column "Mean Temperature".
-```
 
 **2. Remove special characters "???" from the values of "Mean Temperature"**
 
-```         
 For the year 1983, 1993, 2003, 2013, the values of "Mean Temperature" start with "???" which need to be removed.
-```
 
 The codes are shown as below:
 
@@ -114,9 +110,7 @@ After pre-processing on data, we move on to prepare these data for further analy
 
 **1. Combine the 5 files and focus on the variables need to be analyzed**
 
-```         
 Here I pick "Station", "Year", "Month", "Day", "Mean Temperature" to do the further processing and remove all the other variables.
-```
 
 ```{r}
 #| code-fold: true
@@ -143,9 +137,7 @@ temperature$Date <- as.Date(paste(temperature$Year,
 
 **3. Calculate the change on daily mean temperature**
 
-```         
 To study on the increasment of daily mean temperature, I create a new column called "Mean_Change" to observe the variance on daily mean temerature. This variable is obtained by subtracting today's daily mean temperature from that of yesterday.
-```
 
 ```{r}
 #| code-fold: true
@@ -154,9 +146,7 @@ temperature$Mean_Change <- c(0, diff(temperature$"Mean Temperature"))
 
 **4. Calculate the mean, standard deviation and standard error of daily mean temperature**
 
-```         
 Here I apply statistic methods to assess the central tendency and interval estimate regarding the variance on daily mean temperature. I'll calculate statistics such as mean, standard deviation and standard error first and add them to the plot later on.
-```
 
 ```{r}
 #| code-fold: true
@@ -277,7 +267,7 @@ p <- layout(p,
               list(
                 text = "Source: Meteorological Service Singapore",
                 x = 1,
-                y = -0.0765,
+                y = -0.072,
                 showarrow = FALSE,
                 xref = "paper",
                 yref = "paper",
@@ -293,7 +283,7 @@ p <- layout(p,
               list(
                 text = "Year",
                 x = 0.5,
-                y = -0.0765,
+                y = -0.072,
                 showarrow = FALSE,
                 xref = "paper",
                 yref = "paper",
@@ -301,7 +291,7 @@ p <- layout(p,
 p
 ```
 
-# 5. Conclusion
+# 5. Conclusions
 
 -   **Estimated change on daily mean temperature**
 
