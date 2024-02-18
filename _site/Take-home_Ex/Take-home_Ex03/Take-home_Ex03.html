@@ -22,6 +22,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -61,6 +95,14 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="../../site_libs/plotly-binding-4.10.4/plotly.js"></script>
+<script src="../../site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="../../site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="../../site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="../../site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="../../site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="../../site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -162,7 +204,30 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1. Overview</a></li>
+  <li><a href="#task" id="toc-task" class="nav-link" data-scroll-target="#task">2. Task</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">3. Data Preparation</a>
+  <ul class="collapse">
+  <li><a href="#install-and-load-packages" id="toc-install-and-load-packages" class="nav-link" data-scroll-target="#install-and-load-packages">3.1 Install and load packages</a></li>
+  <li><a href="#data-wrangling" id="toc-data-wrangling" class="nav-link" data-scroll-target="#data-wrangling">3.2 Data Wrangling</a></li>
+  </ul></li>
+  <li><a href="#data-visualization" id="toc-data-visualization" class="nav-link" data-scroll-target="#data-visualization">4. Data Visualization</a>
+  <ul class="collapse">
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">4.1 Methods</a></li>
+  <li><a href="#principle" id="toc-principle" class="nav-link" data-scroll-target="#principle">4.2 Principle</a>
+  <ul class="collapse">
+  <li><a href="#clarity" id="toc-clarity" class="nav-link" data-scroll-target="#clarity">4.2.1 Clarity</a></li>
+  <li><a href="#aesthetic" id="toc-aesthetic" class="nav-link" data-scroll-target="#aesthetic">4.2.2 Aesthetic</a></li>
+  </ul></li>
+  <li><a href="#final-plot" id="toc-final-plot" class="nav-link" data-scroll-target="#final-plot">4.3 Final Plot</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">5. Conclusion</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -202,8 +267,374 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="overview" class="level1">
+<h1>1. Overview</h1>
+<p>Here is an office report as shown in the infographic below, after reviewing it, certain figures and statements have captured my attention.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="image/Climate_change.jpg" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Climate_change</figcaption>
+</figure>
+</div>
+<p>As shown in “DAILY TEMPERATURE” sector:</p>
+<ul>
+<li>From 1948 to 2016, annual mean temperatures rose at an average rate of 0.25℃ per decade.</li>
+<li>Daily mean temperatures are projected to increase by 1.4℃ to 4.6℃.</li>
+</ul>
+<p>The annual mean temperatures rose in a slow speed at 0.25℃ per every 10 years. However, the daily mean temperatures are expected to increase by at least 1.4℃ which is nearly equal to the increasement of annual mean temperatures in 60 years. This sounds a bit confusing and need in-depth study.</p>
+</section>
+<section id="task" class="level1">
+<h1>2. Task</h1>
+<p>In this take-home exercise, I will:</p>
+<ul>
+<li><p>Select Changi weather station, download data on daily temperature of December of the year 1983, 1993, 2003, 2013, 2023. Data is downloaded from <a href="http://www.weather.gov.sg/climate-historical-daily/">historical daily temperature</a>.</p></li>
+<li><p>Use visualizing uncertainty methods to validate the claims on daily mean temperatures.</p></li>
+<li><p>Use visual interactivity to display the discovery on daily mean temperatures.</p></li>
+</ul>
+</section>
+<section id="data-preparation" class="level1">
+<h1>3. Data Preparation</h1>
+<section id="install-and-load-packages" class="level2">
+<h2 class="anchored" data-anchor-id="install-and-load-packages">3.1 Install and load packages</h2>
+<p>In this study, I’ll use several R packages shown as below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse,ggdist, ggridges, </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               ggthemes,colorspace,ungeviz,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               plotly,crosstalk,DT,gganimate,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>               gifski, gapminder)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-wrangling" class="level2">
+<h2 class="anchored" data-anchor-id="data-wrangling">3.2 Data Wrangling</h2>
+<p>First, I’ll import all data downloaded from website.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data_1983 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/DAILYDATA_S24_198312.csv"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>data_1993 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/DAILYDATA_S24_199312.csv"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>data_2003 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/DAILYDATA_S24_200312.csv"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>data_2013 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/DAILYDATA_S24_201312.csv"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>data_2023 <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/DAILYDATA_S24_202312.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Then, I’ll check all variables in these files.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_1983</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 31 × 13
+   Station  Year Month   Day `Daily Rainfall Total (mm)` Highest 30 Min Rainfa…¹
+   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;                       &lt;dbl&gt; &lt;chr&gt;                  
+ 1 Changi   1983    12     1                         2.8 ???26.4                
+ 2 Changi   1983    12     2                         1.7 ???24.3                
+ 3 Changi   1983    12     3                         5   ???25.1                
+ 4 Changi   1983    12     4                         8.2 ???25.2                
+ 5 Changi   1983    12     5                         0   ???26                  
+ 6 Changi   1983    12     6                         0   ???25                  
+ 7 Changi   1983    12     7                         0   ???25.6                
+ 8 Changi   1983    12     8                        19.8 ???24.9                
+ 9 Changi   1983    12     9                        48.1 ???24.2                
+10 Changi   1983    12    10                        21.1 ???24.2                
+# ℹ 21 more rows
+# ℹ abbreviated name: ¹​`Highest 30 Min Rainfall (mm)`
+# ℹ 7 more variables: `Highest 60 Min Rainfall (mm)` &lt;dbl&gt;,
+#   `Highest 120 Min Rainfall (mm)` &lt;dbl&gt;, `Mean Temperature` &lt;dbl&gt;,
+#   `Maximum Temperature` &lt;dbl&gt;, `Minimum Temperature` &lt;lgl&gt;,
+#   `Mean Wind Speed (km/h)` &lt;lgl&gt;, `Max Wind Speed (km/h)` &lt;lgl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data_1993</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 31 × 13
+   Station  Year Month   Day `Daily Rainfall Total (mm)` Highest 30 Min Rainfa…¹
+   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;                       &lt;dbl&gt; &lt;chr&gt;                  
+ 1 Changi   1993    12     1                         6   ???25.4                
+ 2 Changi   1993    12     2                         7.9 ???26.5                
+ 3 Changi   1993    12     3                         2.8 ???27.2                
+ 4 Changi   1993    12     4                        22.2 ???27.6                
+ 5 Changi   1993    12     5                         3.5 ???26.1                
+ 6 Changi   1993    12     6                        25.8 ???27.3                
+ 7 Changi   1993    12     7                         0   ???27                  
+ 8 Changi   1993    12     8                        67.6 ???26.1                
+ 9 Changi   1993    12     9                         0.1 ???26                  
+10 Changi   1993    12    10                         8.7 ???27.2                
+# ℹ 21 more rows
+# ℹ abbreviated name: ¹​`Highest 30 Min Rainfall (mm)`
+# ℹ 7 more variables: `Highest 60 Min Rainfall (mm)` &lt;dbl&gt;,
+#   `Highest 120 Min Rainfall (mm)` &lt;dbl&gt;, `Mean Temperature` &lt;dbl&gt;,
+#   `Maximum Temperature` &lt;dbl&gt;, `Minimum Temperature` &lt;lgl&gt;,
+#   `Mean Wind Speed (km/h)` &lt;lgl&gt;, `Max Wind Speed (km/h)` &lt;lgl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>data_2003</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 31 × 13
+   Station  Year Month   Day `Daily Rainfall Total (mm)` Highest 30 Min Rainfa…¹
+   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;                       &lt;dbl&gt; &lt;chr&gt;                  
+ 1 Changi   2003    12     1                        18.6 ???26.6                
+ 2 Changi   2003    12     2                         0.5 ???26.2                
+ 3 Changi   2003    12     3                         0   ???27.3                
+ 4 Changi   2003    12     4                         1.4 ???25.7                
+ 5 Changi   2003    12     5                         0   ???27.4                
+ 6 Changi   2003    12     6                         0   ???27.7                
+ 7 Changi   2003    12     7                         5.2 ???27.4                
+ 8 Changi   2003    12     8                         0.3 ???26                  
+ 9 Changi   2003    12     9                        40.5 ???26.8                
+10 Changi   2003    12    10                        11.3 ???25.1                
+# ℹ 21 more rows
+# ℹ abbreviated name: ¹​`Highest 30 Min Rainfall (mm)`
+# ℹ 7 more variables: `Highest 60 Min Rainfall (mm)` &lt;dbl&gt;,
+#   `Highest 120 Min Rainfall (mm)` &lt;dbl&gt;, `Mean Temperature` &lt;dbl&gt;,
+#   `Maximum Temperature` &lt;dbl&gt;, `Minimum Temperature` &lt;lgl&gt;,
+#   `Mean Wind Speed (km/h)` &lt;lgl&gt;, `Max Wind Speed (km/h)` &lt;lgl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>data_2013</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 31 × 13
+   Station  Year Month   Day `Daily Rainfall Total (mm)` Highest 30 Min Rainfa…¹
+   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;                       &lt;dbl&gt; &lt;chr&gt;                  
+ 1 Changi   2013    12     1                        25.6 ???26.1                
+ 2 Changi   2013    12     2                        11.8 ???25                  
+ 3 Changi   2013    12     3                       120.  ???25.6                
+ 4 Changi   2013    12     4                         0.4 ???25.5                
+ 5 Changi   2013    12     5                         0.4 ???26.7                
+ 6 Changi   2013    12     6                         7.4 ???25.4                
+ 7 Changi   2013    12     7                         0   ???26.5                
+ 8 Changi   2013    12     8                        37.8 ???25                  
+ 9 Changi   2013    12     9                         0   ???26.7                
+10 Changi   2013    12    10                         0.8 ???27.1                
+# ℹ 21 more rows
+# ℹ abbreviated name: ¹​`Highest 30 Min Rainfall (mm)`
+# ℹ 7 more variables: `Highest 60 Min Rainfall (mm)` &lt;dbl&gt;,
+#   `Highest 120 Min Rainfall (mm)` &lt;dbl&gt;, `Mean Temperature` &lt;dbl&gt;,
+#   `Maximum Temperature` &lt;dbl&gt;, `Minimum Temperature` &lt;lgl&gt;,
+#   `Mean Wind Speed (km/h)` &lt;lgl&gt;, `Max Wind Speed (km/h)` &lt;lgl&gt;</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>data_2023</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 31 × 13
+   Station  Year Month   Day `Daily Rainfall Total (mm)` Highest 30 min Rainfa…¹
+   &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;                       &lt;dbl&gt;                   &lt;dbl&gt;
+ 1 Changi   2023    12     1                        17.4                     2.8
+ 2 Changi   2023    12     2                         0.8                     0.8
+ 3 Changi   2023    12     3                         3.8                     2  
+ 4 Changi   2023    12     4                         0                       0  
+ 5 Changi   2023    12     5                         2                       1.2
+ 6 Changi   2023    12     6                         4.2                     4  
+ 7 Changi   2023    12     7                         1.2                     1  
+ 8 Changi   2023    12     8                         0                       0  
+ 9 Changi   2023    12     9                         5.8                     5.8
+10 Changi   2023    12    10                         0                       0  
+# ℹ 21 more rows
+# ℹ abbreviated name: ¹​`Highest 30 min Rainfall (mm)`
+# ℹ 7 more variables: `Highest 60 min Rainfall (mm)` &lt;dbl&gt;,
+#   `Highest 120 min Rainfall (mm)` &lt;dbl&gt;, `Mean Temperature` &lt;dbl&gt;,
+#   `Maximum Temperature` &lt;dbl&gt;, `Minimum Temperature` &lt;dbl&gt;,
+#   `Mean Wind Speed (km/h)` &lt;dbl&gt;, `Max Wind Speed (km/h)` &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>Upon reviewing the data, there are some issues need to be addressed.</p>
+<ol type="1">
+<li><p>Re-match the values with the correct column</p>
+<p>For the year 1983, 1993, 2003, 2013, the values of “Mean Temperature” are wrongly listed in column “Highest 30 Min Rainfall (mm)” due to the missing values on “Highest 30 Min Rainfall (mm)” in these years and the treatment of missing values when imported into R. The values need to be re-matched to column “Mean Temperature”.</p></li>
+<li><p>Remove special characters “???” from the values of “Mean Temperature”</p>
+<p>For the year 1983, 1993, 2003, 2013, the values of “Mean Temperature” start with “???” which need to be removed.</p></li>
+</ol>
+<p>The codes are shown as below:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove "???"</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>data_1983<span class="sc">$</span><span class="st">"Highest 30 Min Rainfall (mm)"</span> <span class="ot">&lt;-</span> </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">?+"</span>, <span class="st">""</span>, data_1983<span class="sc">$</span><span class="st">"Highest 30 Min Rainfall (mm)"</span>)) </span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>data_1993<span class="sc">$</span><span class="st">"Highest 30 Min Rainfall (mm)"</span> <span class="ot">&lt;-</span> </span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">?+"</span>, <span class="st">""</span>, data_1993<span class="sc">$</span><span class="st">"Highest 30 Min Rainfall (mm)"</span>))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>data_2003<span class="sc">$</span><span class="st">"Highest 30 Min Rainfall (mm)"</span> <span class="ot">&lt;-</span> </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">?+"</span>, <span class="st">""</span>, data_2003<span class="sc">$</span><span class="st">"Highest 30 Min Rainfall (mm)"</span>))</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>data_2013<span class="sc">$</span><span class="st">"Highest 30 Min Rainfall (mm)"</span> <span class="ot">&lt;-</span> </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">?+"</span>, <span class="st">""</span>, data_2013<span class="sc">$</span><span class="st">"Highest 30 Min Rainfall (mm)"</span>)) </span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-match values to correct column</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>data_1983 <span class="ot">&lt;-</span> data_1983 <span class="sc">%&gt;%</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Mean Temperature</span><span class="st">`</span><span class="ot">=</span><span class="st">`</span><span class="at">Highest 30 Min Rainfall (mm)</span><span class="st">`</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>data_1993 <span class="ot">&lt;-</span> data_1993 <span class="sc">%&gt;%</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Mean Temperature</span><span class="st">`</span><span class="ot">=</span><span class="st">`</span><span class="at">Highest 30 Min Rainfall (mm)</span><span class="st">`</span>)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>data_2003 <span class="ot">&lt;-</span> data_2003 <span class="sc">%&gt;%</span></span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Mean Temperature</span><span class="st">`</span><span class="ot">=</span><span class="st">`</span><span class="at">Highest 30 Min Rainfall (mm)</span><span class="st">`</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>data_2013 <span class="ot">&lt;-</span> data_2013 <span class="sc">%&gt;%</span></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Mean Temperature</span><span class="st">`</span><span class="ot">=</span><span class="st">`</span><span class="at">Highest 30 Min Rainfall (mm)</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>After pre-processing on data, we move on to prepare these data for further analysis.</p>
+<ol type="1">
+<li><p>Combine the 5 files and focus on the variables need to be analyzed.</p>
+<p>Here I pick “Station”, “Year”, “Month”, “Day”, “Mean Temperature” to do the further processing and remove all the other variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Uniform column names among all files</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(data_2023)[<span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="st">"Highest 30 Min Rainfall (mm)"</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(data_2023)[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="st">"Highest 60 Min Rainfall (mm)"</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(data_2023)[<span class="dv">8</span>] <span class="ot">&lt;-</span> <span class="st">"Highest 120 Min Rainfall (mm)"</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine files and remove columns</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>temperature <span class="ot">&lt;-</span> <span class="fu">rbind</span>(data_1983, data_1993, data_2003, data_2013, data_2023)</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>temperature <span class="ot">&lt;-</span> temperature[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">10</span>,<span class="dv">11</span>,<span class="dv">12</span>,<span class="dv">13</span>)]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></li>
+<li><p>Combine Year, Month and Day into Date</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>temperature<span class="sc">$</span>Date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(<span class="fu">paste</span>(temperature<span class="sc">$</span>Year, </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>                                  temperature<span class="sc">$</span>Month, </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                                  temperature<span class="sc">$</span>Day, </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                                  <span class="at">sep =</span> <span class="st">"-"</span>), </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                            <span class="st">"%Y-%m-%d"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="3" type="1">
+<li><p>Calculate the change on daily mean temperature</p>
+<p>To study on the increasment of daily mean temperature, I create a new column called “Mean_Change” to observe the variance on daily mean temerature. This variable is obtained by subtracting today’s daily mean temperature from that of yesterday.</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>temperature<span class="sc">$</span>Mean_Change <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">diff</span>(temperature<span class="sc">$</span><span class="st">"Mean Temperature"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="4" type="1">
+<li><p>Calculate the mean, standard deviation and standard error of daily mean temperature</p>
+<p>Here I apply statistic methods to assess the central tendency and interval estimate regarding the variance on daily mean temperature. I’ll calculate statistics such as mean, standard deviation and standard error first and add them to the plot later on.</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>my_sum <span class="ot">&lt;-</span> temperature <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Year) <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">n=</span><span class="fu">n</span>(),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean=</span><span class="fu">mean</span>(Mean_Change),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd=</span><span class="fu">sd</span>(Mean_Change)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">se=</span>sd<span class="sc">/</span><span class="fu">sqrt</span>(n<span class="dv">-1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="data-visualization" class="level1">
+<h1>4. Data Visualization</h1>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">4.1 Methods</h2>
+<p>I choose confidence interval plotting in this study because the aim of this study is to assess the estimate on the increasement or the change on daily mean temperature (Δ℃) and the uncertainty of the estimate as well.</p>
+<ul>
+<li><p>Mean of change on daily mean temperature: will show the estimated increasement or change on daily mean temperature.</p></li>
+<li><p>Confidence interval of change on daily mean temperature: will provide a range which the estimated change on daily mean temperature will fall in due to uncertainty.</p></li>
+</ul>
+</section>
+<section id="principle" class="level2">
+<h2 class="anchored" data-anchor-id="principle">4.2 Principle</h2>
+<section id="clarity" class="level3">
+<h3 class="anchored" data-anchor-id="clarity">4.2.1 Clarity</h3>
+<ul>
+<li><p>X axis</p>
+<p>need to be labeled to be the year 1983, 1993, 2003, 2013, 2023.</p></li>
+<li><p>Y axis</p>
+<p>in most cases, the quantitative scale on y axis should begin at 0. But in this case, since I need to assess the variation on daily mean temperature, it might be negative or positive depending on whether today’s mean temperature is rising or dropping. So I’ll set the quantitative scale on y axis starting with negative numbers. Y axis title might be “Variation on daily mean temp (Δ℃)”.</p></li>
+<li><p>Graph title and subtitle</p>
+<p>create an attention-grabbing title together with a descriptive subtitle to bring better understanding to readers.</p></li>
+<li><p>Caption</p>
+<p>need to mark the source of data.</p></li>
+<li><p>Call-outs of important information</p>
+<p>Important information here refer to the mean and confidence interval of the change on daily mean temperature. I’ll apply interactivity to visualize the figures on the plot.</p></li>
+</ul>
+</section>
+<section id="aesthetic" class="level3">
+<h3 class="anchored" data-anchor-id="aesthetic">4.2.2 Aesthetic</h3>
+<ul>
+<li><p>Data ink</p>
+<p>make the plot clear to emphasize information</p></li>
+<li><p>Grid line</p>
+<p>remove irrelevant grid lines</p></li>
+</ul>
+</section>
+</section>
+<section id="final-plot" class="level2">
+<h2 class="anchored" data-anchor-id="final-plot">4.3 Final Plot</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>shared_df <span class="ot">=</span> SharedData<span class="sc">$</span><span class="fu">new</span>(my_sum)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">ggplotly</span>((<span class="fu">ggplot</span>(shared_df) <span class="sc">+</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">x=</span>Year,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">ymin=</span>mean<span class="fl">-2.58</span><span class="sc">*</span>se, </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">ymax=</span>mean<span class="fl">+2.58</span><span class="sc">*</span>se), </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">width=</span><span class="fl">0.2</span>, </span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">colour=</span><span class="st">"black"</span>, </span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha=</span><span class="fl">0.9</span>, </span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>                   <span class="at">size=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">geom_point</span>(<span class="fu">aes</span>(</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>                   <span class="at">x=</span>Year, </span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>                   <span class="at">y=</span>mean, </span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>                   <span class="at">text =</span> <span class="fu">paste</span>(<span class="st">"Year:"</span>, <span class="st">`</span><span class="at">Year</span><span class="st">`</span>, </span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"&lt;br&gt;N:"</span>, <span class="st">`</span><span class="at">n</span><span class="st">`</span>,</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"&lt;br&gt;Avg. Scores:"</span>, <span class="fu">round</span>(mean, <span class="at">digits =</span> <span class="dv">2</span>),</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"&lt;br&gt;99% CI:["</span>, </span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">round</span>((mean<span class="fl">-2.58</span><span class="sc">*</span>se), <span class="at">digits =</span> <span class="dv">2</span>), <span class="st">","</span>,</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>                                <span class="fu">round</span>((mean<span class="fl">+2.58</span><span class="sc">*</span>se), <span class="at">digits =</span> <span class="dv">2</span>),<span class="st">"]"</span>)),</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>                   <span class="at">stat=</span><span class="st">"identity"</span>, </span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>                   <span class="at">color=</span><span class="st">"red"</span>, </span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>                   <span class="at">size =</span> <span class="fl">1.5</span>, </span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>                   <span class="at">alpha=</span><span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">ylim</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.5</span>,<span class="fl">0.8</span>))<span class="sc">+</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">1983</span>, <span class="dv">1993</span>, <span class="dv">2003</span>, <span class="dv">2013</span>, <span class="dv">2023</span>),</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>                                    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"1983"</span>, <span class="st">"1993"</span>, <span class="st">"2003"</span>, <span class="st">"2013"</span>, <span class="st">"2023"</span>))<span class="sc">+</span> </span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">7</span>)<span class="sc">+</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">theme</span>(<span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>                       <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>                       <span class="at">panel.grid.major.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>                       <span class="at">panel.grid.minor.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>                       <span class="at">panel.grid.minor.y =</span> <span class="fu">element_blank</span>())), </span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>              <span class="at">tooltip =</span> <span class="st">"text"</span>)</span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">layout</span>(p,</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>            <span class="at">annotations =</span> <span class="fu">list</span>(</span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a>              <span class="fu">list</span>(</span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a>                <span class="at">text =</span> <span class="st">"The fluctuation in daily mean temperature exhibits extremely minor variations around 0℃.</span><span class="sc">\n</span><span class="st">At 99% CI, the estimated change in daily mean temperature falls within a range of ±0.5℃.</span><span class="sc">\n</span><span class="st">Subtle changes over the period may still contribute to the overall global warming trend."</span>,</span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a>                <span class="at">x =</span> <span class="fl">0.5</span>,</span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> <span class="fl">0.97</span>,</span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a>                <span class="at">xref =</span> <span class="st">"paper"</span>,</span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>                <span class="at">yref =</span> <span class="st">"paper"</span>,</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a>                <span class="at">showarrow =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>                <span class="at">font =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a>              ),</span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a>              <span class="fu">list</span>(</span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>                <span class="at">text =</span> <span class="st">"Insight on variation of daily mean temperature in Singapore"</span>,</span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a>                <span class="at">x =</span> <span class="fl">0.5</span>,</span>
+<span id="cb18-49"><a href="#cb18-49" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> <span class="fl">1.05</span>,</span>
+<span id="cb18-50"><a href="#cb18-50" aria-hidden="true" tabindex="-1"></a>                <span class="at">xref =</span> <span class="st">"paper"</span>,</span>
+<span id="cb18-51"><a href="#cb18-51" aria-hidden="true" tabindex="-1"></a>                <span class="at">yref =</span> <span class="st">"paper"</span>,</span>
+<span id="cb18-52"><a href="#cb18-52" aria-hidden="true" tabindex="-1"></a>                <span class="at">showarrow =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-53"><a href="#cb18-53" aria-hidden="true" tabindex="-1"></a>                <span class="at">font =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">20</span>,</span>
+<span id="cb18-54"><a href="#cb18-54" aria-hidden="true" tabindex="-1"></a>                            <span class="at">family =</span> <span class="st">"Aptos Black"</span>,</span>
+<span id="cb18-55"><a href="#cb18-55" aria-hidden="true" tabindex="-1"></a>                            <span class="at">weight =</span> <span class="st">"bold"</span>)</span>
+<span id="cb18-56"><a href="#cb18-56" aria-hidden="true" tabindex="-1"></a>              ),</span>
+<span id="cb18-57"><a href="#cb18-57" aria-hidden="true" tabindex="-1"></a>              <span class="fu">list</span>(</span>
+<span id="cb18-58"><a href="#cb18-58" aria-hidden="true" tabindex="-1"></a>                <span class="at">text =</span> <span class="st">"Source: Meteorological Service Singapore"</span>,</span>
+<span id="cb18-59"><a href="#cb18-59" aria-hidden="true" tabindex="-1"></a>                <span class="at">x =</span> <span class="dv">1</span>,</span>
+<span id="cb18-60"><a href="#cb18-60" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> <span class="sc">-</span><span class="fl">0.079</span>,</span>
+<span id="cb18-61"><a href="#cb18-61" aria-hidden="true" tabindex="-1"></a>                <span class="at">showarrow =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-62"><a href="#cb18-62" aria-hidden="true" tabindex="-1"></a>                <span class="at">xref =</span> <span class="st">"paper"</span>,</span>
+<span id="cb18-63"><a href="#cb18-63" aria-hidden="true" tabindex="-1"></a>                <span class="at">yref =</span> <span class="st">"paper"</span>,</span>
+<span id="cb18-64"><a href="#cb18-64" aria-hidden="true" tabindex="-1"></a>                <span class="at">font =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">8</span>)),</span>
+<span id="cb18-65"><a href="#cb18-65" aria-hidden="true" tabindex="-1"></a>              <span class="fu">list</span>(</span>
+<span id="cb18-66"><a href="#cb18-66" aria-hidden="true" tabindex="-1"></a>                <span class="at">text =</span> <span class="st">"Variation on daily </span><span class="sc">\n</span><span class="st">mean temp (Δ℃)"</span>,</span>
+<span id="cb18-67"><a href="#cb18-67" aria-hidden="true" tabindex="-1"></a>                <span class="at">x =</span> <span class="sc">-</span><span class="fl">0.045</span>,</span>
+<span id="cb18-68"><a href="#cb18-68" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> <span class="fl">0.855</span>,</span>
+<span id="cb18-69"><a href="#cb18-69" aria-hidden="true" tabindex="-1"></a>                <span class="at">showarrow =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-70"><a href="#cb18-70" aria-hidden="true" tabindex="-1"></a>                <span class="at">xref =</span> <span class="st">"paper"</span>,</span>
+<span id="cb18-71"><a href="#cb18-71" aria-hidden="true" tabindex="-1"></a>                <span class="at">yref =</span> <span class="st">"paper"</span>,</span>
+<span id="cb18-72"><a href="#cb18-72" aria-hidden="true" tabindex="-1"></a>                <span class="at">font =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">8</span>)),</span>
+<span id="cb18-73"><a href="#cb18-73" aria-hidden="true" tabindex="-1"></a>              <span class="fu">list</span>(</span>
+<span id="cb18-74"><a href="#cb18-74" aria-hidden="true" tabindex="-1"></a>                <span class="at">text =</span> <span class="st">"Year"</span>,</span>
+<span id="cb18-75"><a href="#cb18-75" aria-hidden="true" tabindex="-1"></a>                <span class="at">x =</span> <span class="fl">0.5</span>,</span>
+<span id="cb18-76"><a href="#cb18-76" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> <span class="sc">-</span><span class="fl">0.0785</span>,</span>
+<span id="cb18-77"><a href="#cb18-77" aria-hidden="true" tabindex="-1"></a>                <span class="at">showarrow =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb18-78"><a href="#cb18-78" aria-hidden="true" tabindex="-1"></a>                <span class="at">xref =</span> <span class="st">"paper"</span>,</span>
+<span id="cb18-79"><a href="#cb18-79" aria-hidden="true" tabindex="-1"></a>                <span class="at">yref =</span> <span class="st">"paper"</span>,</span>
+<span id="cb18-80"><a href="#cb18-80" aria-hidden="true" tabindex="-1"></a>                <span class="at">font =</span> <span class="fu">list</span>(<span class="at">size =</span> <span class="dv">8</span>))))</span>
+<span id="cb18-81"><a href="#cb18-81" aria-hidden="true" tabindex="-1"></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-a70bd59fbff22261d6bc" style="width:100%;height:464px;"></div>
+<script type="application/json" data-for="htmlwidget-a70bd59fbff22261d6bc">{"x":{"data":[{"x":[1983,1993,2003,2013,2023],"y":[0,0.0064516129032258784,0.029032258064516092,-0.054838709677419328,0.0096774193548387344],"text":"","key":["1","2","3","4","5"],"type":"scatter","mode":"lines","opacity":0.90000000000000002,"line":{"color":"transparent"},"error_y":{"array":[0.48221389444934082,0.38879904420432088,0.47154256401455347,0.43730618785409836,0.43280389062707758],"arrayminus":[0.48221389444934082,0.38879904420432088,0.47154256401455347,0.43730618785409836,0.43280389062707758],"type":"data","width":2.0262324739918345,"symmetric":false,"color":"rgba(0,0,0,1)"},"set":"SharedData1b1ccbfa","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","_isNestedKey":false,"frame":null},{"x":[1983,1993,2003,2013,2023],"y":[0,0.0064516129032258984,0.029032258064516082,-0.054838709677419335,0.0096774193548387327],"text":["Year: 1983 <br>N: 31 <br>Avg. Scores: 0 <br>99% CI:[ -0.48 , 0.48 ]","Year: 1993 <br>N: 31 <br>Avg. Scores: 0.01 <br>99% CI:[ -0.38 , 0.4 ]","Year: 2003 <br>N: 31 <br>Avg. Scores: 0.03 <br>99% CI:[ -0.44 , 0.5 ]","Year: 2013 <br>N: 31 <br>Avg. Scores: -0.05 <br>99% CI:[ -0.49 , 0.38 ]","Year: 2023 <br>N: 31 <br>Avg. Scores: 0.01 <br>99% CI:[ -0.42 , 0.44 ]"],"key":["1","2","3","4","5"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(255,0,0,1)","opacity":1,"size":5.6692913385826778,"symbol":"circle","line":{"width":1.8897637795275593,"color":"rgba(255,0,0,1)"}},"hoveron":"points","set":"SharedData1b1ccbfa","showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","_isNestedKey":false,"frame":null}],"layout":{"margin":{"t":22.508924865089249,"r":4.6492320464923198,"b":16.272312162723122,"l":21.851390618513911},"font":{"color":"rgba(0,0,0,1)","family":"","size":9.2984640929846396},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[1980.8900000000001,2025.1099999999999],"tickmode":"array","ticktext":["1983","1993","2003","2013","2023"],"tickvals":[1983,1993,2003,2013,2023],"categoryorder":"array","categoryarray":["1983","1993","2003","2013","2023"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":2.3246160232461599,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":7.4387712743877135},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":false,"gridcolor":null,"gridwidth":0,"zeroline":false,"anchor":"y","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-0.56499999999999995,0.86499999999999999],"tickmode":"array","ticktext":["-0.5","0.0","0.5"],"tickvals":[-0.5,0,0.5],"categoryorder":"array","categoryarray":["-0.5","0.0","0.5"],"nticks":null,"ticks":"","tickcolor":null,"ticklen":2.3246160232461599,"tickwidth":0,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":7.4387712743877152},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(235,235,235,1)","gridwidth":0.42265745877202915,"zeroline":false,"anchor":"x","title":{"text":"","font":{"color":null,"family":null,"size":0}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":null,"bordercolor":null,"borderwidth":0,"font":{"color":"rgba(0,0,0,1)","family":"","size":7.4387712743877135}},"hovermode":"closest","barmode":"relative","annotations":[{"text":"The fluctuation in daily mean temperature exhibits extremely minor variations around 0℃.<br />At 99% CI, the estimated change in daily mean temperature falls within a range of ±0.5℃.<br />Subtle changes over the period may still contribute to the overall global warming trend.","x":0.5,"y":0.96999999999999997,"xref":"paper","yref":"paper","showarrow":false,"font":{"size":10}},{"text":"Insight on variation of daily mean temperature in Singapore","x":0.5,"y":1.05,"xref":"paper","yref":"paper","showarrow":false,"font":{"size":20,"family":"Aptos Black","weight":"bold"}},{"text":"Source: Meteorological Service Singapore","x":1,"y":-0.079000000000000001,"showarrow":false,"xref":"paper","yref":"paper","font":{"size":8}},{"text":"Variation on daily <br />mean temp (Δ℃)","x":-0.044999999999999998,"y":0.85499999999999998,"showarrow":false,"xref":"paper","yref":"paper","font":{"size":8}},{"text":"Year","x":0.5,"y":-0.0785,"showarrow":false,"xref":"paper","yref":"paper","font":{"size":8}}],"dragmode":"zoom"},"config":{"doubleClick":"reset","modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"source":"A","attrs":{"234859e05508":{"x":{},"ymin":{},"ymax":{},"type":"scatter"},"234836e945ab":{"x":{},"y":{},"text":{}}},"cur_data":"234859e05508","visdat":{"234859e05508":["function (y) ","x"],"234836e945ab":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0,"ctGroups":["SharedData1b1ccbfa"]},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>5. Conclusion</h1>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
