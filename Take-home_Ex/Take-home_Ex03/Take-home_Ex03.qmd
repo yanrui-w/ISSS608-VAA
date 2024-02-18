@@ -52,7 +52,6 @@ First, I'll import all data downloaded from website.
 
 ```{r}
 #| code-fold: true
-#| eval: false
 data_1983 <- read_csv("data/DAILYDATA_S24_198312.csv")
 data_1993 <- read_csv("data/DAILYDATA_S24_199312.csv")
 data_2003 <- read_csv("data/DAILYDATA_S24_200312.csv")
@@ -90,7 +89,6 @@ The codes are shown as below:
 
 ```{r}
 #| code-fold: true
-#| eval: false
 # Remove "???"
 data_1983$"Highest 30 Min Rainfall (mm)" <- 
   as.numeric(gsub("^\\?+", "", data_1983$"Highest 30 Min Rainfall (mm)")) 
@@ -122,7 +120,6 @@ Here I pick "Station", "Year", "Month", "Day", "Mean Temperature" to do the furt
 
 ```{r}
 #| code-fold: true
-#| eval: false
 # Uniform column names among all files
 colnames(data_2023)[6] <- "Highest 30 Min Rainfall (mm)"
 colnames(data_2023)[7] <- "Highest 60 Min Rainfall (mm)"
@@ -137,7 +134,6 @@ temperature <- temperature[, -c(5,6,7,8,10,11,12,13)]
 
 ```{r}
 #| code-fold: true
-#| eval: false
 temperature$Date <- as.Date(paste(temperature$Year, 
                                   temperature$Month, 
                                   temperature$Day, 
@@ -152,6 +148,7 @@ To study on the increasment of daily mean temperature, I create a new column cal
 ```
 
 ```{r}
+#| code-fold: true
 temperature$Mean_Change <- c(0, diff(temperature$"Mean Temperature"))
 ```
 
@@ -163,8 +160,7 @@ Here I apply statistic methods to assess the central tendency and interval estim
 
 ```{r}
 #| code-fold: true
-#| eval: false
-my_sum <- temperature %>%
+my_summary <- temperature %>%
   group_by(Year) %>%
   summarise(
     n=n(),
@@ -222,7 +218,7 @@ I choose confidence interval plotting in this study because the aim of this stud
 
 ```{r}
 #| code-fold: true
-shared_df = SharedData$new(my_sum)
+shared_df = SharedData$new(my_summary)
 
 p <- ggplotly((ggplot(shared_df) +
                  geom_errorbar(aes(
