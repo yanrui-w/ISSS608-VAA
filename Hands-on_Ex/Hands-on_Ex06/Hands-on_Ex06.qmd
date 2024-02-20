@@ -1,0 +1,11 @@
+---
+title: "Hands-on Exercise 6: Visualising and Analysing Time-Oriented Data"
+author: Wei Yanrui
+date: "February 20, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+editor: visual
+---
