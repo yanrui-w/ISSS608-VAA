@@ -219,7 +219,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">3.2 Importing the data</a></li>
   <li><a href="#examining-the-data-structure" id="toc-examining-the-data-structure" class="nav-link" data-scroll-target="#examining-the-data-structure">3.3 Examining the data structure</a></li>
   <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">3.4 Data Preparation</a></li>
-  <li><a href="#building-the-calendar-heatmaps" id="toc-building-the-calendar-heatmaps" class="nav-link" data-scroll-target="#building-the-calendar-heatmaps">3.5 Building the Calendar Heatmaps</a></li>
+  <li><a href="#building-the-calendar-heatmap" id="toc-building-the-calendar-heatmap" class="nav-link" data-scroll-target="#building-the-calendar-heatmap">3.5 Building the Calendar Heatmap</a></li>
+  <li><a href="#building-multiple-calendar-heatmaps" id="toc-building-multiple-calendar-heatmaps" class="nav-link" data-scroll-target="#building-multiple-calendar-heatmaps">3.6 Building Multiple Calendar Heatmaps</a></li>
+  </ul></li>
+  <li><a href="#plotting-cycle-plot" id="toc-plotting-cycle-plot" class="nav-link" data-scroll-target="#plotting-cycle-plot">4. Plotting Cycle Plot</a>
+  <ul class="collapse">
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">4.1 Overview</a></li>
+  <li><a href="#import-data" id="toc-import-data" class="nav-link" data-scroll-target="#import-data">4.2 Import data</a></li>
+  <li><a href="#data-preparation-1" id="toc-data-preparation-1" class="nav-link" data-scroll-target="#data-preparation-1">4.3 Data Preparation</a></li>
+  <li><a href="#plotting-the-cycle-plot" id="toc-plotting-the-cycle-plot" class="nav-link" data-scroll-target="#plotting-the-cycle-plot">4.4 Plotting the cycle plot</a></li>
+  </ul></li>
+  <li><a href="#plotting-slopegraph" id="toc-plotting-slopegraph" class="nav-link" data-scroll-target="#plotting-slopegraph">5. Plotting Slopegraph</a>
+  <ul class="collapse">
+  <li><a href="#overview-1" id="toc-overview-1" class="nav-link" data-scroll-target="#overview-1">5.1 Overview</a></li>
+  <li><a href="#import-data-1" id="toc-import-data-1" class="nav-link" data-scroll-target="#import-data-1">5.2 Import data</a></li>
+  <li><a href="#plotting-the-slopegraph" id="toc-plotting-the-slopegraph" class="nav-link" data-scroll-target="#plotting-the-slopegraph">5.3 Plotting the slopegraph</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -264,6 +278,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="roadmap-for-studying" class="level1">
 <h1>1. Roadmap for studying</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="image/roadmap_6.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">roadmap_6</figcaption>
+</figure>
+</div>
 </section>
 <section id="getting-started" class="level1">
 <h1>2. Getting Started</h1>
@@ -508,8 +528,8 @@ Code Notes
 </div>
 </div>
 </section>
-<section id="building-the-calendar-heatmaps" class="level2">
-<h2 class="anchored" data-anchor-id="building-the-calendar-heatmaps">3.5 Building the Calendar Heatmaps</h2>
+<section id="building-the-calendar-heatmap" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-calendar-heatmap">3.5 Building the Calendar Heatmap</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>grouped <span class="ot">&lt;-</span> attacks <span class="sc">%&gt;%</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(wkday, hour) <span class="sc">%&gt;%</span></span>
@@ -558,6 +578,257 @@ Code Notes
 <li><p><code>scale_fill_gradient()</code>: Defines a gradient scale for the fill color based on the count of attacks. <code>name</code> parameter provides a label for the legend that explains what the colors represent.</p></li>
 <li><p><code>labs(x=NULL,y=NULL)</code>: removes x and y labels</p></li>
 </ol>
+</div>
+</div>
+</section>
+<section id="building-multiple-calendar-heatmaps" class="level2">
+<h2 class="anchored" data-anchor-id="building-multiple-calendar-heatmaps">3.6 Building Multiple Calendar Heatmaps</h2>
+<p>In this sector, we will extend one calendar heatmap to multiple heatmaps for the top four countries with the highest number of attacks.</p>
+<p>Step 1: Deriving attack by country object</p>
+<p>In order to identify the top 4 countries with the highest number of attacks, you are required to do the followings:</p>
+<ul>
+<li><p>count the number of attacks by country</p></li>
+<li><p>calculate the percent of attackes by country</p></li>
+<li><p>save the results in a tibble data frame</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>attacks_by_country <span class="ot">&lt;-</span> <span class="fu">count</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  attacks, source_country) <span class="sc">%&gt;%</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent=</span><span class="fu">percent</span>(n<span class="sc">/</span><span class="fu">sum</span>(n))) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><code>count(data,vars,...,wt=NULL,sort=FALSE,name="n")</code><br>
+1.1 <code>data</code>: data frame. No need to define it if there is ‘data frame %&gt;%’ in front of it.<br>
+1.2 <code>vars</code>: column name used to be grouped.<br>
+1.3 <code>...</code>: more column names to be grouped.<br>
+1.4 <code>wt</code>: optional parameter, indicate weight.<br>
+1.5 <code>sort</code>: boolean value, define the order of counting number.<br>
+1.6 <code>name</code>: the column name of counting number, it’s called ‘n’ by default. The ‘n’ in this code chunk refer to the counting number resulted from this <code>count</code> function, not the previous one from ‘grouped’ data frame.<br>
+</li>
+</ol>
+</div>
+</div>
+<p>Step 2: Preparing the tidy data frame</p>
+<p>In this step, you are required to extract the attack records of the top 4 countries from attacks data frame and save the data in a new tibble data frame (i.e.&nbsp;top4_attacks).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>top4 <span class="ot">&lt;-</span> attacks_by_country<span class="sc">$</span>source_country[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>top4_attacks <span class="ot">&lt;-</span> attacks <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(source_country <span class="sc">%in%</span> top4) <span class="sc">%&gt;%</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(source_country,wkday,hour) <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">source_country =</span> <span class="fu">factor</span>(</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    source_country, <span class="at">levels=</span>top4)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><code>filter( %in% )</code>: <code>%in%</code> operator is used to check whether the element on the left side is in the vector on the right side.</li>
+</ol>
+</div>
+</div>
+<p>Step 3: Plotting the Multiple Calender Heatmap by using ggplot2 package.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(top4_attacks,</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(hour,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>           wkday,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill=</span>n))<span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color=</span><span class="st">"white"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">size=</span><span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_tufte</span>(<span class="at">base_family =</span> <span class="st">"Helvetica"</span>)<span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>()<span class="sc">+</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">name=</span><span class="st">"# of attacks"</span>,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                      <span class="at">low=</span><span class="st">"skyblue"</span>,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>                      <span class="at">high=</span><span class="st">"darkblue"</span>)<span class="sc">+</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>source_country, <span class="at">ncol=</span><span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="cn">NULL</span>,<span class="at">y=</span><span class="cn">NULL</span>,</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">title=</span><span class="st">"Attacks on top 4 countries by weekday and time of day"</span>)<span class="sc">+</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks=</span><span class="fu">element_blank</span>(),</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">7</span>),</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>),</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">8</span>),</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text =</span> <span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">6</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex06_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><code>facet_wrap(~source_country, ncol = 2)</code>: to create a separate plot or panel (facet) for each level of the source_country factor within the top4_attacks data frame.</p></li>
+<li><p><code>~source_country</code>: indicates that the facets should be created based on the unique values of the source_country column in the top4_attacks data frame. Each country will have its own panel in the resulting plot.</p></li>
+<li><p><code>ncol=2</code>: This parameter specifies the number of columns in the grid layout.</p></li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="plotting-cycle-plot" class="level1">
+<h1>4. Plotting Cycle Plot</h1>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">4.1 Overview</h2>
+<p>Cycle plots are a type of visualization used to explore trends and patterns over time, particularly when data exhibits <strong>seasonal or cyclical patterns</strong>.</p>
+<p>Here are several scenarios where cycle plots can be particularly useful for visualization:</p>
+<ul>
+<li><p><strong>Sales and Retail Analysis</strong>: For tracking monthly or quarterly sales data to identify seasonal trends, such as increased sales during holiday periods or summer slumps.</p></li>
+<li><p><strong>Weather and Climate Studies</strong>: To examine temperature, precipitation, or other weather variables across different seasons or years, helping to identify long-term climate trends alongside seasonal variability.</p></li>
+<li><p><strong>Energy Consumption</strong>: Analyzing daily or monthly electricity or gas usage to identify patterns of consumption that vary by season, such as higher energy use in winter for heating or in summer for air conditioning.</p></li>
+<li><p><strong>Tourism and Hospitality</strong>: Understanding seasonal trends in hotel bookings, flights, or tourist arrivals, which can be critical for planning and resource allocation.</p></li>
+<li><p><strong>Agriculture</strong>: Monitoring crop yields or pest activity across different planting seasons to assist in planning for planting, harvesting, and pest control.</p></li>
+<li><p><strong>Financial Markets</strong>: Analyzing seasonal effects in stock market returns or the performance of certain sectors, such as the retail sector’s performance during the holiday shopping season.</p></li>
+<li><p><strong>Website Traffic</strong>: Examining patterns in website visits or user engagement metrics to identify times of the year when traffic peaks or dips, which can inform content and marketing strategies.</p></li>
+<li><p><strong>Healthcare and Epidemiology</strong>: Tracking the occurrence of infectious diseases or hospital admissions to identify seasonal patterns, such as flu season peaks or variations in certain conditions related to weather or seasonal activities.</p></li>
+<li><p><strong>Transportation and Traffic Analysis</strong>: Understanding seasonal variations in traffic patterns, public transportation usage, or air travel to improve planning and infrastructure development.</p></li>
+<li><p><strong>Product Lifecycle Management</strong>: Analyzing the sales cycle of different products to understand seasonal demand patterns, which can guide inventory management and promotional activities.</p></li>
+</ul>
+</section>
+<section id="import-data" class="level2">
+<h2 class="anchored" data-anchor-id="import-data">4.2 Import data</h2>
+<p>For the purpose of this hands-on exercise, arrivals_by_air.xlsx will be used.</p>
+<p>The code chunk below imports arrivals_by_air.xlsx by using read_excel() of readxl package and save it as a tibble data frame called air.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>air <span class="ot">&lt;-</span> <span class="fu">read_excel</span>(<span class="st">"data/arrivals_by_air.xlsx"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="data-preparation-1" class="level2">
+<h2 class="anchored" data-anchor-id="data-preparation-1">4.3 Data Preparation</h2>
+<p>Step 1: Deriving month and year fields</p>
+<p>Two new fields called month and year are derived from Month-Year field.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>air<span class="sc">$</span>month <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">month</span>(air<span class="sc">$</span><span class="st">`</span><span class="at">Month-Year</span><span class="st">`</span>),</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">levels=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">labels=</span>month.abb,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ordered=</span><span class="cn">TRUE</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>air<span class="sc">$</span>year <span class="ot">&lt;-</span> <span class="fu">year</span>(<span class="fu">ymd</span>(air<span class="sc">$</span><span class="st">`</span><span class="at">Month-Year</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><code>labels</code>: to define the name of each factor./ 1.1 <code>month.abb</code>: abbreviation of month, e.g.&nbsp;c(‘Jan’,‘Feb’,‘Mar’,…)/</p></li>
+<li><p><code>ymd()</code>: intelligently recognizes many different year, month, and day formats and converts them to Date objects for R.</p></li>
+</ol>
+</div>
+</div>
+<p>Step 2: Extracting the target country</p>
+<p>the code chunk below is use to extract data for the target country (i.e.&nbsp;Vietnam)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Vietnam <span class="ot">&lt;-</span> air <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">`</span><span class="at">Vietnam</span><span class="st">`</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>         month,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>         year) <span class="sc">%&gt;%</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="dv">2010</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Step 3: Computing year average arrivals by month</p>
+<p>The code chunk below uses <code>group_by()</code> and <code>summarise()</code> of dplyr to compute year average arrivals by month.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>hline.data <span class="ot">&lt;-</span> Vietnam <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(month) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">avgvalue=</span><span class="fu">mean</span>(<span class="st">`</span><span class="at">Vietnam</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="plotting-the-cycle-plot" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-the-cycle-plot">4.4 Plotting the cycle plot</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>()<span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data=</span>Vietnam,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x=</span>year,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">y=</span><span class="st">`</span><span class="at">Vietnam</span><span class="st">`</span>,</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">group=</span>month),</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">colour=</span><span class="st">"black"</span>)<span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept=</span>avgvalue),</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">data=</span>hline.data,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>             <span class="at">linetype=</span><span class="dv">6</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour=</span><span class="st">"red"</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>             <span class="at">size=</span><span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_grid</span>(<span class="sc">~</span>month)<span class="sc">+</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Visitor arrivals from Vietnam by air, Jan 2010-Dec 2019"</span>)<span class="sc">+</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x=</span><span class="fu">element_blank</span>())<span class="sc">+</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">""</span>)<span class="sc">+</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"No. of Visitors"</span>)<span class="sc">+</span></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_tufte</span>(<span class="at">base_family =</span> <span class="st">"Helvetica"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex06_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="plotting-slopegraph" class="level1">
+<h1>5. Plotting Slopegraph</h1>
+<section id="overview-1" class="level2">
+<h2 class="anchored" data-anchor-id="overview-1">5.1 Overview</h2>
+<p>Slopegraphs are a type of visualization that <strong>display change between two points in time or between two conditions for multiple subjects or items</strong>.</p>
+<p>They are particularly useful for highlighting the magnitude of change, ranking shifts, or comparing individual trajectories.</p>
+<p>Here are several scenarios where slopegraphs can be effectively used for visualization:</p>
+<ul>
+<li><p><strong>Pre and Post Analysis</strong>: Comparing metrics before and after a specific event or intervention, such as sales figures before and after a marketing campaign, to visualize the impact.</p></li>
+<li><p><strong>Year-over-Year Performance</strong>: Tracking changes in performance metrics, such as revenue or customer satisfaction scores, across different years for multiple departments or products.</p></li>
+<li><p><strong>Educational Growth or Decline</strong>: Visualizing test scores or graduation rates across different schools or districts from one year to the next, to identify trends in educational outcomes.</p></li>
+<li><p><strong>Healthcare Trends</strong>: Comparing patient outcomes, such as recovery rates or disease incidence, before and after implementing new healthcare policies or treatments.</p></li>
+<li><p><strong>Environmental Changes</strong>: Tracking changes in environmental data, like air quality or temperature averages, between two time periods to highlight climate change or the impact of environmental policies.</p></li>
+<li><p><strong>Economic Indicators</strong>: Visualizing shifts in economic indicators like GDP, unemployment rates, or inflation between two time points for different countries or regions.</p></li>
+<li><p><strong>Technology Adoption Rates</strong>: Comparing the adoption rates of different technologies or software versions between two time points to analyze market trends.</p></li>
+<li><p><strong>Employee or Team Performance</strong>: Evaluating changes in employee productivity or team performance metrics between two evaluation periods.</p></li>
+<li><p><strong>Social Media Engagement</strong>: Tracking changes in social media metrics, such as follower count or engagement rates, before and after a campaign or event.</p></li>
+<li><p><strong>Sports Statistics</strong>: Comparing athletes’ performance stats, such as race times or points scored, across seasons or before and after a coaching change.</p></li>
+</ul>
+</section>
+<section id="import-data-1" class="level2">
+<h2 class="anchored" data-anchor-id="import-data-1">5.2 Import data</h2>
+<p>Import the rice data set into R environment by using the code chunk below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>rice <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/rice.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="plotting-the-slopegraph" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-the-slopegraph">5.3 Plotting the slopegraph</h2>
+<p>Code chunk below will be used to plot a basic slopegraph as shown below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>rice <span class="sc">%&gt;%</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Year =</span> <span class="fu">factor</span>(Year)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1961</span>,<span class="dv">1980</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">newggslopegraph</span>(Year, Yield, Country,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                  <span class="at">Title =</span> <span class="st">"Rice Yield of Top 11 Asian Countries"</span>,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                  <span class="at">SubTitle =</span> <span class="st">"1961-1980"</span>,</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">Caption =</span> <span class="st">"Prepared by: Wei Yanrui"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex06_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 

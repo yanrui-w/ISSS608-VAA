@@ -12,6 +12,8 @@ editor: visual
 
 # 1. Roadmap for studying
 
+![roadmap_6](image/roadmap_6.png)
+
 # 2. Getting Started
 
 ## 2.1 Import and load packages
@@ -160,7 +162,7 @@ Table below shows the tidy tibble table after processing.
 kable(head(attacks))
 ```
 
-## 3.5 Building the Calendar Heatmaps
+## 3.5 Building the Calendar Heatmap
 
 ```{r}
 grouped <- attacks %>%
@@ -197,9 +199,9 @@ ggplot(grouped,
 
 2.  `ungroup()`: After using `count()`, the resulting data frame is still grouped by the variables specified in `count()`. The `ungroup()` function is used to remove this grouping. While `count()` automatically ungroups the data in most cases, explicitly calling `ungroup()` can be a good practice for clarity or in preparation for subsequent operations that should not be affected by the previous grouping.
 
-3.  `na.omit()`: removes all rows from the data frame that contain NA (missing values) in any column. 
+3.  `na.omit()`: removes all rows from the data frame that contain NA (missing values) in any column.
 
-4.  `geom_tile()`:  is used to plot tiles (grids) at each x and y position. Color and size arguments are used to specify the border color and line size of the tiles.
+4.  `geom_tile()`: is used to plot tiles (grids) at each x and y position. Color and size arguments are used to specify the border color and line size of the tiles.
 
 5.  `coord_equal()`: Ensures that one unit on the x-axis is the same length as one unit on the y-axis, which can help make the plot easier to interpret, especially for spatial representations like heatmaps.
 
@@ -207,4 +209,252 @@ ggplot(grouped,
 
 7.  `labs(x=NULL,y=NULL)`: removes x and y labels
 :::
+
+## 3.6 Building Multiple Calendar Heatmaps
+
+In this sector, we will extend one calendar heatmap to multiple heatmaps for the top four countries with the highest number of attacks.
+
+Step 1: Deriving attack by country object
+
+In order to identify the top 4 countries with the highest number of attacks, you are required to do the followings:
+
+-   count the number of attacks by country
+
+-   calculate the percent of attackes by country
+
+-   save the results in a tibble data frame
+
+```{r}
+attacks_by_country <- count(
+  attacks, source_country) %>%
+  mutate(percent=percent(n/sum(n))) %>%
+  arrange(desc(n))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `count(data,vars,...,wt=NULL,sort=FALSE,name="n")`\
+    1.1 `data`: data frame. No need to define it if there is 'data frame %\>%' in front of it.\
+    1.2 `vars`: column name used to be grouped.\
+    1.3 `...`: more column names to be grouped.\
+    1.4 `wt`: optional parameter, indicate weight.\
+    1.5 `sort`: boolean value, define the order of counting number.\
+    1.6 `name`: the column name of counting number, it's called 'n' by default. The 'n' in this code chunk refer to the counting number resulted from this `count` function, not the previous one from 'grouped' data frame.\
+:::
+
+Step 2: Preparing the tidy data frame
+
+In this step, you are required to extract the attack records of the top 4 countries from attacks data frame and save the data in a new tibble data frame (i.e. top4_attacks).
+
+```{r}
+top4 <- attacks_by_country$source_country[1:4]
+
+top4_attacks <- attacks %>%
+  filter(source_country %in% top4) %>%
+  count(source_country,wkday,hour) %>%
+  ungroup() %>%
+  mutate(source_country = factor(
+    source_country, levels=top4)) %>%
+  na.omit()
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `filter( %in% )`: `%in%` operator is used to check whether the element on the left side is in the vector on the right side.
+:::
+
+Step 3: Plotting the Multiple Calender Heatmap by using ggplot2 package.
+
+```{r}
+ggplot(top4_attacks,
+       aes(hour,
+           wkday,
+           fill=n))+
+  geom_tile(color="white",
+            size=0.1)+
+  theme_tufte(base_family = "Helvetica")+
+  coord_equal()+
+  scale_fill_gradient(name="# of attacks",
+                      low="skyblue",
+                      high="darkblue")+
+  facet_wrap(~source_country, ncol=2)+
+  labs(x=NULL,y=NULL,
+       title="Attacks on top 4 countries by weekday and time of day")+
+  theme(axis.ticks=element_blank(),
+        axis.text.x = element_text(size=7),
+        plot.title = element_text(hjust=0.5),
+        legend.title = element_text(size=8),
+        legend.text = element_text(size=6))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `facet_wrap(~source_country, ncol = 2)`: to create a separate plot or panel (facet) for each level of the source_country factor within the top4_attacks data frame.
+
+2.  `~source_country`: indicates that the facets should be created based on the unique values of the source_country column in the top4_attacks data frame. Each country will have its own panel in the resulting plot.
+
+3.  `ncol=2`: This parameter specifies the number of columns in the grid layout.
+:::
+
+# 4. Plotting Cycle Plot
+
+## 4.1 Overview
+
+Cycle plots are a type of visualization used to explore trends and patterns over time, particularly when data exhibits **seasonal or cyclical patterns**.
+
+Here are several scenarios where cycle plots can be particularly useful for visualization:
+
+-   **Sales and Retail Analysis**: For tracking monthly or quarterly sales data to identify seasonal trends, such as increased sales during holiday periods or summer slumps.
+
+-   **Weather and Climate Studies**: To examine temperature, precipitation, or other weather variables across different seasons or years, helping to identify long-term climate trends alongside seasonal variability.
+
+-   **Energy Consumption**: Analyzing daily or monthly electricity or gas usage to identify patterns of consumption that vary by season, such as higher energy use in winter for heating or in summer for air conditioning.
+
+-   **Tourism and Hospitality**: Understanding seasonal trends in hotel bookings, flights, or tourist arrivals, which can be critical for planning and resource allocation.
+
+-   **Agriculture**: Monitoring crop yields or pest activity across different planting seasons to assist in planning for planting, harvesting, and pest control.
+
+-   **Financial Markets**: Analyzing seasonal effects in stock market returns or the performance of certain sectors, such as the retail sector's performance during the holiday shopping season.
+
+-   **Website Traffic**: Examining patterns in website visits or user engagement metrics to identify times of the year when traffic peaks or dips, which can inform content and marketing strategies.
+
+-   **Healthcare and Epidemiology**: Tracking the occurrence of infectious diseases or hospital admissions to identify seasonal patterns, such as flu season peaks or variations in certain conditions related to weather or seasonal activities.
+
+-   **Transportation and Traffic Analysis**: Understanding seasonal variations in traffic patterns, public transportation usage, or air travel to improve planning and infrastructure development.
+
+-   **Product Lifecycle Management**: Analyzing the sales cycle of different products to understand seasonal demand patterns, which can guide inventory management and promotional activities.
+
+## 4.2 Import data
+
+For the purpose of this hands-on exercise, arrivals_by_air.xlsx will be used.
+
+The code chunk below imports arrivals_by_air.xlsx by using read_excel() of readxl package and save it as a tibble data frame called air.
+
+```{r}
+air <- read_excel("data/arrivals_by_air.xlsx")
+```
+
+## 4.3 Data Preparation
+
+Step 1: Deriving month and year fields
+
+Two new fields called month and year are derived from Month-Year field.
+
+```{r}
+air$month <- factor(month(air$`Month-Year`),
+                    levels=1:12,
+                    labels=month.abb,
+                    ordered=TRUE)
+
+air$year <- year(ymd(air$`Month-Year`))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `labels`: to define the name of each factor./
+  1.1 `month.abb`: abbreviation of month, e.g. c('Jan','Feb','Mar',...)/
+
+2.  `ymd()`: intelligently recognizes many different year, month, and day formats and converts them to Date objects for R.
+:::
+
+Step 2: Extracting the target country
+
+the code chunk below is use to extract data for the target country (i.e. Vietnam)
+
+```{r}
+Vietnam <- air %>%
+  select(`Vietnam`,
+         month,
+         year) %>%
+  filter(year >= 2010)
+```
+
+Step 3: Computing year average arrivals by month
+
+The code chunk below uses `group_by()` and `summarise()` of dplyr to compute year average arrivals by month.
+
+```{r}
+hline.data <- Vietnam %>%
+  group_by(month) %>%
+  summarise(avgvalue=mean(`Vietnam`))
+```
+
+## 4.4 Plotting the cycle plot
+
+```{r}
+ggplot()+
+  geom_line(data=Vietnam,
+            aes(x=year,
+                y=`Vietnam`,
+                group=month),
+            colour="black")+
+  geom_hline(aes(yintercept=avgvalue),
+             data=hline.data,
+             linetype=6,
+             colour="red",
+             size=0.5)+
+  facet_grid(~month)+
+  labs(title="Visitor arrivals from Vietnam by air, Jan 2010-Dec 2019")+
+  theme(axis.text.x=element_blank())+
+  xlab("")+
+  ylab("No. of Visitors")+
+  theme_tufte(base_family = "Helvetica")
+```
+
+# 5. Plotting Slopegraph
+
+## 5.1 Overview
+
+Slopegraphs are a type of visualization that **display change between two points in time or between two conditions for multiple subjects or items**. 
+
+They are particularly useful for highlighting the magnitude of change, ranking shifts, or comparing individual trajectories. 
+
+Here are several scenarios where slopegraphs can be effectively used for visualization:
+
+- **Pre and Post Analysis**: Comparing metrics before and after a specific event or intervention, such as sales figures before and after a marketing campaign, to visualize the impact.
+
+- **Year-over-Year Performance**: Tracking changes in performance metrics, such as revenue or customer satisfaction scores, across different years for multiple departments or products.
+
+- **Educational Growth or Decline**: Visualizing test scores or graduation rates across different schools or districts from one year to the next, to identify trends in educational outcomes.
+
+- **Healthcare Trends**: Comparing patient outcomes, such as recovery rates or disease incidence, before and after implementing new healthcare policies or treatments.
+
+- **Environmental Changes**: Tracking changes in environmental data, like air quality or temperature averages, between two time periods to highlight climate change or the impact of environmental policies.
+
+- **Economic Indicators**: Visualizing shifts in economic indicators like GDP, unemployment rates, or inflation between two time points for different countries or regions.
+
+- **Technology Adoption Rates**: Comparing the adoption rates of different technologies or software versions between two time points to analyze market trends.
+
+- **Employee or Team Performance**: Evaluating changes in employee productivity or team performance metrics between two evaluation periods.
+
+- **Social Media Engagement**: Tracking changes in social media metrics, such as follower count or engagement rates, before and after a campaign or event.
+
+- **Sports Statistics**: Comparing athletes' performance stats, such as race times or points scored, across seasons or before and after a coaching change.
+
+## 5.2 Import data
+
+Import the rice data set into R environment by using the code chunk below.
+
+```{r}
+rice <- read_csv("data/rice.csv")
+```
+
+## 5.3 Plotting the slopegraph
+
+Code chunk below will be used to plot a basic slopegraph as shown below.
+
+```{r}
+rice %>%
+  mutate(Year = factor(Year)) %>%
+  filter(Year %in% c(1961,1980)) %>%
+  newggslopegraph(Year, Yield, Country,
+                  Title = "Rice Yield of Top 11 Asian Countries",
+                  SubTitle = "1961-1980",
+                  Caption = "Prepared by: Wei Yanrui")
+```
+
 
