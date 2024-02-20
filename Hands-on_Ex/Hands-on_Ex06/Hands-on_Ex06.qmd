@@ -9,3 +9,202 @@ execute:
   warning: false
 editor: visual
 ---
+
+# 1. Roadmap for studying
+
+# 2. Getting Started
+
+## 2.1 Import and load packages
+
+The following R packages will be used in this exercise:
+
+```{r}
+pacman::p_load(scales,viridis, lubridate,
+               ggthemes, gridExtra, readxl,
+               knitr, data.table,CGPfunctions,
+               ggHoriPlot, tidyverse)
+```
+
+# 3. Plotting Calendar Heatmap
+
+## 3.1 Overview of Calendar Heatmap
+
+Calendar Heatmaps are particularly useful for **highlighting the intensity or frequency of events** over a calendar period.
+
+Here are several scenarios where calendar heatmaps can be effectively used for visualization:
+
+-   **Website Traffic Analysis**: To visualize daily website visits or user activity, highlighting peak usage times or identifying days with unusually low traffic.
+
+-   **Fitness Tracking**: For displaying daily workout durations, steps taken, or calories burned, allowing users to easily see their activity patterns over time.
+
+-   **Sales Data Visualization**: To show daily sales figures for a business, making it easy to spot trends, seasonal effects, or particular days with high sales volumes.
+
+-   **Social Media Engagement**: To track daily likes, comments, or shares on social media posts, helping to identify content that performs well or times when engagement spikes.
+
+-   **Project Management and Productivity**: For tracking tasks completed, time spent on projects, or milestones reached on a daily basis, offering insights into productivity patterns.
+
+-   **Health and Medical Records**: To monitor daily health-related metrics, such as blood sugar levels, blood pressure, or symptom frequency, useful for patients and healthcare providers to identify trends or triggers.
+
+-   **Environmental Data Monitoring**: To display daily temperature, rainfall, or air quality index readings, useful for environmental analysis and understanding seasonal variations.
+
+-   **Energy Consumption Analysis**: For visualizing daily electricity, gas, or water usage, helping households or businesses to identify periods of high consumption and potential for savings.
+
+-   **Software Development**: To track daily commits, pull requests, or issues closed in a software project, highlighting productivity and collaboration patterns within a development team.
+
+-   **Customer Support**: For visualizing the number of support tickets received or resolved each day, helping to identify peak times for customer issues and evaluate support team performance.
+
+-   **Attendance and Absenteeism**: To track daily attendance records in schools or workplaces, making it easier to spot absenteeism trends and address issues promptly.
+
+-   **Financial Markets**: For tracking daily stock prices, trading volumes, or market indices, allowing investors to spot trends and make informed decisions based on historical performance.
+
+-   **Event Logging and Monitoring**: For IT infrastructure, to visualize logs or alerts generated each day, helping in identifying patterns of system behavior or potential security breaches.
+
+## 3.2 Importing the data
+
+For the purpose of this hands-on exercise, eventlog.csv file will be used. This data file consists of 199,999 rows of time-series cyber attack records by country.
+
+```{r}
+attacks <- read_csv("data/eventlog.csv")
+```
+
+## 3.3 Examining the data structure
+
+It is always a good practice to examine the imported data frame before further analysis is performed.
+
+For example, `kable()` can be used to review the structure of the imported data frame.
+
+```{r}
+kable(head(attacks))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `kable(head())` vs. `head()`\
+    1.1 `head()`: used to view the first 6 rows (excluding header lines) by default of a DataFrame or Matrix. This method is simple and direct, suitable for quickly viewing the structure and content of the data.\
+    1.2 `kable(head())`: from the `knitr` package, is a table formatting function used to create a more visually appealing table presentation. It formats the first 6 rows of the dataset (excluding header line) into a table more suitable for display in Markdown, HTML, or PDF documents. Better visual appearance, suitable for inclusion in reports and documents, offering more customization options, such as table alignment and column formatting.
+:::
+
+There are three columns, namely *timestamp*, *source_country* and *tz*.
+
+-   *timestamp* field stores date-time values in POSIXct format.
+
+-   *source_country* field stores the source of the attack. It is in ISO 3166-1 alpha-2 country code.
+
+-   *tz* field stores time zone of the source IP address.
+
+## 3.4 Data Preparation
+
+Step 1: Deriving *weekday* and *hour of day* fields
+
+Before we can plot the calender heatmap, two new fields namely *wkday* and *hour* need to be derived. In this step, we will write a function to perform the task.
+
+```{r}
+make_hr_wkday <- function(ts,sc,tz){
+  real_times <- ymd_hms(ts,
+                        tz=tz[1],
+                        quiet = TRUE)
+  dt <- data.table(source_country = sc,
+                   wkday = weekdays(real_times),
+                   hour = hour(real_times))
+  return(dt)
+}
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `make_hr_wkday <- function(ts,sc,tz){}`: is a function with three parameters: ts, sc, tz
+
+2.  `ymd_hms()`: from the `lubridate` package, is used to parse the ts vector of timestamps into POSIXct/POSIXlt objects, e.g. "2023-02-20 14:30:00"\
+    2.1 `tz[1]`: the first element of the `tz` vector, used as the time zone for all timestamps. It applies the first element (first row: "Asia/Shanghai") of the tz vector as the timezone for all timestamps in the ts vector. [The timestamps originally belongs to other timezone will be directly adjusted to the specific timezone without any transformation.]{.underline} The table will be grouped by tz later on to address this issue.\
+    2.2 `quiet=TRUE`: suppresses warning messages that might arise from any parsing issues.
+
+3.  `data.table()`: a is created with three columns: source_country, wkday, hour\
+    3.1 `weekdays()`: a base R function, will return result as the name of the weekdays, e.g. "Monday"\
+    3.2 `hour()`: from the `lubridate` package. Extract the hour of the day for each timestamp.\
+:::
+
+Step 2: Deriving the attacks tibble data frame
+
+```{r}
+wkday_levels <- c('Saturday', 'Friday', 
+                  'Thursday', 'Wednesday', 
+                  'Tuesday', 'Monday', 
+                  'Sunday')
+
+attacks <- attacks %>%
+  group_by(tz) %>%
+  do(make_hr_wkday(.$timestamp,
+                   .$source_country,
+                   .$tz)) %>%
+  ungroup() %>%
+  mutate(wkday = factor(
+    wkday, levels = wkday_levels),
+    hour = factor(
+      hour, levels = 0:23))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `do()`: is used to apply custom functions to grouped data, allowing for complex operations to be performed on each group.\
+    1.1 `.$col_name`: Instead of using `datatable$col_name`, `.$col_name` is used in pipe operations, allowing to directly reference a column of a data frame or data table as it is passed through the pipe. This approach avoids the need to repeatedly specify the name of the data frame, making the code more concise.
+
+2.  `factor(col_name,levels=)`: convert the column into factor, which is a method for handling categorical data in R. `levels` parameter is to control the levels of the factor (i.e., the order of the categories), which is very useful in data analysis and visualization.
+:::
+
+Table below shows the tidy tibble table after processing.
+
+```{r}
+kable(head(attacks))
+```
+
+## 3.5 Building the Calendar Heatmaps
+
+```{r}
+grouped <- attacks %>%
+  count(wkday, hour) %>%
+  ungroup() %>%
+  na.omit()
+
+ggplot(grouped,
+       aes(hour,
+           wkday,
+           fill=n))+
+  geom_tile(color="white",
+            size=0.1)+
+  theme_tufte(base_family = "Helvetica")+
+  coord_equal()+
+  scale_fill_gradient(name="# of attacks",
+                      low="skyblue",
+                      high="darkblue")+
+  labs(x=NULL,
+       y=NULL,
+       title="Attacks by weekday and time of day")+
+  theme(axis.ticks=element_blank(),
+        plot.title=element_text(hjust=0.5),
+        legend.title=element_text(size=8),
+        legend.text=element_text(size=6))
+
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  *grouped*: a tibble data table called *grouped* is derived by aggregating the attack by wkday and hour fields.\
+    1.1 `count()`: will return the only columns used to be grouped and counted, here refer to *wkday* and *hour*, and create a new column called *n* by default to record the number of occurence with combination of unique *wkday* and *hour*.
+
+2.  `ungroup()`: After using `count()`, the resulting data frame is still grouped by the variables specified in `count()`. The `ungroup()` function is used to remove this grouping. While `count()` automatically ungroups the data in most cases, explicitly calling `ungroup()` can be a good practice for clarity or in preparation for subsequent operations that should not be affected by the previous grouping.
+
+3.  `na.omit()`: removes all rows from the data frame that contain NA (missing values) in any column. 
+
+4.  `geom_tile()`:  is used to plot tiles (grids) at each x and y position. Color and size arguments are used to specify the border color and line size of the tiles.
+
+5.  `coord_equal()`: Ensures that one unit on the x-axis is the same length as one unit on the y-axis, which can help make the plot easier to interpret, especially for spatial representations like heatmaps.
+
+6.  `scale_fill_gradient()`: Defines a gradient scale for the fill color based on the count of attacks. `name` parameter provides a label for the legend that explains what the colors represent.
+
+7.  `labs(x=NULL,y=NULL)`: removes x and y labels
+:::
+

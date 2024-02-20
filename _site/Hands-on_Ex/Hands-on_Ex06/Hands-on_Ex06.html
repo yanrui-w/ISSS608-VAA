@@ -22,6 +22,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -170,7 +204,25 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#roadmap-for-studying" id="toc-roadmap-for-studying" class="nav-link active" data-scroll-target="#roadmap-for-studying">1. Roadmap for studying</a></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2. Getting Started</a>
+  <ul class="collapse">
+  <li><a href="#import-and-load-packages" id="toc-import-and-load-packages" class="nav-link" data-scroll-target="#import-and-load-packages">2.1 Import and load packages</a></li>
+  </ul></li>
+  <li><a href="#plotting-calendar-heatmap" id="toc-plotting-calendar-heatmap" class="nav-link" data-scroll-target="#plotting-calendar-heatmap">3. Plotting Calendar Heatmap</a>
+  <ul class="collapse">
+  <li><a href="#overview-of-calendar-heatmap" id="toc-overview-of-calendar-heatmap" class="nav-link" data-scroll-target="#overview-of-calendar-heatmap">3.1 Overview of Calendar Heatmap</a></li>
+  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">3.2 Importing the data</a></li>
+  <li><a href="#examining-the-data-structure" id="toc-examining-the-data-structure" class="nav-link" data-scroll-target="#examining-the-data-structure">3.3 Examining the data structure</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">3.4 Data Preparation</a></li>
+  <li><a href="#building-the-calendar-heatmaps" id="toc-building-the-calendar-heatmaps" class="nav-link" data-scroll-target="#building-the-calendar-heatmaps">3.5 Building the Calendar Heatmaps</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -210,8 +262,308 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="roadmap-for-studying" class="level1">
+<h1>1. Roadmap for studying</h1>
+</section>
+<section id="getting-started" class="level1">
+<h1>2. Getting Started</h1>
+<section id="import-and-load-packages" class="level2">
+<h2 class="anchored" data-anchor-id="import-and-load-packages">2.1 Import and load packages</h2>
+<p>The following R packages will be used in this exercise:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(scales,viridis, lubridate,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>               ggthemes, gridExtra, readxl,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>               knitr, data.table,CGPfunctions,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>               ggHoriPlot, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="plotting-calendar-heatmap" class="level1">
+<h1>3. Plotting Calendar Heatmap</h1>
+<section id="overview-of-calendar-heatmap" class="level2">
+<h2 class="anchored" data-anchor-id="overview-of-calendar-heatmap">3.1 Overview of Calendar Heatmap</h2>
+<p>Calendar Heatmaps are particularly useful for <strong>highlighting the intensity or frequency of events</strong> over a calendar period.</p>
+<p>Here are several scenarios where calendar heatmaps can be effectively used for visualization:</p>
+<ul>
+<li><p><strong>Website Traffic Analysis</strong>: To visualize daily website visits or user activity, highlighting peak usage times or identifying days with unusually low traffic.</p></li>
+<li><p><strong>Fitness Tracking</strong>: For displaying daily workout durations, steps taken, or calories burned, allowing users to easily see their activity patterns over time.</p></li>
+<li><p><strong>Sales Data Visualization</strong>: To show daily sales figures for a business, making it easy to spot trends, seasonal effects, or particular days with high sales volumes.</p></li>
+<li><p><strong>Social Media Engagement</strong>: To track daily likes, comments, or shares on social media posts, helping to identify content that performs well or times when engagement spikes.</p></li>
+<li><p><strong>Project Management and Productivity</strong>: For tracking tasks completed, time spent on projects, or milestones reached on a daily basis, offering insights into productivity patterns.</p></li>
+<li><p><strong>Health and Medical Records</strong>: To monitor daily health-related metrics, such as blood sugar levels, blood pressure, or symptom frequency, useful for patients and healthcare providers to identify trends or triggers.</p></li>
+<li><p><strong>Environmental Data Monitoring</strong>: To display daily temperature, rainfall, or air quality index readings, useful for environmental analysis and understanding seasonal variations.</p></li>
+<li><p><strong>Energy Consumption Analysis</strong>: For visualizing daily electricity, gas, or water usage, helping households or businesses to identify periods of high consumption and potential for savings.</p></li>
+<li><p><strong>Software Development</strong>: To track daily commits, pull requests, or issues closed in a software project, highlighting productivity and collaboration patterns within a development team.</p></li>
+<li><p><strong>Customer Support</strong>: For visualizing the number of support tickets received or resolved each day, helping to identify peak times for customer issues and evaluate support team performance.</p></li>
+<li><p><strong>Attendance and Absenteeism</strong>: To track daily attendance records in schools or workplaces, making it easier to spot absenteeism trends and address issues promptly.</p></li>
+<li><p><strong>Financial Markets</strong>: For tracking daily stock prices, trading volumes, or market indices, allowing investors to spot trends and make informed decisions based on historical performance.</p></li>
+<li><p><strong>Event Logging and Monitoring</strong>: For IT infrastructure, to visualize logs or alerts generated each day, helping in identifying patterns of system behavior or potential security breaches.</p></li>
+</ul>
+</section>
+<section id="importing-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="importing-the-data">3.2 Importing the data</h2>
+<p>For the purpose of this hands-on exercise, eventlog.csv file will be used. This data file consists of 199,999 rows of time-series cyber attack records by country.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>attacks <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/eventlog.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="examining-the-data-structure" class="level2">
+<h2 class="anchored" data-anchor-id="examining-the-data-structure">3.3 Examining the data structure</h2>
+<p>It is always a good practice to examine the imported data frame before further analysis is performed.</p>
+<p>For example, <code>kable()</code> can be used to review the structure of the imported data frame.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(attacks))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">timestamp</th>
+<th style="text-align: left;">source_country</th>
+<th style="text-align: left;">tz</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2015-03-12 15:59:16</td>
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Asia/Shanghai</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2015-03-12 16:00:48</td>
+<td style="text-align: left;">FR</td>
+<td style="text-align: left;">Europe/Paris</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2015-03-12 16:02:26</td>
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Asia/Shanghai</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2015-03-12 16:02:38</td>
+<td style="text-align: left;">US</td>
+<td style="text-align: left;">America/Chicago</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2015-03-12 16:03:22</td>
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Asia/Shanghai</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2015-03-12 16:03:45</td>
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Asia/Shanghai</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><code>kable(head())</code> vs.&nbsp;<code>head()</code><br>
+1.1 <code>head()</code>: used to view the first 6 rows (excluding header lines) by default of a DataFrame or Matrix. This method is simple and direct, suitable for quickly viewing the structure and content of the data.<br>
+1.2 <code>kable(head())</code>: from the <code>knitr</code> package, is a table formatting function used to create a more visually appealing table presentation. It formats the first 6 rows of the dataset (excluding header line) into a table more suitable for display in Markdown, HTML, or PDF documents. Better visual appearance, suitable for inclusion in reports and documents, offering more customization options, such as table alignment and column formatting.</li>
+</ol>
+</div>
+</div>
+<p>There are three columns, namely <em>timestamp</em>, <em>source_country</em> and <em>tz</em>.</p>
+<ul>
+<li><p><em>timestamp</em> field stores date-time values in POSIXct format.</p></li>
+<li><p><em>source_country</em> field stores the source of the attack. It is in ISO 3166-1 alpha-2 country code.</p></li>
+<li><p><em>tz</em> field stores time zone of the source IP address.</p></li>
+</ul>
+</section>
+<section id="data-preparation" class="level2">
+<h2 class="anchored" data-anchor-id="data-preparation">3.4 Data Preparation</h2>
+<p>Step 1: Deriving <em>weekday</em> and <em>hour of day</em> fields</p>
+<p>Before we can plot the calender heatmap, two new fields namely <em>wkday</em> and <em>hour</em> need to be derived. In this step, we will write a function to perform the task.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>make_hr_wkday <span class="ot">&lt;-</span> <span class="cf">function</span>(ts,sc,tz){</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  real_times <span class="ot">&lt;-</span> <span class="fu">ymd_hms</span>(ts,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                        <span class="at">tz=</span>tz[<span class="dv">1</span>],</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                        <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  dt <span class="ot">&lt;-</span> <span class="fu">data.table</span>(<span class="at">source_country =</span> sc,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">wkday =</span> <span class="fu">weekdays</span>(real_times),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">hour =</span> <span class="fu">hour</span>(real_times))</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(dt)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><code>make_hr_wkday &lt;- function(ts,sc,tz){}</code>: is a function with three parameters: ts, sc, tz</p></li>
+<li><p><code>ymd_hms()</code>: from the <code>lubridate</code> package, is used to parse the ts vector of timestamps into POSIXct/POSIXlt objects, e.g.&nbsp;“2023-02-20 14:30:00”<br>
+2.1 <code>tz[1]</code>: the first element of the <code>tz</code> vector, used as the time zone for all timestamps. It applies the first element (first row: “Asia/Shanghai”) of the tz vector as the timezone for all timestamps in the ts vector. <u>The timestamps originally belongs to other timezone will be directly adjusted to the specific timezone without any transformation.</u> The table will be grouped by tz later on to address this issue.<br>
+2.2 <code>quiet=TRUE</code>: suppresses warning messages that might arise from any parsing issues.</p></li>
+<li><p><code>data.table()</code>: a is created with three columns: source_country, wkday, hour<br>
+3.1 <code>weekdays()</code>: a base R function, will return result as the name of the weekdays, e.g.&nbsp;“Monday”<br>
+3.2 <code>hour()</code>: from the <code>lubridate</code> package. Extract the hour of the day for each timestamp.<br>
+</p></li>
+</ol>
+</div>
+</div>
+<p>Step 2: Deriving the attacks tibble data frame</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>wkday_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">'Saturday'</span>, <span class="st">'Friday'</span>, </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'Thursday'</span>, <span class="st">'Wednesday'</span>, </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'Tuesday'</span>, <span class="st">'Monday'</span>, </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                  <span class="st">'Sunday'</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>attacks <span class="ot">&lt;-</span> attacks <span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(tz) <span class="sc">%&gt;%</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">do</span>(<span class="fu">make_hr_wkday</span>(.<span class="sc">$</span>timestamp,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>                   .<span class="sc">$</span>source_country,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>                   .<span class="sc">$</span>tz)) <span class="sc">%&gt;%</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">wkday =</span> <span class="fu">factor</span>(</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    wkday, <span class="at">levels =</span> wkday_levels),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">hour =</span> <span class="fu">factor</span>(</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>      hour, <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">23</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><code>do()</code>: is used to apply custom functions to grouped data, allowing for complex operations to be performed on each group.<br>
+1.1 <code>.$col_name</code>: Instead of using <code>datatable$col_name</code>, <code>.$col_name</code> is used in pipe operations, allowing to directly reference a column of a data frame or data table as it is passed through the pipe. This approach avoids the need to repeatedly specify the name of the data frame, making the code more concise.</p></li>
+<li><p><code>factor(col_name,levels=)</code>: convert the column into factor, which is a method for handling categorical data in R. <code>levels</code> parameter is to control the levels of the factor (i.e., the order of the categories), which is very useful in data analysis and visualization.</p></li>
+</ol>
+</div>
+</div>
+<p>Table below shows the tidy tibble table after processing.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(<span class="fu">head</span>(attacks))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">tz</th>
+<th style="text-align: left;">source_country</th>
+<th style="text-align: left;">wkday</th>
+<th style="text-align: left;">hour</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">BG</td>
+<td style="text-align: left;">Saturday</td>
+<td style="text-align: left;">20</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">TW</td>
+<td style="text-align: left;">Sunday</td>
+<td style="text-align: left;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">TW</td>
+<td style="text-align: left;">Sunday</td>
+<td style="text-align: left;">8</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">CN</td>
+<td style="text-align: left;">Sunday</td>
+<td style="text-align: left;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">US</td>
+<td style="text-align: left;">Sunday</td>
+<td style="text-align: left;">15</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Africa/Cairo</td>
+<td style="text-align: left;">CA</td>
+<td style="text-align: left;">Monday</td>
+<td style="text-align: left;">11</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="building-the-calendar-heatmaps" class="level2">
+<h2 class="anchored" data-anchor-id="building-the-calendar-heatmaps">3.5 Building the Calendar Heatmaps</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>grouped <span class="ot">&lt;-</span> attacks <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(wkday, hour) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">na.omit</span>()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(grouped,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(hour,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>           wkday,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill=</span>n))<span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">color=</span><span class="st">"white"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">size=</span><span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_tufte</span>(<span class="at">base_family =</span> <span class="st">"Helvetica"</span>)<span class="sc">+</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>()<span class="sc">+</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">name=</span><span class="st">"# of attacks"</span>,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                      <span class="at">low=</span><span class="st">"skyblue"</span>,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                      <span class="at">high=</span><span class="st">"darkblue"</span>)<span class="sc">+</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="cn">NULL</span>,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span><span class="cn">NULL</span>,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">title=</span><span class="st">"Attacks by weekday and time of day"</span>)<span class="sc">+</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.ticks=</span><span class="fu">element_blank</span>(),</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title=</span><span class="fu">element_text</span>(<span class="at">hjust=</span><span class="fl">0.5</span>),</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">8</span>),</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.text=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">6</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex06_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><em>grouped</em>: a tibble data table called <em>grouped</em> is derived by aggregating the attack by wkday and hour fields.<br>
+1.1 <code>count()</code>: will return the only columns used to be grouped and counted, here refer to <em>wkday</em> and <em>hour</em>, and create a new column called <em>n</em> by default to record the number of occurence with combination of unique <em>wkday</em> and <em>hour</em>.</p></li>
+<li><p><code>ungroup()</code>: After using <code>count()</code>, the resulting data frame is still grouped by the variables specified in <code>count()</code>. The <code>ungroup()</code> function is used to remove this grouping. While <code>count()</code> automatically ungroups the data in most cases, explicitly calling <code>ungroup()</code> can be a good practice for clarity or in preparation for subsequent operations that should not be affected by the previous grouping.</p></li>
+<li><p><code>na.omit()</code>: removes all rows from the data frame that contain NA (missing values) in any column.</p></li>
+<li><p><code>geom_tile()</code>: is used to plot tiles (grids) at each x and y position. Color and size arguments are used to specify the border color and line size of the tiles.</p></li>
+<li><p><code>coord_equal()</code>: Ensures that one unit on the x-axis is the same length as one unit on the y-axis, which can help make the plot easier to interpret, especially for spatial representations like heatmaps.</p></li>
+<li><p><code>scale_fill_gradient()</code>: Defines a gradient scale for the fill color based on the count of attacks. <code>name</code> parameter provides a label for the legend that explains what the colors represent.</p></li>
+<li><p><code>labs(x=NULL,y=NULL)</code>: removes x and y labels</p></li>
+</ol>
+</div>
+</div>
 
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
