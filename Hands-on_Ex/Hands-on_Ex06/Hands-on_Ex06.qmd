@@ -1,12 +1,14 @@
 ---
 title: "Hands-on Exercise 6: Visualising and Analysing Time-Oriented Data"
-author: Wei Yanrui
+author: "Wei Yanrui"
 date: "February 20, 2024"
 date-modified: "last-modified"
 execute: 
   eval: true
   echo: true
+  freeze: true
   warning: false
+  message: false
 editor: visual
 ---
 
@@ -355,8 +357,7 @@ air$year <- year(ymd(air$`Month-Year`))
 ::: {.callout-note icon="false"}
 ## Code Notes
 
-1.  `labels`: to define the name of each factor./
-  1.1 `month.abb`: abbreviation of month, e.g. c('Jan','Feb','Mar',...)/
+1.  `labels`: to define the name of each factor./ 1.1 `month.abb`: abbreviation of month, e.g. c('Jan','Feb','Mar',...)/
 
 2.  `ymd()`: intelligently recognizes many different year, month, and day formats and converts them to Date objects for R.
 :::
@@ -409,31 +410,31 @@ ggplot()+
 
 ## 5.1 Overview
 
-Slopegraphs are a type of visualization that **display change between two points in time or between two conditions for multiple subjects or items**. 
+Slopegraphs are a type of visualization that **display change between two points in time or between two conditions for multiple subjects or items**.
 
-They are particularly useful for highlighting the magnitude of change, ranking shifts, or comparing individual trajectories. 
+They are particularly useful for highlighting the magnitude of change, ranking shifts, or comparing individual trajectories.
 
 Here are several scenarios where slopegraphs can be effectively used for visualization:
 
-- **Pre and Post Analysis**: Comparing metrics before and after a specific event or intervention, such as sales figures before and after a marketing campaign, to visualize the impact.
+-   **Pre and Post Analysis**: Comparing metrics before and after a specific event or intervention, such as sales figures before and after a marketing campaign, to visualize the impact.
 
-- **Year-over-Year Performance**: Tracking changes in performance metrics, such as revenue or customer satisfaction scores, across different years for multiple departments or products.
+-   **Year-over-Year Performance**: Tracking changes in performance metrics, such as revenue or customer satisfaction scores, across different years for multiple departments or products.
 
-- **Educational Growth or Decline**: Visualizing test scores or graduation rates across different schools or districts from one year to the next, to identify trends in educational outcomes.
+-   **Educational Growth or Decline**: Visualizing test scores or graduation rates across different schools or districts from one year to the next, to identify trends in educational outcomes.
 
-- **Healthcare Trends**: Comparing patient outcomes, such as recovery rates or disease incidence, before and after implementing new healthcare policies or treatments.
+-   **Healthcare Trends**: Comparing patient outcomes, such as recovery rates or disease incidence, before and after implementing new healthcare policies or treatments.
 
-- **Environmental Changes**: Tracking changes in environmental data, like air quality or temperature averages, between two time periods to highlight climate change or the impact of environmental policies.
+-   **Environmental Changes**: Tracking changes in environmental data, like air quality or temperature averages, between two time periods to highlight climate change or the impact of environmental policies.
 
-- **Economic Indicators**: Visualizing shifts in economic indicators like GDP, unemployment rates, or inflation between two time points for different countries or regions.
+-   **Economic Indicators**: Visualizing shifts in economic indicators like GDP, unemployment rates, or inflation between two time points for different countries or regions.
 
-- **Technology Adoption Rates**: Comparing the adoption rates of different technologies or software versions between two time points to analyze market trends.
+-   **Technology Adoption Rates**: Comparing the adoption rates of different technologies or software versions between two time points to analyze market trends.
 
-- **Employee or Team Performance**: Evaluating changes in employee productivity or team performance metrics between two evaluation periods.
+-   **Employee or Team Performance**: Evaluating changes in employee productivity or team performance metrics between two evaluation periods.
 
-- **Social Media Engagement**: Tracking changes in social media metrics, such as follower count or engagement rates, before and after a campaign or event.
+-   **Social Media Engagement**: Tracking changes in social media metrics, such as follower count or engagement rates, before and after a campaign or event.
 
-- **Sports Statistics**: Comparing athletes' performance stats, such as race times or points scored, across seasons or before and after a coaching change.
+-   **Sports Statistics**: Comparing athletes' performance stats, such as race times or points scored, across seasons or before and after a coaching change.
 
 ## 5.2 Import data
 
@@ -456,5 +457,3 @@ rice %>%
                   SubTitle = "1961-1980",
                   Caption = "Prepared by: Wei Yanrui")
 ```
-
-

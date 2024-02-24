@@ -1,0 +1,16 @@
+{
+  "hash": "0c2ded76ff38e5b4c7e0af90e3469a70",
+  "result": {
+    "markdown": "---\ntitle: \"Horizon Plot\"\nauthor: \"Wei Yanrui\"\ndate: \"February 24,2024\"\ndate-modified: \"last-modified\"\nexecute: \n  eval: true\n  echo: true\n  freeze: true\n  warning: false\n  message: false\n---\n\n\nInstall packages\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(ggHoriPlot, ggthemes,\n               tidyverse)\n```\n:::\n\n\nImport data\n\n::: {.cell}\n\n```{.r .cell-code}\naverp <- read_csv(\"data/AVERP.csv\")\n```\n:::\n\n\n*Date* is treated as character type, need to change to date type\n\n::: {.cell}\n\n```{.r .cell-code}\naverp<- averp %>%\n  mutate(`Date` = dmy(`Date`))\n```\n:::\n\n\nPlot\n\n::: {.cell}\n\n```{.r .cell-code}\naverp %>% \n  filter(Date >= \"2018-01-01\") %>%\n  ggplot() +\n  geom_horizon(aes(x = Date, y=Values), \n               origin = \"midpoint\", \n               horizonscale = 6)+\n  facet_grid(`Consumer Items`~.) +\n    theme_few() +\n  scale_fill_hcl(palette = 'RdBu') +# diverging color is used to show positive and negative difference\n  theme(panel.spacing.y=unit(0, \"lines\"), strip.text.y = element_text(\n    size = 5, angle = 0, hjust = 0),\n    legend.position = 'none',\n    axis.text.y = element_blank(),\n    axis.text.x = element_text(size=7),\n    axis.title.y = element_blank(),\n    axis.title.x = element_blank(),\n    axis.ticks.y = element_blank(),\n    panel.border = element_blank()\n    ) +\n    scale_x_date(expand=c(0,0), date_breaks = \"3 month\", date_labels = \"%b%y\") +\n  ggtitle('Average Retail Prices of Selected Consumer Items (Jan 2018 to Dec 2022)')\n```\n\n::: {.cell-output-display}\n![](In-Class_Ex06_files/figure-html/unnamed-chunk-4-1.png){width=1152}\n:::\n:::",
+    "supporting": [
+      "In-Class_Ex06_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
