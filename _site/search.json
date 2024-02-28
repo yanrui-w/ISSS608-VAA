@@ -572,5 +572,47 @@
     "title": "Horizon Plot",
     "section": "",
     "text": "Install packages\n\npacman::p_load(ggHoriPlot, ggthemes,\n               tidyverse)\n\nImport data\n\naverp &lt;- read_csv(\"data/AVERP.csv\")\n\nDate is treated as character type, need to change to date type\n\naverp&lt;- averp %&gt;%\n  mutate(`Date` = dmy(`Date`))\n\nPlot\n\naverp %&gt;% \n  filter(Date &gt;= \"2018-01-01\") %&gt;%\n  ggplot() +\n  geom_horizon(aes(x = Date, y=Values), \n               origin = \"midpoint\", \n               horizonscale = 6)+\n  facet_grid(`Consumer Items`~.) +\n    theme_few() +\n  scale_fill_hcl(palette = 'RdBu') +# diverging color is used to show positive and negative difference\n  theme(panel.spacing.y=unit(0, \"lines\"), strip.text.y = element_text(\n    size = 5, angle = 0, hjust = 0),\n    legend.position = 'none',\n    axis.text.y = element_blank(),\n    axis.text.x = element_text(size=7),\n    axis.title.y = element_blank(),\n    axis.title.x = element_blank(),\n    axis.ticks.y = element_blank(),\n    panel.border = element_blank()\n    ) +\n    scale_x_date(expand=c(0,0), date_breaks = \"3 month\", date_labels = \"%b%y\") +\n  ggtitle('Average Retail Prices of Selected Consumer Items (Jan 2018 to Dec 2022)')"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#overview",
+    "href": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#overview",
+    "title": "Hands-on Exercise 7: Visualising and Analysing Geographic Data",
+    "section": "2.1 Overview",
+    "text": "2.1 Overview\nWhat is Choropleth Maps?\n\na type of map that uses colors to represent the magnitude of specific data values within certain areas, such as population density, income levels, or any other statistical data.\n\nWhy use Choropleth Maps?\n\nVisual representation: shows the differences in data between geographical areas, allowing one to see at a glance where values are high or low.\nEasy to understand.\nWide application: climate change, economic development, happy index, social issues, and other different fields.\n\nHow does it work?\n\nEach area is filled with a color corresponding to its data value. Higher data values are usually represented by darker colors, while lower data values are represented by lighter colors."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#getting-started",
+    "href": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#getting-started",
+    "title": "Hands-on Exercise 7: Visualising and Analysing Geographic Data",
+    "section": "2.2 Getting Started",
+    "text": "2.2 Getting Started\nIn this hands-on exercise, the key R package use is tmap package in R. Beside tmap package, four other R packages will be used. They are:\n\nreadr for importing delimited text file,\ntidyr for tidying data,\ndplyr for wrangling data and\nsf for handling geospatial data.\n\nTo install and load these packages:\n\npacman::p_load(tidyverse, sf, tmap)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#importing-data",
+    "href": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#importing-data",
+    "title": "Hands-on Exercise 7: Visualising and Analysing Geographic Data",
+    "section": "2.3 Importing Data",
+    "text": "2.3 Importing Data\n\n2.3.1 The Data\nTwo data set will be used to create the choropleth map. They are:\n\nMaster Plan 2014 Subzone Boundary (Web) (i.e. MP14_SUBZONE_WEB_PL) in ESRI shapefile format. It can be downloaded at data.gov.sg This is a geospatial data. It consists of the geographical boundary of Singapore at the planning subzone level. The data is based on URA Master Plan 2014.\nSingapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e. respopagesextod2011to2020.csv). This is an aspatial data fie. It can be downloaded at Department of Statistics, Singapore. Although it does not contain any coordinates values, but it’s PA and SZ fields can be used as unique identifiers to geocode to MP14_SUBZONE_WEB_PL shapefile.\n\n\n\n2.3.2 Importing Geospatial Data into R\nThe code chunk below uses the st_read() function of sf package to import MP14_SUBZONE_WEB_PL shapefile into R as a simple feature data frame called mpsz.\nSimple Feature Data Frame\n\na data structure used for storing and manipulating spatial data.\na standard for describing the geometries of spatial data, such as points (locations), lines (paths), polygons (areas), etc.\nallows data scientists and geographic information specialists to process and analyze geospatial data in a consistent manner across various GIS software and programming environments.\nBeyond the regular data columns (such as numeric, character, and logical values), a simple feature data frame includes at least one special column (known as the geometry column) that stores the spatial geometry data for each observation which enables the simple feature data frame to directly visualize and analyze spatial data within R, without the dependency on external GIS software.\n\n\nmpsz &lt;- st_read(dsn=\"data/geospatial\",\n                layer = \"MP14_SUBZONE_WEB_PL\")\n\nReading layer `MP14_SUBZONE_WEB_PL' from data source \n  `D:\\yanrui-w\\ISSS608-VAA\\Hands-on_Ex\\Hands-on_Ex07\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 323 features and 15 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 2667.538 ymin: 15748.72 xmax: 56396.44 ymax: 50256.33\nProjected CRS: SVY21\n\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\ndsn: the data source name or directory where the geospatial files are located.\nlayer: the specific layer within the shapefile\nshapefile: a popular geospatial vector data format that typically comprises several different files, which together define the attributes and geometric information of a map.\n3.1 .shp: the main file that contains the geospatial geometry data.\n3.2 .shx: the index file, which allows GIS programs to quickly find the geometries of the data.\n3.3 .dbf: the attribute file that contains attribute data associated with each shape, stored in the dBASE format.\n3.4 .prf: the projection file, which describes the coordinate system and projection information used by the geospatial data.\n\n\n\n\n\n2.3.3 Importing Attribute Data into R\n\n\n2.3.4 Data Preparation"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#section",
+    "href": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#section",
+    "title": "Hands-on Exercise 7: Visualising and Analysing Geographic Data",
+    "section": "2.4",
+    "text": "2.4"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#section-1",
+    "href": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#section-1",
+    "title": "Hands-on Exercise 7: Visualising and Analysing Geographic Data",
+    "section": "2.5",
+    "text": "2.5"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#section-2",
+    "href": "Hands-on_Ex/Hands-on_Ex07/Hands-on_Ex07.html#section-2",
+    "title": "Hands-on Exercise 7: Visualising and Analysing Geographic Data",
+    "section": "2.6",
+    "text": "2.6"
   }
 ]

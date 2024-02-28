@@ -11,3 +11,97 @@ execute:
   message: false
 editor: visual
 ---
+
+# 1. Roadmap for studying
+
+# 2. Visualzing: Choropleth Maps
+
+## 2.1 Overview
+
+**What is Choropleth Maps?**
+
+-   a type of map that uses colors to represent the magnitude of specific data values within certain areas, such as population density, income levels, or any other statistical data.
+
+**Why use Choropleth Maps?**
+
+-   Visual representation: shows the differences in data between geographical areas, allowing one to see at a glance where values are high or low.
+
+-   Easy to understand.
+
+-   Wide application: climate change, economic development, happy index, social issues, and other different fields.
+
+**How does it work?**
+
+-   Each area is filled with a color corresponding to its data value. Higher data values are usually represented by darker colors, while lower data values are represented by lighter colors.
+
+## 2.2 Getting Started
+
+In this hands-on exercise, the key R package use is [tmap](https://cran.r-project.org/web/packages/tmap/) package in R. Beside tmap package, four other R packages will be used. They are:
+
+-   readr for importing delimited text file,
+-   tidyr for tidying data,
+-   dplyr for wrangling data and
+-   [sf](https://cran.r-project.org/web/packages/sf/) for handling geospatial data.
+
+To install and load these packages:
+
+```{r}
+pacman::p_load(tidyverse, sf, tmap)
+```
+
+## 2.3 Importing Data
+
+### 2.3.1 The Data
+
+Two data set will be used to create the choropleth map. They are:
+
+-   Master Plan 2014 Subzone Boundary (Web) (i.e. `MP14_SUBZONE_WEB_PL`) in ESRI shapefile format. It can be downloaded at [data.gov.sg](https://beta.data.gov.sg/) This is a geospatial data. It consists of the geographical boundary of Singapore at the planning subzone level. The data is based on URA Master Plan 2014.
+
+-   Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020 in csv format (i.e. `respopagesextod2011to2020.csv`). This is an aspatial data fie. It can be downloaded at [Department of Statistics, Singapore](https://www.singstat.gov.sg/). Although it does not contain any coordinates values, but it’s PA and SZ fields can be used as unique identifiers to geocode to `MP14_SUBZONE_WEB_PL` shapefile.
+
+### 2.3.2 Importing Geospatial Data into R
+
+The code chunk below uses the *st_read()* function of `sf` package to import `MP14_SUBZONE_WEB_PL` shapefile into R as a simple feature data frame called `mpsz`.
+
+**Simple Feature Data Frame**
+
+-   a data structure used for storing and manipulating spatial data.
+
+-   a standard for describing the geometries of spatial data, such as points (locations), lines (paths), polygons (areas), etc.
+
+-   allows data scientists and geographic information specialists to process and analyze geospatial data in a consistent manner across various GIS software and programming environments.
+
+-   Beyond the regular data columns (such as numeric, character, and logical values), a simple feature data frame includes at least one special column (known as the geometry column) that stores the spatial geometry data for each observation which enables the simple feature data frame to directly visualize and analyze spatial data within R, without the dependency on external GIS software.
+
+```{r}
+mpsz <- st_read(dsn="data/geospatial",
+                layer = "MP14_SUBZONE_WEB_PL")
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `dsn`: the data source name or directory where the geospatial files are located.
+
+2.  `layer`: the specific layer within the shapefile
+
+3.  **shapefile**: a popular geospatial vector data format that typically comprises several different files, which together define the attributes and geometric information of a map.\
+    3.1 **.shp**: the main file that contains the geospatial geometry data.\
+    3.2 **.shx**: the index file, which allows GIS programs to quickly find the geometries of the data.\
+    3.3 **.dbf**: the attribute file that contains attribute data associated with each shape, stored in the dBASE format.\
+    3.4 **.prf**: the projection file, which describes the coordinate system and projection information used by the geospatial data.
+:::
+
+### 2.3.3 Importing Attribute Data into R
+
+### 2.3.4 Data Preparation
+
+## 2.4
+
+## 2.5
+
+## 2.6
+
+# 3. Visualzing: Geospatial Point Data
+
+# 4. Analyzing: Analytical Mapping
