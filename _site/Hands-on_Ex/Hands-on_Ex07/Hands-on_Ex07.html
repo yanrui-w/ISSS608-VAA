@@ -228,9 +228,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#importing-attribute-data-into-r" id="toc-importing-attribute-data-into-r" class="nav-link" data-scroll-target="#importing-attribute-data-into-r">2.3.3 Importing Attribute Data into R</a></li>
   <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">2.3.4 Data Preparation</a></li>
   </ul></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">2.4</a></li>
-  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1">2.5</a></li>
-  <li><a href="#section-2" id="toc-section-2" class="nav-link" data-scroll-target="#section-2">2.6</a></li>
+  <li><a href="#plotting-choropleth-maps-with-tmap" id="toc-plotting-choropleth-maps-with-tmap" class="nav-link" data-scroll-target="#plotting-choropleth-maps-with-tmap">2.4 Plotting Choropleth Maps with <em>tmap</em></a>
+  <ul class="collapse">
+  <li><a href="#plotting-a-choropleth-map-quickly-by-using-qtm" id="toc-plotting-a-choropleth-map-quickly-by-using-qtm" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-quickly-by-using-qtm">2.4.1 Plotting a choropleth map quickly by using <em>qtm()</em></a></li>
+  <li><a href="#plotting-a-choropleth-map-by-using-tmaps-elements" id="toc-plotting-a-choropleth-map-by-using-tmaps-elements" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-by-using-tmaps-elements">2.4.2 Plotting a choropleth map by using <em>tmap’s elements</em></a></li>
+  <li><a href="#data-classification-methods-of-tmap" id="toc-data-classification-methods-of-tmap" class="nav-link" data-scroll-target="#data-classification-methods-of-tmap">2.4.3 Data classification methods of tmap</a></li>
+  <li><a href="#plotting-a-choropleth-map" id="toc-plotting-a-choropleth-map" class="nav-link" data-scroll-target="#plotting-a-choropleth-map">2.4.4 Plotting a choropleth map</a></li>
+  <li><a href="#plotting-a-choropleth-map-1" id="toc-plotting-a-choropleth-map-1" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-1">2.4.5 Plotting a choropleth map</a></li>
+  <li><a href="#plotting-a-choropleth-map-2" id="toc-plotting-a-choropleth-map-2" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-2">2.4.6 Plotting a choropleth map</a></li>
+  <li><a href="#plotting-a-choropleth-map-3" id="toc-plotting-a-choropleth-map-3" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-3">2.4.7 Plotting a choropleth map</a></li>
+  </ul></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">2.5</a></li>
+  <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1">2.6</a></li>
   </ul></li>
   <li><a href="#visualzing-geospatial-point-data" id="toc-visualzing-geospatial-point-data" class="nav-link" data-scroll-target="#visualzing-geospatial-point-data">3. Visualzing: Geospatial Point Data</a></li>
   <li><a href="#analyzing-analytical-mapping" id="toc-analyzing-analytical-mapping" class="nav-link" data-scroll-target="#analyzing-analytical-mapping">4. Analyzing: Analytical Mapping</a></li>
@@ -456,17 +465,175 @@ First 10 features:
 </section>
 <section id="joining-the-attribute-data-and-geospatial-data" class="level4">
 <h4 class="anchored" data-anchor-id="joining-the-attribute-data-and-geospatial-data">2.3.4.2 Joining the attribute data and geospatial data</h4>
+<p>Before we can perform the georelational join, one extra step is required to convert the values in PA and SZ fields to uppercase. This is because the values of <em>SUBZONE_N</em> and <em>PLN_AREA_N</em> are in uppercase. We need to convert the ones of <em>PA</em> and <em>SZ</em> to uppercase as well so that they can be matched with <em>SUBZONE_N</em> and <em>PLN_AREA_N</em>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>popdata2020 <span class="ot">&lt;-</span> popdata2020 <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate_at</span>(<span class="at">.vars =</span> <span class="fu">vars</span>(PA,SZ),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">.funs =</span> <span class="fu">funs</span>(toupper)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">ECONOMY ACTIVE</span><span class="st">`</span> <span class="sc">&gt;</span> <span class="dv">0</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p>why <code>mutate_at()</code>, not <code>mutate()</code>: <code>mutate_at()</code> provides a more convenient way to apply the same operation or conversion to multiple columns.</p></li>
+<li><p><code>.vars=vars()</code>: <code>.vars</code> indicates which columns to be selected (could be vector of column name, vector of column index). <code>vars()</code> is a select helper enables you to choose multiple columns.</p></li>
+<li><p><code>.funs=funs(toupper)</code>: <code>.funs</code> indicates what function to be used to selected columns. <code>funs(toupper)</code> is the function to capitalize all characters.</p></li>
+<li><p><code>filter(</code>ECONOMY ACTIVE<code>&gt; 0)</code>: to remove the rows where <code>DEPENDENCY</code> is NaN.</p></li>
+</ol>
+</div>
+</div>
+<p>Next, <em>left_join()</em> of <strong>dplyr</strong> is used to join the geographical data and attribute table using planning subzone name e.g.&nbsp;<em>SUBZONE_N</em> and <em>SZ</em> as the common identifier.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mpsz_pop2020 <span class="ot">&lt;-</span> <span class="fu">left_join</span>(mpsz,popdata2020,</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>                          <span class="at">by=</span><span class="fu">c</span>(<span class="st">"SUBZONE_N"</span><span class="ot">=</span><span class="st">"SZ"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><code>left_join()</code>: is used with <code>mpsz</code> simple feature data frame as the left data table is to ensure that the output will be a simple features data frame.</li>
+</ol>
+</div>
+</div>
+<p>To save the R object to directory:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(mpsz_pop2020,<span class="st">"data/rds/mpszpop2020.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 </section>
+</section>
+</section>
+<section id="plotting-choropleth-maps-with-tmap" class="level2">
+<h2 class="anchored" data-anchor-id="plotting-choropleth-maps-with-tmap">2.4 Plotting Choropleth Maps with <em>tmap</em></h2>
+<p>Two approaches can be used to prepare thematic map using tmap, they are:</p>
+<ul>
+<li>Plotting a thematic map quickly by using <em>qtm()</em>.</li>
+<li>Plotting highly customisable thematic map by using tmap elements.</li>
+</ul>
+<section id="plotting-a-choropleth-map-quickly-by-using-qtm" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map-quickly-by-using-qtm">2.4.1 Plotting a choropleth map quickly by using <em>qtm()</em></h3>
+<p>The easiest and quickest to draw a choropleth map using <strong>tmap</strong> is using <em>qtm()</em>. It is concise and provides a good default visualisation in many cases.</p>
+<p>The code chunk below will draw a cartographic standard choropleth map as shown below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qtm</span>(mpsz_pop2020,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill=</span><span class="st">"DEPENDENCY"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><code>tmap_mode()</code>: is used to set the mode of <code>tmap</code>.<br>
+1.1 “plot” mode: produce a static map.<br>
+1.2 “view” mode: produce an interactive map.</li>
+</ol>
+</div>
+</div>
+</section>
+<section id="plotting-a-choropleth-map-by-using-tmaps-elements" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map-by-using-tmaps-elements">2.4.2 Plotting a choropleth map by using <em>tmap’s elements</em></h3>
+<p>Despite its usefulness of drawing a choropleth map quickly and easily, the disadvantge of <em>qtm()</em> is that it makes aesthetics of individual layers harder to control. To draw a high quality cartographic choropleth map as shown in the figure below, <strong>tmap’s drawing elements</strong> should be used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"Dependency ratio"</span>)<span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of Dependency Ratio by planning subzone"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.position =</span> <span class="st">"center"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.size =</span> <span class="fl">1.2</span>,</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.height =</span> <span class="fl">0.45</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.width =</span> <span class="fl">0.35</span>,</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">frame =</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_compass</span>(<span class="at">type=</span><span class="st">"8star"</span>, <span class="at">size =</span> <span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_scale_bar</span>()<span class="sc">+</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_grid</span>(<span class="at">alpha =</span> <span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_credits</span>(<span class="st">"Source: Planning Sub-zone boundary from Urban Redevelopment Authorithy (URA)</span><span class="sc">\n</span><span class="st"> and Population data from Department of Statistics DOS"</span>,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">position =</span> <span class="fu">c</span>(<span class="st">"left"</span>,<span class="st">"bottom"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><code>tm_shape()</code>: indicates the foundation layer of the map which is the <em>mpsz_pop2020</em> dataset.</p></li>
+<li><p><code>tm_fill()</code>: one filling layer based on <em>DEPENDENCY</em> attribute.<br>
+2.1 <code>style="quantile"</code>: indicates the rule of change on color. In this case, the color assignment is based on the quantiles of values of <em>DEPENDENCY</em>.<br>
+2.2 <code>palette="Blues"</code>: select a set of blue colors to represent values of <em>DEPENDENCY</em>.<br>
+2.3 <code>title="..."</code>: set the title for legend.<br>
+</p></li>
+<li><p><code>tm_layout()</code>: design the overall layout and format of map.<br>
+3.1 <code>frame=TRUE</code>: adds frame line to the map.<br>
+</p></li>
+<li><p><code>tm_borders</code>: border line layer to visually seperate each subzone.<br>
+4.1 <code>col=</code>: border color.<br>
+4.2 <code>lwd=</code>: border line width, default is 1.<br>
+4.3 <code>lty=</code>: border line type, default is “solid”.<br>
+4.4 <code>alpha=</code>: border line transparency.<br>
+</p></li>
+<li><p><code>tm_compass()</code>: compass layer to recognize directions.</p></li>
+<li><p><code>tm_scale_bar()</code>: measuring scale layer.</p></li>
+<li><p><code>tm_grid()</code>: add grid lines to the map.</p></li>
+<li><p><code>tm_credits()</code>: add copyright info and data source.</p></li>
+</ol>
+</div>
+</div>
+</section>
+<section id="data-classification-methods-of-tmap" class="level3">
+<h3 class="anchored" data-anchor-id="data-classification-methods-of-tmap">2.4.3 Data classification methods of tmap</h3>
+</section>
+<section id="plotting-a-choropleth-map" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map">2.4.4 Plotting a choropleth map</h3>
+</section>
+<section id="plotting-a-choropleth-map-1" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map-1">2.4.5 Plotting a choropleth map</h3>
+</section>
+<section id="plotting-a-choropleth-map-2" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map-2">2.4.6 Plotting a choropleth map</h3>
+</section>
+<section id="plotting-a-choropleth-map-3" class="level3">
+<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map-3">2.4.7 Plotting a choropleth map</h3>
 </section>
 </section>
 <section id="section" class="level2">
-<h2 class="anchored" data-anchor-id="section">2.4</h2>
+<h2 class="anchored" data-anchor-id="section">2.5</h2>
 </section>
 <section id="section-1" class="level2">
-<h2 class="anchored" data-anchor-id="section-1">2.5</h2>
-</section>
-<section id="section-2" class="level2">
-<h2 class="anchored" data-anchor-id="section-2">2.6</h2>
+<h2 class="anchored" data-anchor-id="section-1">2.6</h2>
 </section>
 </section>
 <section id="visualzing-geospatial-point-data" class="level1">
