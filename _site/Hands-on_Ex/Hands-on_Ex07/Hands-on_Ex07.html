@@ -233,10 +233,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#plotting-a-choropleth-map-quickly-by-using-qtm" id="toc-plotting-a-choropleth-map-quickly-by-using-qtm" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-quickly-by-using-qtm">2.4.1 Plotting a choropleth map quickly by using <em>qtm()</em></a></li>
   <li><a href="#plotting-a-choropleth-map-by-using-tmaps-elements" id="toc-plotting-a-choropleth-map-by-using-tmaps-elements" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-by-using-tmaps-elements">2.4.2 Plotting a choropleth map by using <em>tmap’s elements</em></a></li>
   <li><a href="#data-classification-methods-of-tmap" id="toc-data-classification-methods-of-tmap" class="nav-link" data-scroll-target="#data-classification-methods-of-tmap">2.4.3 Data classification methods of tmap</a></li>
-  <li><a href="#plotting-a-choropleth-map" id="toc-plotting-a-choropleth-map" class="nav-link" data-scroll-target="#plotting-a-choropleth-map">2.4.4 Plotting a choropleth map</a></li>
-  <li><a href="#plotting-a-choropleth-map-1" id="toc-plotting-a-choropleth-map-1" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-1">2.4.5 Plotting a choropleth map</a></li>
-  <li><a href="#plotting-a-choropleth-map-2" id="toc-plotting-a-choropleth-map-2" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-2">2.4.6 Plotting a choropleth map</a></li>
-  <li><a href="#plotting-a-choropleth-map-3" id="toc-plotting-a-choropleth-map-3" class="nav-link" data-scroll-target="#plotting-a-choropleth-map-3">2.4.7 Plotting a choropleth map</a></li>
+  <li><a href="#colour-scheme" id="toc-colour-scheme" class="nav-link" data-scroll-target="#colour-scheme">2.4.4 Colour Scheme</a></li>
+  <li><a href="#map-layouts" id="toc-map-layouts" class="nav-link" data-scroll-target="#map-layouts">2.4.5 Map Layouts</a></li>
+  <li><a href="#drawing-small-multiple-choropleth-maps" id="toc-drawing-small-multiple-choropleth-maps" class="nav-link" data-scroll-target="#drawing-small-multiple-choropleth-maps">2.4.6 Drawing Small Multiple Choropleth Maps</a></li>
+  <li><a href="#plotting-a-choropleth-map" id="toc-plotting-a-choropleth-map" class="nav-link" data-scroll-target="#plotting-a-choropleth-map">2.4.7 Plotting a choropleth map</a></li>
   </ul></li>
   <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section">2.5</a></li>
   <li><a href="#section-1" id="toc-section-1" class="nav-link" data-scroll-target="#section-1">2.6</a></li>
@@ -275,7 +275,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">February 29, 2024</p>
+      <p class="date-modified">March 2, 2024</p>
     </div>
   </div>
     
@@ -615,18 +615,235 @@ Code Notes
 </section>
 <section id="data-classification-methods-of-tmap" class="level3">
 <h3 class="anchored" data-anchor-id="data-classification-methods-of-tmap">2.4.3 Data classification methods of tmap</h3>
+<p>Most choropleth maps employ some methods of data classification. The point of classification is to take a large number of observations and group them into data ranges or classes. (different ways to group numerical data into categories or classes.)</p>
+<p><strong>tmap</strong> provides a total ten data classification methods, namely: <em>fixed, sd, equal, pretty (default), quantile, kmeans, hclust, bclust, fisher</em>, and <em>jenks</em>.</p>
+<ul>
+<li><p><strong>fixed</strong>: Class boundaries are based on specific values you choose.</p></li>
+<li><p><strong>sd</strong>: Classes are created based on the standard deviation from the mean of the data. This method is useful for data that is normally distributed. If most of your data points are close to the average, they fall into one class, and points far from the average fall into other classes.</p></li>
+<li><p><strong>equal</strong>: This method divides the range of your data into equal-sized intervals.</p></li>
+<li><p><strong>pretty (default)</strong>: This method tries to create classes that are easy to understand and are “pretty” or neatly aligned to round numbers. It’s like the equal method but adjusts the class limits to more round numbers.</p></li>
+<li><p><strong>Quantile</strong>: Each class contains an equal number of data points. If you have 100 data points and you want 5 classes, each class will have 20 data points, regardless of the numerical range they cover.</p></li>
+<li><p><strong>KMeans</strong>: It tries to group data points into clusters based on their value so that the points in each cluster are as similar as possible.</p></li>
+<li><p><strong>HClust(Hierarchical Clustering)</strong>: Data is classified based on hierarchical clustering, which creates a tree of clusters. You can then decide where to cut the tree to form classes. It groups data points that are closely related into the same class.</p></li>
+<li><p><strong>BClust(Birch Clustering)</strong>: Similar to HClust, but specifically uses the Birch clustering algorithm. This method is efficient for large datasets and tries to build a tree structure where the final clusters can be refined to form classes.</p></li>
+<li><p><strong>Fisher</strong>: this method is often used to reduce the variance within classes and maximize the variance between classes. It’s particularly good for data with natural breaks or clusters.</p></li>
+<li><p><strong>Jenks</strong>: it’s focused on finding natural groupings in your data. The Jenks optimization method minimizes variance within classes and maximizes it between classes, ideally highlighting natural groupings or patterns in the data.</p></li>
+</ul>
+<p>To define a data classification method, the style argument of tm_fill() or tm_polygons() will be used.</p>
+<section id="plotting-choropleth-maps-with-built-in-classification-methods" class="level4">
+<h4 class="anchored" data-anchor-id="plotting-choropleth-maps-with-built-in-classification-methods">2.4.3.1 Plotting choropleth maps with built-in classification methods</h4>
+<p>The code chunk below shows a quantile data classification that used 5 classes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">n=</span><span class="dv">5</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">style=</span><span class="st">"jenks"</span>)<span class="sc">+</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span><span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>In the code chunk below, <em>equal</em> data classification method is used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">n=</span><span class="dv">5</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"equal"</span>)<span class="sc">+</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="plotting-choropleth-map-with-custome-break" class="level4">
+<h4 class="anchored" data-anchor-id="plotting-choropleth-map-with-custome-break">2.4.3.2 Plotting choropleth map with custome break</h4>
+<p>For all the built-in styles, the category breaks are computed internally. In order to override these defaults, the breakpoints can be set explicitly by means of the <em>breaks</em> argument to the <em>tm_fill()</em>. It is important to note that, in <strong>tmap</strong> the breaks include a minimum and maximum. As a result, in order to end up with n categories, n+1 elements must be specified in the <em>breaks</em> option (the values must be in increasing order).</p>
+<p>Before we get started, it is always a good practice to get some descriptive statistics on the variable before setting the break points. Code chunk below will be used to compute and display the descriptive statistics of <strong>DEPENDENCY</strong> field.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(mpsz_pop2020<span class="sc">$</span>DEPENDENCY)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+ 0.1111  0.7147  0.7866  0.8585  0.8763 19.0000      92 </code></pre>
+</div>
+</div>
+<p>With reference to the results above, we set break point at 0.60, 0.70, 0.80, and 0.90. In addition, we also need to include a minimum and maximum, which we set at 0 and 100. Our breaks vector is thus c(0, 0.60, 0.70, 0.80, 0.90, 1.00)</p>
+<p>Now, we will plot the choropleth map by using the code chunk below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.60</span>,<span class="fl">0.70</span>,<span class="fl">0.80</span>,<span class="fl">0.90</span>,<span class="fl">1.00</span>))<span class="sc">+</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p>When you use the <em>breaks</em> parameter, you have already explicitly specified how to group the data, so there’s no need for the <em>style</em> parameter to automatically determine these groups. The <em>breaks</em> parameter allows you to precisely control the range of each category, which is very useful when you already know how to group based on specific characteristics or values of the data.</p></li>
+<li><p>The selected values of <em>DEPENDENCY</em> is from 0 to 1. Since the max value is 19, this value will not be displayed in the map, but it doesn’t mean any area will not be displayed because one area consists of many values.</p></li>
+</ol>
+</div>
+</div>
+</section>
+</section>
+<section id="colour-scheme" class="level3">
+<h3 class="anchored" data-anchor-id="colour-scheme">2.4.4 Colour Scheme</h3>
+<p><strong>tmap</strong> supports colour ramps either defined by the user or a set of predefined colour ramps from the <strong>RColorBrewer</strong> package.</p>
+<section id="using-colourbrewer-palette" class="level4">
+<h4 class="anchored" data-anchor-id="using-colourbrewer-palette">2.4.4.1 Using ColourBrewer palette</h4>
+<p>To change the colour, we assign the preferred colour to <em>palette</em> argument of <em>tm_fill()</em> as shown in the code chunk below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">n=</span><span class="dv">6</span>,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>)<span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span><span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Notice that the choropleth map is shaded in green.</p>
+<p>To <strong>reverse</strong> the colour shading, add a “-” prefix.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette =</span> <span class="st">"-Greens"</span>)<span class="sc">+</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Notice that the colour scheme has been reversed.</p>
+</section>
+</section>
+<section id="map-layouts" class="level3">
+<h3 class="anchored" data-anchor-id="map-layouts">2.4.5 Map Layouts</h3>
+<section id="map-legend" class="level4">
+<h4 class="anchored" data-anchor-id="map-legend">2.4.5.1 Map Legend</h4>
+<p>In tmap, several <em>legend</em> options are provided to change the placement, format and appearance of the legend.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"jenks"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.hist =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.is.portrait =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">legend.hist.z =</span> <span class="fl">0.1</span>)<span class="sc">+</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of Dependency Ratio by planning subzone </span><span class="sc">\n</span><span class="st">(Jenks classification)"</span>,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.position =</span> <span class="st">"center"</span>,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.size =</span> <span class="dv">1</span>,</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.height =</span> <span class="fl">0.45</span>,</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.width =</span> <span class="fl">0.35</span>,</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.outside =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.position =</span> <span class="fu">c</span>(<span class="st">"right"</span>,<span class="st">"bottom"</span>),</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">frame =</span> <span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha=</span><span class="fl">0.5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><code>legend.hist=TRUE</code>: This enables a histogram in the legend, showing the distribution of the data values across the categories defined by the Jenks classification. The histogram provides a visual representation of how many data points fall into each category.</p></li>
+<li><p><code>legend.hist.z=0.1</code>: This parameter adjusts the z-scale of the histogram in the legend, essentially controlling the height of the bars in the histogram relative to the size of the legend. A value of 0.1 reduces the height, making the histogram bars smaller.</p></li>
+</ol>
+<p>3 <code>legend.is.portrait=TRUE</code>: This setting controls the orientation of the legend. Setting it to <strong>TRUE</strong> makes the legend vertical (portrait mode). If it were <strong>FALSE</strong>, the legend would be horizontal (landscape mode).</p>
+<ol start="4" type="1">
+<li><p><code>legend.height</code>,<code>legend.width</code>: <code>legend.height</code> sets the height of the legend relative to the height of the entire map, and <code>legend.width</code> sets the width relative to the width of the map. Both are expressed as fractions of the total height and width, so values of 0.45 and 0.35 mean the legend’s height is 45% of the map’s height, and its width is 35% of the map’s width, respectively. (the size of the legend)</p></li>
+<li><p><code>legend.outside=FALSE</code>: This determines whether the legend should be placed outside the map area. Setting it to <strong>FALSE</strong> keeps the legend inside the main map area. If it were <strong>TRUE</strong>, the legend would be placed outside the map, which could be useful if the map area is crowded or if you want a clearer separation between the map and its legend.</p></li>
+<li><p><code>legend.position=c("right","bottom")</code>: This sets the position of the legend on the map. (the position of the legend)</p></li>
+</ol>
+</div>
+</div>
+</section>
+<section id="map-style" class="level4">
+<h4 class="anchored" data-anchor-id="map-style">2.4.5.2 Map style</h4>
+<p>tmap allows a wide variety of layout settings to be changed. They can be called by using <em>tmap_style()</em>.</p>
+<p>The code chunk below shows the <em>classic</em> style is used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette =</span> <span class="st">"-Greens"</span>)<span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tmap_style</span>(<span class="st">"classic"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="cartographic-furniture" class="level4">
+<h4 class="anchored" data-anchor-id="cartographic-furniture">2.4.5.3 Cartographic furniture</h4>
+<p>Beside map style, tmap also also provides arguments to draw other map furniture such as compass, scale bar and grid lines.</p>
+<p>In the code chunk below, <em>tm_compass()</em>, <em>tm_scale_bar()</em> and <em>tm_grid()</em> are used to add compass, scale bar and grid lines onto the choropleth map.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tm_shape</span>(mpsz_pop2020)<span class="sc">+</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_fill</span>(<span class="st">"DEPENDENCY"</span>,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">style =</span> <span class="st">"quantile"</span>,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">palette =</span> <span class="st">"Blues"</span>,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">title =</span> <span class="st">"No. of persons"</span>)<span class="sc">+</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">main.title =</span> <span class="st">"Distribution of Dependency Ratio </span><span class="sc">\n</span><span class="st">by planning subzone"</span>,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.position =</span> <span class="st">"center"</span>,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">main.title.size =</span> <span class="fl">1.2</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.height =</span> <span class="fl">0.45</span>,</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">legend.width =</span> <span class="fl">0.35</span>,</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">frame =</span> <span class="cn">TRUE</span>)<span class="sc">+</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_borders</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>)<span class="sc">+</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_compass</span>(<span class="at">type =</span> <span class="st">"8star"</span>, <span class="at">size=</span><span class="dv">2</span>)<span class="sc">+</span></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_scale_bar</span>(<span class="at">width=</span><span class="fl">0.15</span>)<span class="sc">+</span></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_grid</span>(<span class="at">lwd=</span><span class="fl">0.1</span>,<span class="at">alpha=</span><span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_credits</span>(<span class="st">"Source: Planning Sub-zone boundary from Urban Redevelopment Authorith (URA)</span><span class="sc">\n</span><span class="st"> and Population data from Department of Statistics DOS"</span>,</span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>             <span class="at">position =</span> <span class="fu">c</span>(<span class="st">"left"</span>,<span class="st">"bottom"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex07_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><code>tm_credits()</code>: add a text label on the map, which is often used for attribution, to provide credits for the data source, or to include any other necessary textual information directly on the map visualization. This feature is particularly important for acknowledging sources or providing additional context to the map’s viewers.</li>
+</ol>
+</div>
+</div>
+<p>To reset the default style, refer to the code chunk below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_style</span>(<span class="st">"white"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="drawing-small-multiple-choropleth-maps" class="level3">
+<h3 class="anchored" data-anchor-id="drawing-small-multiple-choropleth-maps">2.4.6 Drawing Small Multiple Choropleth Maps</h3>
 </section>
 <section id="plotting-a-choropleth-map" class="level3">
-<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map">2.4.4 Plotting a choropleth map</h3>
-</section>
-<section id="plotting-a-choropleth-map-1" class="level3">
-<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map-1">2.4.5 Plotting a choropleth map</h3>
-</section>
-<section id="plotting-a-choropleth-map-2" class="level3">
-<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map-2">2.4.6 Plotting a choropleth map</h3>
-</section>
-<section id="plotting-a-choropleth-map-3" class="level3">
-<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map-3">2.4.7 Plotting a choropleth map</h3>
+<h3 class="anchored" data-anchor-id="plotting-a-choropleth-map">2.4.7 Plotting a choropleth map</h3>
 </section>
 </section>
 <section id="section" class="level2">

@@ -240,18 +240,18 @@ tm_shape(mpsz_pop2020)+
 1.  `tm_shape()`: indicates the foundation layer of the map which is the *mpsz_pop2020* dataset.
 
 2.  `tm_fill()`: one filling layer based on *DEPENDENCY* attribute.\
-  2.1 `style="quantile"`: indicates the rule of change on color. In this case, the color assignment is based on the quantiles of values of *DEPENDENCY*.\
-  2.2 `palette="Blues"`: select a set of blue colors to represent values of *DEPENDENCY*.\
-  2.3 `title="..."`: set the title for legend.\
-  
+    2.1 `style="quantile"`: indicates the rule of change on color. In this case, the color assignment is based on the quantiles of values of *DEPENDENCY*.\
+    2.2 `palette="Blues"`: select a set of blue colors to represent values of *DEPENDENCY*.\
+    2.3 `title="..."`: set the title for legend.\
+
 3.  `tm_layout()`: design the overall layout and format of map.\
-  3.1 `frame=TRUE`: adds frame line to the map.\
-  
+    3.1 `frame=TRUE`: adds frame line to the map.\
+
 4.  `tm_borders`: border line layer to visually seperate each subzone.\
-  4.1 `col=`: border color.\
-  4.2 `lwd=`: border line width, default is 1.\
-  4.3 `lty=`: border line type, default is "solid".\
-  4.4 `alpha=`: border line transparency.\
+    4.1 `col=`: border color.\
+    4.2 `lwd=`: border line width, default is 1.\
+    4.3 `lty=`: border line type, default is "solid".\
+    4.4 `alpha=`: border line transparency.\
 
 5.  `tm_compass()`: compass layer to recognize directions.
 
@@ -264,19 +264,212 @@ tm_shape(mpsz_pop2020)+
 
 ### 2.4.3 Data classification methods of tmap
 
+Most choropleth maps employ some methods of data classification. The point of classification is to take a large number of observations and group them into data ranges or classes. (different ways to group numerical data into categories or classes.)
+
+**tmap** provides a total ten data classification methods, namely: *fixed, sd, equal, pretty (default), quantile, kmeans, hclust, bclust, fisher*, and *jenks*.
+
+-  **fixed**: Class boundaries are based on specific values you choose.
+
+-  **sd**: Classes are created based on the standard deviation from the mean of the data. This method is useful for data that is normally distributed. If most of your data points are close to the average, they fall into one class, and points far from the average fall into other classes.
+
+-  **equal**: This method divides the range of your data into equal-sized intervals.
+
+-  **pretty (default)**: This method tries to create classes that are easy to understand and are "pretty" or neatly aligned to round numbers. It’s like the equal method but adjusts the class limits to more round numbers.
+
+-  **Quantile**: Each class contains an equal number of data points. If you have 100 data points and you want 5 classes, each class will have 20 data points, regardless of the numerical range they cover.
+
+-  **KMeans**: It tries to group data points into clusters based on their value so that the points in each cluster are as similar as possible.
+
+-  **HClust(Hierarchical Clustering)**: Data is classified based on hierarchical clustering, which creates a tree of clusters. You can then decide where to cut the tree to form classes. It groups data points that are closely related into the same class.
+
+-  **BClust(Birch Clustering)**: Similar to HClust, but specifically uses the Birch clustering algorithm. This method is efficient for large datasets and tries to build a tree structure where the final clusters can be refined to form classes.
+
+-  **Fisher**: this method is often used to reduce the variance within classes and maximize the variance between classes. It's particularly good for data with natural breaks or clusters.
+
+-  **Jenks**: it's focused on finding natural groupings in your data. The Jenks optimization method minimizes variance within classes and maximizes it between classes, ideally highlighting natural groupings or patterns in the data.
+
+To define a data classification method, the style argument of tm_fill() or tm_polygons() will be used.
+
+#### 2.4.3.1 Plotting choropleth maps with built-in classification methods
+
+The code chunk below shows a quantile data classification that used 5 classes.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n=5,
+          style="jenks")+
+  tm_borders(alpha=0.5)
+```
+
+In the code chunk below, *equal* data classification method is used.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n=5,
+          style = "equal")+
+  tm_borders(alpha = 0.5)
+```
+
+#### 2.4.3.2 Plotting choropleth map with custome break
+
+For all the built-in styles, the category breaks are computed internally. In order to override these defaults, the breakpoints can be set explicitly by means of the *breaks* argument to the *tm_fill()*. It is important to note that, in **tmap** the breaks include a minimum and maximum. As a result, in order to end up with n categories, n+1 elements must be specified in the *breaks* option (the values must be in increasing order).
+
+Before we get started, it is always a good practice to get some descriptive statistics on the variable before setting the break points. Code chunk below will be used to compute and display the descriptive statistics of **DEPENDENCY** field.
+
+```{r}
+summary(mpsz_pop2020$DEPENDENCY)
+```
+
+With reference to the results above, we set break point at 0.60, 0.70, 0.80, and 0.90. In addition, we also need to include a minimum and maximum, which we set at 0 and 100. Our breaks vector is thus c(0, 0.60, 0.70, 0.80, 0.90, 1.00)
+
+Now, we will plot the choropleth map by using the code chunk below.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          breaks = c(0,0.60,0.70,0.80,0.90,1.00))+
+  tm_borders(alpha = 0.5)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  When you use the *breaks* parameter, you have already explicitly specified how to group the data, so there's no need for the *style* parameter to automatically determine these groups. The *breaks* parameter allows you to precisely control the range of each category, which is very useful when you already know how to group based on specific characteristics or values of the data.
+
+2.  The selected values of *DEPENDENCY* is from 0 to 1. Since the max value is 19, this value will not be displayed in the map, but it doesn't mean any area will not be displayed because one area consists of many values.
+:::
+
+### 2.4.4 Colour Scheme
+
+**tmap** supports colour ramps either defined by the user or a set of predefined colour ramps from the **RColorBrewer** package.
+
+#### 2.4.4.1 Using ColourBrewer palette
+
+To change the colour, we assign the preferred colour to *palette* argument of *tm_fill()* as shown in the code chunk below.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          n=6,
+          style = "quantile",
+          palette = "Blues")+
+  tm_borders(alpha=0.5)
+```
+
+Notice that the choropleth map is shaded in green.
+
+To **reverse** the colour shading, add a “-” prefix.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = "-Greens")+
+  tm_borders(alpha = 0.5)
+```
+
+Notice that the colour scheme has been reversed.
+
+### 2.4.5 Map Layouts
+
+#### 2.4.5.1 Map Legend
+
+In tmap, several *legend* options are provided to change the placement, format and appearance of the legend.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          style = "jenks",
+          palette = "Blues",
+          legend.hist = TRUE,
+          legend.is.portrait = TRUE,
+          legend.hist.z = 0.1)+
+  tm_layout(main.title = "Distribution of Dependency Ratio by planning subzone \n(Jenks classification)",
+            main.title.position = "center",
+            main.title.size = 1,
+            legend.height = 0.45,
+            legend.width = 0.35,
+            legend.outside = FALSE,
+            legend.position = c("right","bottom"),
+            frame = FALSE)+
+  tm_borders(alpha=0.5)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `legend.hist=TRUE`: This enables a histogram in the legend, showing the distribution of the data values across the categories defined by the Jenks classification. The histogram provides a visual representation of how many data points fall into each category.
 
 
+2.  `legend.hist.z=0.1`: This parameter adjusts the z-scale of the histogram in the legend, essentially controlling the height of the bars in the histogram relative to the size of the legend. A value of 0.1 reduces the height, making the histogram bars smaller.
+
+3   `legend.is.portrait=TRUE`: This setting controls the orientation of the legend. Setting it to **TRUE** makes the legend vertical (portrait mode). If it were **FALSE**, the legend would be horizontal (landscape mode).
+
+4.  `legend.height`,`legend.width`: `legend.height` sets the height of the legend relative to the height of the entire map, and `legend.width` sets the width relative to the width of the map. Both are expressed as fractions of the total height and width, so values of 0.45 and 0.35 mean the legend's height is 45% of the map's height, and its width is 35% of the map's width, respectively. (the size of the legend)
+
+5.  `legend.outside=FALSE`: This determines whether the legend should be placed outside the map area. Setting it to **FALSE** keeps the legend inside the main map area. If it were **TRUE**, the legend would be placed outside the map, which could be useful if the map area is crowded or if you want a clearer separation between the map and its legend.
+
+6.  `legend.position=c("right","bottom")`: This sets the position of the legend on the map. (the position of the legend)
+:::
+
+#### 2.4.5.2 Map style
+
+tmap allows a wide variety of layout settings to be changed. They can be called by using *tmap_style()*.
+
+The code chunk below shows the *classic* style is used.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = "-Greens")+
+  tm_borders(alpha = 0.5)+
+  tmap_style("classic")
+```
+
+#### 2.4.5.3 Cartographic furniture
+
+Beside map style, tmap also also provides arguments to draw other map furniture such as compass, scale bar and grid lines.
+
+In the code chunk below, *tm_compass()*, *tm_scale_bar()* and *tm_grid()* are used to add compass, scale bar and grid lines onto the choropleth map.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = "Blues",
+          title = "No. of persons")+
+  tm_layout(main.title = "Distribution of Dependency Ratio \nby planning subzone",
+            main.title.position = "center",
+            main.title.size = 1.2,
+            legend.height = 0.45,
+            legend.width = 0.35,
+            frame = TRUE)+
+  tm_borders(alpha = 0.5)+
+  tm_compass(type = "8star", size=2)+
+  tm_scale_bar(width=0.15)+
+  tm_grid(lwd=0.1,alpha=0.2)+
+  tm_credits("Source: Planning Sub-zone boundary from Urban Redevelopment Authorith (URA)\n and Population data from Department of Statistics DOS",
+             position = c("left","bottom"))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `tm_credits()`: add a text label on the map, which is often used for attribution, to provide credits for the data source, or to include any other necessary textual information directly on the map visualization. This feature is particularly important for acknowledging sources or providing additional context to the map's viewers.
+:::
+
+To reset the default style, refer to the code chunk below.
+
+```{r}
+tmap_style("white")
+```
+
+### 2.4.6 Drawing Small Multiple Choropleth Maps
 
 
-
-### 2.4.4 Plotting a choropleth map
-
-
-### 2.4.5 Plotting a choropleth map
-
-
-
-### 2.4.6 Plotting a choropleth map
 
 
 
