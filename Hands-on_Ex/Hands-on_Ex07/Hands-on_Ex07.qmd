@@ -268,25 +268,25 @@ Most choropleth maps employ some methods of data classification. The point of cl
 
 **tmap** provides a total ten data classification methods, namely: *fixed, sd, equal, pretty (default), quantile, kmeans, hclust, bclust, fisher*, and *jenks*.
 
--  **fixed**: Class boundaries are based on specific values you choose.
+-   **fixed**: Class boundaries are based on specific values you choose.
 
--  **sd**: Classes are created based on the standard deviation from the mean of the data. This method is useful for data that is normally distributed. If most of your data points are close to the average, they fall into one class, and points far from the average fall into other classes.
+-   **sd**: Classes are created based on the standard deviation from the mean of the data. This method is useful for data that is normally distributed. If most of your data points are close to the average, they fall into one class, and points far from the average fall into other classes.
 
--  **equal**: This method divides the range of your data into equal-sized intervals.
+-   **equal**: This method divides the range of your data into equal-sized intervals.
 
--  **pretty (default)**: This method tries to create classes that are easy to understand and are "pretty" or neatly aligned to round numbers. It’s like the equal method but adjusts the class limits to more round numbers.
+-   **pretty (default)**: This method tries to create classes that are easy to understand and are "pretty" or neatly aligned to round numbers. It’s like the equal method but adjusts the class limits to more round numbers.
 
--  **Quantile**: Each class contains an equal number of data points. If you have 100 data points and you want 5 classes, each class will have 20 data points, regardless of the numerical range they cover.
+-   **Quantile**: Each class contains an equal number of data points. If you have 100 data points and you want 5 classes, each class will have 20 data points, regardless of the numerical range they cover.
 
--  **KMeans**: It tries to group data points into clusters based on their value so that the points in each cluster are as similar as possible.
+-   **KMeans**: It tries to group data points into clusters based on their value so that the points in each cluster are as similar as possible.
 
--  **HClust(Hierarchical Clustering)**: Data is classified based on hierarchical clustering, which creates a tree of clusters. You can then decide where to cut the tree to form classes. It groups data points that are closely related into the same class.
+-   **HClust(Hierarchical Clustering)**: Data is classified based on hierarchical clustering, which creates a tree of clusters. You can then decide where to cut the tree to form classes. It groups data points that are closely related into the same class.
 
--  **BClust(Birch Clustering)**: Similar to HClust, but specifically uses the Birch clustering algorithm. This method is efficient for large datasets and tries to build a tree structure where the final clusters can be refined to form classes.
+-   **BClust(Birch Clustering)**: Similar to HClust, but specifically uses the Birch clustering algorithm. This method is efficient for large datasets and tries to build a tree structure where the final clusters can be refined to form classes.
 
--  **Fisher**: this method is often used to reduce the variance within classes and maximize the variance between classes. It's particularly good for data with natural breaks or clusters.
+-   **Fisher**: this method is often used to reduce the variance within classes and maximize the variance between classes. It's particularly good for data with natural breaks or clusters.
 
--  **Jenks**: it's focused on finding natural groupings in your data. The Jenks optimization method minimizes variance within classes and maximizes it between classes, ideally highlighting natural groupings or patterns in the data.
+-   **Jenks**: it's focused on finding natural groupings in your data. The Jenks optimization method minimizes variance within classes and maximizes it between classes, ideally highlighting natural groupings or patterns in the data.
 
 To define a data classification method, the style argument of tm_fill() or tm_polygons() will be used.
 
@@ -402,10 +402,9 @@ tm_shape(mpsz_pop2020)+
 
 1.  `legend.hist=TRUE`: This enables a histogram in the legend, showing the distribution of the data values across the categories defined by the Jenks classification. The histogram provides a visual representation of how many data points fall into each category.
 
-
 2.  `legend.hist.z=0.1`: This parameter adjusts the z-scale of the histogram in the legend, essentially controlling the height of the bars in the histogram relative to the size of the legend. A value of 0.1 reduces the height, making the histogram bars smaller.
 
-3   `legend.is.portrait=TRUE`: This setting controls the orientation of the legend. Setting it to **TRUE** makes the legend vertical (portrait mode). If it were **FALSE**, the legend would be horizontal (landscape mode).
+3 `legend.is.portrait=TRUE`: This setting controls the orientation of the legend. Setting it to **TRUE** makes the legend vertical (portrait mode). If it were **FALSE**, the legend would be horizontal (landscape mode).
 
 4.  `legend.height`,`legend.width`: `legend.height` sets the height of the legend relative to the height of the entire map, and `legend.width` sets the width relative to the width of the map. Both are expressed as fractions of the total height and width, so values of 0.45 and 0.35 mean the legend's height is 45% of the map's height, and its width is 35% of the map's width, respectively. (the size of the legend)
 
@@ -469,16 +468,376 @@ tmap_style("white")
 
 ### 2.4.6 Drawing Small Multiple Choropleth Maps
 
+**Small multiple maps**, also referred to as **facet maps**, are composed of many maps arrange side-by-side, and sometimes stacked vertically. Small multiple maps enable the visualisation of how spatial relationships change with respect to another variable, such as time.
 
+In **tmap**, small multiple maps can be plotted in three ways:
 
+-   by assigning multiple values to at least one of the asthetic arguments,
+-   by defining a group-by variable in *tm_facets()*, and
+-   by creating multiple stand-alone maps with *tmap_arrange()*.
 
+#### 2.4.6.1 By assigning multiple values to at least one of the aesthetic arguments
 
-### 2.4.7 Plotting a choropleth map
+In this example, small multiple choropleth maps are created by defining **ncols** in **tm_fill()**.
 
-## 2.5
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill(c("YOUNG","AGED"),
+          style="equal",
+          palette="Blues")+
+  tm_layout(legend.position=c("right","bottom"))+
+  tm_borders(alpha=0.5)+
+  tmap_style("white")
+```
 
-## 2.6
+In this example, small multiple choropleth maps are created by assigning multiple values to at least one of the aesthetic arguments.
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_polygons(c("DEPENDENCY","AGED"),
+              style=c("equal","quantile"),
+              palette=list("Blues","Greens"))+
+  tm_layout(legend.position = c("right","bottom"))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  Both `tm_fill` and `tm_polygons` can be used for filling areas on maps, but `tm_polygons` offers more control over the style of boundaries, making it more suitable for scenarios where it's important to emphasize geographical borders. On the other hand, `tm_fill` focuses more on representing data through the color filling of areas, applicable to scenarios that require highlighting data differences rather than the clarity of borders. In practice, these two functions can be combined to achieve both the differentiation of data and the emphasis on geographical boundaries.
+:::
+
+#### 2.4.6.2 By defining a group-by variable in *tm_facets()*
+
+In this example, multiple small choropleth maps are created by using *tm_facets()*
+
+```{r}
+tm_shape(mpsz_pop2020)+
+  tm_fill("DEPENDENCY",
+          style = "quantile",
+          palette = "Blues",
+          thres.poly = 0)+
+  tm_facets(by="REGION_N",
+            free.coords = TRUE,
+            drop.shapes = FALSE)+
+  tm_layout(legend.show = FALSE,
+            title.position = c("center","center"),
+            title.size = 20)+
+  tm_borders(alpha = 0.5)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `thres.poly = 0`: is used to set a threshold applied when drawing polygons. Here, it is set to 0, meaning that no polygons will be filtered out based on their size.
+
+2.  `free.coords=TRUE`: indicates that each panel can have its own coordinate axis range, allowing for the optimal display of each region.
+
+3.  `drop.shapes=FALSE`: means that even if some regions do not have data in the *REGION_N* classification, their shapes will not be removed from the map.
+:::
+
+#### 2.4.6.3 By creating multiple stand-alone maps with *tmap_arrange()*
+
+In this example, multiple small choropleth maps are created by creating multiple stand-alone maps with *tmap_arrange()*
+
+```{r}
+youngmap <- tm_shape(mpsz_pop2020)+
+  tm_polygons("YOUNG",
+              style="quantile",
+              palette="Blues")
+
+agedmap <- tm_shape(mpsz_pop2020)+
+  tm_polygons("AGED",
+              style="quantile",
+              palette="Blues")
+
+tmap_arrange(youngmap,agedmap,asp=1, ncol=2)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `asp=1`: sets the aspect ratio (width/height) of each map in the arrangement. An aspect ratio of 1 means that the height and width of each map are equal, leading to a square shape for each map plot.
+
+2.  `ncol=2`: specifies the number of columns in the arrangement. Setting ncol=2 means that the maps will be arranged side by side in two columns.
+:::
+
+### 2.4.7 Mappping Spatial Object Meeting a Selection Criterion
+
+Instead of creating small multiple choropleth map, you can also use selection funtion to map spatial objects meeting the selection criterion.
+
+```{r}
+tm_shape(mpsz_pop2020[mpsz_pop2020$REGION_N=="CENTRAL REGION",])+
+  tm_fill("DEPENDENCY",
+          style="quantile",
+          palette = "Blues",
+          legend.hist = TRUE,
+          legend.is.portrait = TRUE,
+          legend.hist.z = 0.1)+
+  tm_layout(legend.outside = TRUE,
+            legend.height = 0.45,
+            legend.width = 5.0,
+            legend.position = c("right","bottom"),
+            frame = FALSE)+
+  tm_borders(alpha=0.5)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `[mpsz_pop2020$REGION_N=="CENTRAL REGION", ]`: \[row constraints, col constraints\], in this case, it filters all the cols corresponding to the constrained rows.
+:::
 
 # 3. Visualzing: Geospatial Point Data
 
+Proportional symbol maps (also known as graduate symbol maps) are a class of maps that use the visual variable of size to represent differences in the magnitude of a discrete, abruptly changing phenomenon, e.g. counts of people. Like choropleth maps, you can create classed or unclassed versions of these maps.
+
+-   the classed ones are known as range-graded or graduated symbols
+-   the unclassed are called proportional symbols, where the area of the symbols are proportional to the values of the attribute being mapped
+
+In this hands-on exercise, you will learn how to create a **proportional symbol map** showing the number of wins by Singapore Pools’ outlets using an R package called **tmap**.
+
+## 3.1 Getting Started
+
+```{r}
+pacman::p_load(sf,tmap,tidyverse)
+```
+
+## 3.2 Data Wrangling
+
+### 3.2.1 The Data
+
+The data set use for this hands-on exercise is called SGPools_svy21. The data is in csv file format.
+
+### 3.2.2 Data Import and Preparation
+
+```{r}
+sgpools <- read_csv("data/aspatial/SGPools_svy21.csv")
+```
+
+It consists of seven columns. The XCOORD and YCOORD columns are the x-coordinates and y-coordinates of SingPools outlets and branches.
+
+After importing the data file into R, it is important for us to examine if the data file has been imported correctly.
+
+The code chunk below shows *list()* is used to do the job.
+
+```{r}
+list(sgpools)
+```
+
+Notice that the sgpools data in tibble data frame and not the common R data frame.
+
+### 3.2.3 Create a sf data frame from an aspatial data frame
+
+The code chunk below converts sgpools data frame into a simple feature data frame by using *st_as_sf()* of **sf** packages
+
+```{r}
+sgpools_sf <- st_as_sf(sgpools,
+                    coords = c("XCOORD","YCOORD"),
+                    crs=3414)
+```
+
+Notice that a new column called *geometry* has been added into the data frame *sgpools_sf*.
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `coords=`: requires you to provide the column name of the x-coordinates first then followed by the column name of the y-coordinates.
+
+2.  `crs=`: requires you to provide the coordinates system in epsg format. [EPSG: 3414](https://epsg.io/3414) is Singapore SVY21 Projected Coordinate System. You can search for other country’s epsg code by refering to [epsg.io](https://epsg.io/).
+:::
+
+You can display the basic information of the newly created sgpools_sf by using the code chunk below.
+
+```{r}
+list(sgpools_sf)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  **Geometry type: POINT**: shows that sgppols_sf is in point feature class. It’s epsg ID is 3414. The bbox provides information of the extend of the geospatial data.
+:::
+
+## 3.3 Drawing Proportional Symbol Map
+
+To create an interactive proportional symbol map in R, the view mode of tmap will be used.
+
+The code churn below will turn on the interactive mode of tmap.
+
+```{r}
+tmap_mode("view")
+```
+
+### 3.3.1 Start with an interactive point symbol map (points with same size)
+
+The code chunks below are used to create an interactive point symbol map.
+
+```{r}
+tm_shape(sgpools_sf)+
+  tm_bubbles(col="red",
+             size=1,
+             border.col="black",
+             border.lwd=1)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `col="red"`: fills the colour of points in red.
+
+2.  `size=1`: defines the size of points.
+
+3.  `border.col = "black"`: fills the border line of points in black.
+
+4.  `border.lwd=1`: defines the width of border line of points.
+:::
+
+### 3.3.2 Make it proportional (points with different size)
+
+To draw a proportional symbol map, we need to assign a numerical variable to the size visual attribute. The code chunks below show that the variable *Gp1Gp2Winnings* is assigned to size visual attribute.
+
+```{r}
+tm_shape(sgpools_sf)+
+  tm_bubbles(col="red",
+             size="Gp1Gp2 Winnings",
+             border.col="black",
+             border.lwd=1)
+```
+
+### 3.3.3 Give it a different colour
+
+The proportional symbol map can be further improved by using the colour visual attribute. In the code chunks below, *OUTLET_TYPE* variable is used as the colour attribute variable.
+
+```{r}
+tm_shape(sgpools_sf)+
+  tm_bubbles(col="OUTLET TYPE",
+             size="Gp1Gp2 Winnings",
+             border.col="black",
+             border.lwd=1)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `col="OUTLET TYPE"`: assigns different colours to different outlet type variable.
+:::
+
+### 3.3.4 Have a twin maps
+
+An impressive and little-know feature of tmap’s view mode is that it also works with [faceted plots]{.underline}. The argument *sync* in *tm_facets()* can be used in this case to produce multiple maps [with synchronised zoom and pan settings]{.underline}.
+
+```{r}
+tm_shape(sgpools_sf)+
+  tm_bubbles(col="OUTLET TYPE",
+             size="Gp1Gp2 Winnings",
+             border.col="black",
+             border.lwd=1)+
+  tm_facets(by="OUTLET TYPE",
+            nrow=1,
+            sync = TRUE)
+```
+
 # 4. Analyzing: Analytical Mapping
+
+## 4.1 Getting Started
+
+### 4.1.1 Installing and loading packages
+
+```{r}
+pacman::p_load(sf, tmap, tidyverse)
+```
+
+### 4.1.2 Importing data
+
+For the purpose of this hands-on exercise, a prepared data set called *NGA_wp.rds* will be used. The data set is a polygon feature data.frame providing information on water point of Nigeria at the LGA level. You can find the data set in the rds sub-direct of the hands-on data folder.
+
+-  Simple Feature Dataframe: provides a flexible way to handle various types of spatial data
+
+-  Polygon Feature Dataframe: offers a focused approach for processing and analyzing polygon spatial data.
+
+```{r}
+NGA_wp <- read_rds("data/rds/NGA_wp.rds")
+```
+
+## 4.2 Analyzing: Basic Choropleth Mapping
+
+### 4.2.1 Visualizing distribution of functional water point
+
+Plot a choropleth map showing the distribution of function water point by LGA.
+
+```{r}
+tmap_mode("plot")
+
+p1 <- tm_shape(NGA_wp)+
+  tm_fill("wp_functional",
+          n=10,
+          style = "equal",
+          palette = "Blues")+
+  tm_borders(lwd=0.1,
+             alpha = 1)+
+  tm_layout(main.title = "Distribution of functional water point by LGAs",
+            legend.outside = FALSE)
+
+p2 <- tm_shape(NGA_wp)+
+  tm_fill("total_wp",
+          n=10,
+          style = "equal",
+          palette = "Blues")+
+  tm_borders(lwd=0.1,
+             alpha = 1)+
+  tm_layout(main.title = "Distribution of total water point by LGAs",
+            legend.outside = FALSE)
+
+tmap_arrange(p2,p1,nrow=1)
+```
+
+## 4.3 Analyzing: Choropleth Map for Rates
+
+### 4.3.1 Deriving Proportion of Functional Water Points and Non-Functional Water Points
+
+We will tabulate the proportion of functional water points and the proportion of non-functional water points in each LGA. In the following code chunk, `mutate()` from **dplyr** package is used to derive two fields, namely *pct_functional* and *pct_nonfunctional*.
+
+```{r}
+NGA_wp <- NGA_wp %>%
+  mutate(pct_functional = wp_functional / total_wp) %>%
+  mutate(pct_nonfunctional = wp_nonfunctional / total_wp)
+```
+
+### 4.3.2 Plotting map of rate
+
+Plot a choropleth map showing the distribution of percentage functional water point by LGA.
+
+```{r}
+tm_shape(NGA_wp)+
+  tm_fill("pct_functional",
+          n=10,
+          style = "equal",
+          palette = "Blues",
+          legend.hist = TRUE)+
+  tm_borders(lwd=0.1,
+             alpha = 1)+
+  tm_layout(main.title = "Rate map of functional water point by LGAs",
+            legend.outside = TRUE)
+```
+
+## 4.4 Analyzing: Extreme Value Maps
+
+### 4.4.1 Percentile Map
+
+#### 4.4.1.1 Data Preparation
+
+#### 4.4.1.2 Creating the get.var function
+
+#### 4.4.1.3 A percentile mapping function
+
+#### 4.4.1.4 Test drive the percentile mapping function
+
+### 4.4.2 Box Map
+
+#### 4.4.2.1 Creating the boxbreaks function
+
+#### 4.4.2.2 Creating the grt.var function
+
+#### 4.4.2.3 Test drive the newly created function
+
+#### 4.4.2.4 Boxmap function
