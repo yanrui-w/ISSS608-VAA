@@ -16,3 +16,180 @@ editor: visual
 
 ![]()
 
+# 2. Getting Started
+
+## 2.1 Installing and launching R packages
+
+In this hands-on exercise, four network data modelling and visualisation packages will be installed and launched. They are **igraph, tidygraph, ggraph** and **visNetwork**. Beside these four packages, **tidyverse** and **lubridate**, an R package specially designed to handle and wrangling time data will be installed and launched too.
+
+```{r}
+pacman::p_load(igraph,tidygraph,ggraph,
+               visNetwork,lubridate,clock,
+               tidyverse,graphlayouts)
+```
+
+# 3. The Data
+
+The data sets used in this hands-on exercise is from an oil exploration and extraction company. There are two data sets. One contains the nodes data and the other contains the edges (also know as link) data.
+
+-   **Nodes Data**: Points or dots in a network which can represent almost anything, depending on what the network is about. Nodes data is essentially information about these points, such as their names, characteristics, and possibly their positions in space if the network has a geographical component.
+-   **Edges Data**: Lines that connect the nodes in a network, showing how they are related. Edges data includes information about these connections, like the type of relationship (friendship, road, data link, etc.), the strength or capacity of the connection (like the bandwidth of an internet connection), and sometimes the distance or cost associated with the connection.
+
+## 3.1 The edges data
+
+*GAStech-email_edges-v2.csv* which consists of two weeks of 9063 emails correspondances between 55 employees.
+
+![edgesdata](image/edgesdata.png)
+
+## 3.2 The nodes data
+
+*GAStech_email_nodes.csv* which consist of the names, department and title of the 55 employees.
+
+![nodesdata](image/nodesdata.png)
+
+## 3.3 Importing network data from files
+
+Import *GAStech_email_node.csv* and *GAStech_email_edges-v2.csv* into RStudio environment by using `read_csv()` of readr package.
+
+```{r}
+GAStech_nodes <- read_csv("data/GAStech_email_node.csv")
+GAStech_edges <- read_csv("data/GAStech_email_edge-v2.csv")
+```
+
+## 3.4 Reviewing the imported data
+
+Next, we will examine the structure of the data frame using `glimpse()` of **dplyr**.
+
+```{r}
+glimpse(GAStech_edges)
+```
+
+::: {.callout-note icon="false"}
+## Warning
+
+The output report of *GAStech_edges* above reveals that the *SentDate* is treated as “Character” data type instead of date data type. This is an error! Before we continue, it is important for us to change the data type of SentDate field back to “Date” data type.
+:::
+
+## 3.5 Wrangling time
+
+The code chunk below will be used to perform the changes.
+
+```{r}
+GAStech_edges <- GAStech_edges %>%
+  mutate(SentDate = dmy(SentDate)) %>%
+  mutate(Weekday=wday(SentDate,
+                      label=TRUE,
+                      abbr=FALSE))
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `dmy()`: a function of **lubridate** package which transforms the *SentDate* to Date data type.
+
+2.  `wday()`: a function of **lubridate** package which returns the day of the week as a decimal number or an ordered factor if label is TRUE. The argument abbr is FALSE keep the daya spells in full, i.e. Monday. The function will create a new column in the data.frame i.e. *Weekday* and the output of `wday()` will save in this newly created field. The values in the Weekday field are in ordinal scale.
+:::
+
+## 3.6 Reviewing the revised data fields
+
+Table below shows the data structure of the reformatted GAStech_edges data frame.
+
+```{r}
+glimpse(GAStech_edges)
+```
+
+## 3.7 Wrangling attributes
+
+A close examination of GAStech_edges data.frame reveals that it consists of individual e-mail flow records. This is not very useful for visualisation.
+
+In view of this, we will aggregate the individual by date, senders, receivers, main subject and day of the week.
+
+The code chunk:
+
+```{r}
+GAStech_edges_aggregated <- GAStech_edges %>%
+  filter(MainSubject == "Work related") %>%
+  group_by(source,target,Weekday) %>%
+  summarise(Weight=n()) %>%
+  filter(source!=target) %>%
+  filter(Weight>1) %>%
+  ungroup()
+```
+
+## 3.8 Reviewing the revised edges file
+
+Table below shows the data structure of the reformatted *GAStech_edges_aggregated* data frame.
+
+```{r}
+glimpse(GAStech_edges_aggregated)
+```
+
+# 4. Creating network objects using tidygraph
+
+In this section, **tidygraph** packageyou will be used to create a graph data model. It provides a tidy API for graph/network manipulation. While network data itself is not tidy, it can be envisioned as two tidy tables, one for node data and one for edge data. tidygraph provides a way to switch between the two tables and provides dplyr verbs for manipulating them. Furthermore it provides access to a lot of graph algorithms with return values that facilitate their use in a tidy workflow.
+
+Refer to these two articles for more information:\
+- [Introducing tidygraph](https://www.data-imaginist.com/posts/2017-07-07-introducing-tidygraph/)\
+- [tidygraph 1.1 - A tidy hope](https://www.data-imaginist.com/posts/2018-02-12-tidygraph-1-1-a-tidy-hope/index.html)
+
+## 4.1 The tbl_graph object
+
+## 4.2 The dplyr verbs in tidygraph
+
+## 4.3 Using tbl_graph() to build tidygraph data model
+
+## 4.4 Reviewing the output tidygraph's graph object
+
+## 4.5 Changing the active object
+
+# 5. Plotting Static Network Graphs with ggraph package
+
+## 5.1 Plotting a basic network graph
+
+## 5.2 Changing the default network graph theme
+
+## 5.3 Changing the coloring of the plot
+
+## 5.4 Working with ggraph's layouts
+
+## 5.5 Fruchterman and Reingold layout
+
+## 5.6 Modifying network nodes
+
+## 5.7 Modifying edges
+
+# 6. Creating facet graphs
+
+## 6.1 Working with facet_edges()
+
+## 6.2 A framed facet graph
+
+## 6.3 Working with facet_nodes()
+
+# 7. Network Metrics Analysis
+
+## 7.1 Computing centrality indices
+
+## 7.2 Visualizing network metrics
+
+## 7.3 Visualizing community
+
+# 8. Building Interactive Network Graph with visNetwork
+
+## 8.1 Data Preparation
+
+## 8.2 Plotting the first interactive network graph
+
+## 8.3 Working with layout
+
+## 8.4 Working with visual attributes - Nodes
+
+## 8.5 Working with visual attributes - Edges
+
+## 8.6 Interactivity
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `left_join()`: is used with `mpsz` simple feature data frame as the left data table is to ensure that the output will be a simple features data frame.
+:::

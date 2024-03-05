@@ -684,5 +684,236 @@
     "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
     "section": "",
     "text": "1. Roadmap for studying"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#installing-and-launching-r-packages",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#installing-and-launching-r-packages",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "2.1 Installing and launching R packages",
+    "text": "2.1 Installing and launching R packages\nIn this hands-on exercise, four network data modelling and visualisation packages will be installed and launched. They are igraph, tidygraph, ggraph and visNetwork. Beside these four packages, tidyverse and lubridate, an R package specially designed to handle and wrangling time data will be installed and launched too.\n\npacman::p_load(igraph,tidygraph,ggraph,\n               visNetwork,lubridate,clock,\n               tidyverse,graphlayouts)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#the-edges-data",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#the-edges-data",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "3.1 The edges data",
+    "text": "3.1 The edges data\nGAStech-email_edges-v2.csv which consists of two weeks of 9063 emails correspondances between 55 employees.\n\n\n\nedgesdata"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#the-nodes-data",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#the-nodes-data",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "3.2 The nodes data",
+    "text": "3.2 The nodes data\nGAStech_email_nodes.csv which consist of the names, department and title of the 55 employees.\n\n\n\nnodesdata"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#importing-network-data-from-files",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#importing-network-data-from-files",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "3.3 Importing network data from files",
+    "text": "3.3 Importing network data from files\nImport GAStech_email_node.csv and GAStech_email_edges-v2.csv into RStudio environment by using read_csv() of readr package.\n\nGAStech_nodes &lt;- read_csv(\"data/GAStech_email_node.csv\")\nGAStech_edges &lt;- read_csv(\"data/GAStech_email_edge-v2.csv\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#reviewing-the-imported-data",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#reviewing-the-imported-data",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "3.4 Reviewing the imported data",
+    "text": "3.4 Reviewing the imported data\nNext, we will examine the structure of the data frame using glimpse() of dplyr.\n\nglimpse(GAStech_edges)\n\nRows: 9,063\nColumns: 8\n$ source      &lt;dbl&gt; 43, 43, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 26, 26, 26…\n$ target      &lt;dbl&gt; 41, 40, 51, 52, 53, 45, 44, 46, 48, 49, 47, 54, 27, 28, 29…\n$ SentDate    &lt;chr&gt; \"6/1/2014\", \"6/1/2014\", \"6/1/2014\", \"6/1/2014\", \"6/1/2014\"…\n$ SentTime    &lt;time&gt; 08:39:00, 08:39:00, 08:58:00, 08:58:00, 08:58:00, 08:58:0…\n$ Subject     &lt;chr&gt; \"GT-SeismicProcessorPro Bug Report\", \"GT-SeismicProcessorP…\n$ MainSubject &lt;chr&gt; \"Work related\", \"Work related\", \"Work related\", \"Work rela…\n$ sourceLabel &lt;chr&gt; \"Sven.Flecha\", \"Sven.Flecha\", \"Kanon.Herrero\", \"Kanon.Herr…\n$ targetLabel &lt;chr&gt; \"Isak.Baza\", \"Lucas.Alcazar\", \"Felix.Resumir\", \"Hideki.Coc…\n\n\n\n\n\n\n\n\nWarning\n\n\n\nThe output report of GAStech_edges above reveals that the SentDate is treated as “Character” data type instead of date data type. This is an error! Before we continue, it is important for us to change the data type of SentDate field back to “Date” data type."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#wrangling-time",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#wrangling-time",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "3.5 Wrangling time",
+    "text": "3.5 Wrangling time\nThe code chunk below will be used to perform the changes.\n\nGAStech_edges &lt;- GAStech_edges %&gt;%\n  mutate(SentDate = dmy(SentDate)) %&gt;%\n  mutate(Weekday=wday(SentDate,\n                      label=TRUE,\n                      abbr=FALSE))\n\n\n\n\n\n\n\nCode Notes\n\n\n\n\ndmy(): a function of lubridate package which transforms the SentDate to Date data type.\nwday(): a function of lubridate package which returns the day of the week as a decimal number or an ordered factor if label is TRUE. The argument abbr is FALSE keep the daya spells in full, i.e. Monday. The function will create a new column in the data.frame i.e. Weekday and the output of wday() will save in this newly created field. The values in the Weekday field are in ordinal scale."
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#reviewing-the-revised-data-fields",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#reviewing-the-revised-data-fields",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "3.6 Reviewing the revised data fields",
+    "text": "3.6 Reviewing the revised data fields\nTable below shows the data structure of the reformatted GAStech_edges data frame.\n\nglimpse(GAStech_edges)\n\nRows: 9,063\nColumns: 9\n$ source      &lt;dbl&gt; 43, 43, 44, 44, 44, 44, 44, 44, 44, 44, 44, 44, 26, 26, 26…\n$ target      &lt;dbl&gt; 41, 40, 51, 52, 53, 45, 44, 46, 48, 49, 47, 54, 27, 28, 29…\n$ SentDate    &lt;date&gt; 2014-01-06, 2014-01-06, 2014-01-06, 2014-01-06, 2014-01-0…\n$ SentTime    &lt;time&gt; 08:39:00, 08:39:00, 08:58:00, 08:58:00, 08:58:00, 08:58:0…\n$ Subject     &lt;chr&gt; \"GT-SeismicProcessorPro Bug Report\", \"GT-SeismicProcessorP…\n$ MainSubject &lt;chr&gt; \"Work related\", \"Work related\", \"Work related\", \"Work rela…\n$ sourceLabel &lt;chr&gt; \"Sven.Flecha\", \"Sven.Flecha\", \"Kanon.Herrero\", \"Kanon.Herr…\n$ targetLabel &lt;chr&gt; \"Isak.Baza\", \"Lucas.Alcazar\", \"Felix.Resumir\", \"Hideki.Coc…\n$ Weekday     &lt;ord&gt; Monday, Monday, Monday, Monday, Monday, Monday, Monday, Mo…"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#wrangling-attributes",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#wrangling-attributes",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "3.7 Wrangling attributes",
+    "text": "3.7 Wrangling attributes\nA close examination of GAStech_edges data.frame reveals that it consists of individual e-mail flow records. This is not very useful for visualisation.\nIn view of this, we will aggregate the individual by date, senders, receivers, main subject and day of the week.\nThe code chunk:\n\nGAStech_edges_aggregated &lt;- GAStech_edges %&gt;%\n  filter(MainSubject == \"Work related\") %&gt;%\n  group_by(source,target,Weekday) %&gt;%\n  summarise(Weight=n()) %&gt;%\n  filter(source!=target) %&gt;%\n  filter(Weight&gt;1) %&gt;%\n  ungroup()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#reviewing-the-revised-edges-file",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#reviewing-the-revised-edges-file",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "3.8 Reviewing the revised edges file",
+    "text": "3.8 Reviewing the revised edges file\nTable below shows the data structure of the reformatted GAStech_edges_aggregated data frame.\n\nglimpse(GAStech_edges_aggregated)\n\nRows: 1,456\nColumns: 4\n$ source  &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…\n$ target  &lt;dbl&gt; 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 7,…\n$ Weekday &lt;ord&gt; Monday, Tuesday, Wednesday, Friday, Monday, Tuesday, Wednesday…\n$ Weight  &lt;int&gt; 4, 3, 5, 8, 4, 3, 5, 8, 4, 3, 5, 8, 4, 3, 5, 8, 4, 3, 5, 8, 4,…"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#the-tbl_graph-object",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#the-tbl_graph-object",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "4.1 The tbl_graph object",
+    "text": "4.1 The tbl_graph object"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#the-dplyr-verbs-in-tidygraph",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#the-dplyr-verbs-in-tidygraph",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "4.2 The dplyr verbs in tidygraph",
+    "text": "4.2 The dplyr verbs in tidygraph"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#using-tbl_graph-to-build-tidygraph-data-model",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#using-tbl_graph-to-build-tidygraph-data-model",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "4.3 Using tbl_graph() to build tidygraph data model",
+    "text": "4.3 Using tbl_graph() to build tidygraph data model"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#reviewing-the-output-tidygraphs-graph-object",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#reviewing-the-output-tidygraphs-graph-object",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "4.4 Reviewing the output tidygraph’s graph object",
+    "text": "4.4 Reviewing the output tidygraph’s graph object"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#changing-the-active-object",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#changing-the-active-object",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "4.5 Changing the active object",
+    "text": "4.5 Changing the active object"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#plotting-a-basic-network-graph",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#plotting-a-basic-network-graph",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "5.1 Plotting a basic network graph",
+    "text": "5.1 Plotting a basic network graph"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#changing-the-default-network-graph-theme",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#changing-the-default-network-graph-theme",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "5.2 Changing the default network graph theme",
+    "text": "5.2 Changing the default network graph theme"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#changing-the-coloring-of-the-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#changing-the-coloring-of-the-plot",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "5.3 Changing the coloring of the plot",
+    "text": "5.3 Changing the coloring of the plot"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-ggraphs-layouts",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-ggraphs-layouts",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "5.4 Working with ggraph’s layouts",
+    "text": "5.4 Working with ggraph’s layouts"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#fruchterman-and-reingold-layout",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#fruchterman-and-reingold-layout",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "5.5 Fruchterman and Reingold layout",
+    "text": "5.5 Fruchterman and Reingold layout"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#modifying-network-nodes",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#modifying-network-nodes",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "5.6 Modifying network nodes",
+    "text": "5.6 Modifying network nodes"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#modifying-edges",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#modifying-edges",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "5.7 Modifying edges",
+    "text": "5.7 Modifying edges"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-facet_edges",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-facet_edges",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "6.1 Working with facet_edges()",
+    "text": "6.1 Working with facet_edges()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#a-framed-facet-graph",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#a-framed-facet-graph",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "6.2 A framed facet graph",
+    "text": "6.2 A framed facet graph"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-facet_nodes",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-facet_nodes",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "6.3 Working with facet_nodes()",
+    "text": "6.3 Working with facet_nodes()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#computing-centrality-indices",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#computing-centrality-indices",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "7.1 Computing centrality indices",
+    "text": "7.1 Computing centrality indices"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#visualizing-network-metrics",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#visualizing-network-metrics",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "7.2 Visualizing network metrics",
+    "text": "7.2 Visualizing network metrics"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#visualizing-community",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#visualizing-community",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "7.3 Visualizing community",
+    "text": "7.3 Visualizing community"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#data-preparation",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#data-preparation",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "8.1 Data Preparation",
+    "text": "8.1 Data Preparation"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#plotting-the-first-interactive-network-graph",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#plotting-the-first-interactive-network-graph",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "8.2 Plotting the first interactive network graph",
+    "text": "8.2 Plotting the first interactive network graph"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-layout",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-layout",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "8.3 Working with layout",
+    "text": "8.3 Working with layout"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-visual-attributes---nodes",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-visual-attributes---nodes",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "8.4 Working with visual attributes - Nodes",
+    "text": "8.4 Working with visual attributes - Nodes"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-visual-attributes---edges",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#working-with-visual-attributes---edges",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "8.5 Working with visual attributes - Edges",
+    "text": "8.5 Working with visual attributes - Edges"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#interactivity",
+    "href": "Hands-on_Ex/Hands-on_Ex08/Hands-on_Ex08.html#interactivity",
+    "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
+    "section": "8.6 Interactivity",
+    "text": "8.6 Interactivity\n\n\n\n\n\n\nCode Notes\n\n\n\n\nleft_join(): is used with mpsz simple feature data frame as the left data table is to ensure that the output will be a simple features data frame."
   }
 ]
