@@ -307,7 +307,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">March 5, 2024</p>
+      <p class="date-modified">March 6, 2024</p>
     </div>
   </div>
     
@@ -485,18 +485,126 @@ $ Weight  &lt;int&gt; 4, 3, 5, 8, 4, 3, 5, 8, 4, 3, 5, 8, 4, 3, 5, 8, 4, 3, 5, 8
 - <a href="https://www.data-imaginist.com/posts/2018-02-12-tidygraph-1-1-a-tidy-hope/index.html">tidygraph 1.1 - A tidy hope</a></p>
 <section id="the-tbl_graph-object" class="level2">
 <h2 class="anchored" data-anchor-id="the-tbl_graph-object">4.1 The tbl_graph object</h2>
+<p>Two functions of <strong>tidygraph</strong> package can be used to create network objects, they are:</p>
+<ul>
+<li><p><code>tbl_graph()</code> creates a new <strong>tbl_graph</strong> network object from nodes and edges data.</p></li>
+<li><p><code>as_tbl_graph()</code> converts an existed network data and objects to a <strong>tbl_graph</strong> network. Below are network data and objects supported by <code>as_tbl_graph()</code></p>
+<ul>
+<li><p>a node data.frame and an edge data.frame,</p></li>
+<li><p>data.frame, list, matrix from base,</p></li>
+<li><p>igraph from igraph, - network from network,</p></li>
+<li><p>dendrogram and hclust from stats,</p></li>
+<li><p>Node from data.tree,</p></li>
+<li><p>phylo and evonet from ape, and</p></li>
+<li><p>graphNEL, graphAM, graphBAM from graph (in Bioconductor).</p></li>
+</ul></li>
+</ul>
 </section>
 <section id="the-dplyr-verbs-in-tidygraph" class="level2">
 <h2 class="anchored" data-anchor-id="the-dplyr-verbs-in-tidygraph">4.2 The dplyr verbs in tidygraph</h2>
+<ul>
+<li><p><code>activate()</code> verb from <strong>tidygraph</strong> serves as a switch between tibbles for nodes and edges. All dplyr verbs applied to <strong>tbl_graph</strong> object are applied to the active tibble.</p></li>
+<li><p><code>N()</code> function is used to gain access to the node data while manipulating the edge data. Similarly .<code>E()</code> will give you the edge data and .<code>G()</code> will give you the tbl_graph object itself.</p></li>
+</ul>
 </section>
 <section id="using-tbl_graph-to-build-tidygraph-data-model" class="level2">
 <h2 class="anchored" data-anchor-id="using-tbl_graph-to-build-tidygraph-data-model">4.3 Using tbl_graph() to build tidygraph data model</h2>
+<p>In this section, <code>tbl_graph()</code> of <strong>tidygraph</strong> package will be used to build an tidygraph’s network graph data.frame.</p>
+<p>Before typing the codes, it’s recommended to review to reference guide of <a href="https://tidygraph.data-imaginist.com/reference/tbl_graph.html">tbl_graph()</a></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>GAStech_graph <span class="ot">&lt;-</span> <span class="fu">tbl_graph</span>(<span class="at">nodes=</span>GAStech_nodes,</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>                           <span class="at">edges=</span>GAStech_edges_aggregated,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                           <span class="at">directed =</span><span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><code>directed=TRUE</code>: directed graph where edges have directions.</li>
+</ol>
+</div>
+</div>
 </section>
 <section id="reviewing-the-output-tidygraphs-graph-object" class="level2">
 <h2 class="anchored" data-anchor-id="reviewing-the-output-tidygraphs-graph-object">4.4 Reviewing the output tidygraph’s graph object</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>GAStech_graph</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tbl_graph: 54 nodes and 1456 edges
+#
+# A directed multigraph with 1 component
+#
+# Node Data: 54 × 4 (active)
+      id label               Department     Title                               
+   &lt;dbl&gt; &lt;chr&gt;               &lt;chr&gt;          &lt;chr&gt;                               
+ 1     1 Mat.Bramar          Administration Assistant to CEO                    
+ 2     2 Anda.Ribera         Administration Assistant to CFO                    
+ 3     3 Rachel.Pantanal     Administration Assistant to CIO                    
+ 4     4 Linda.Lagos         Administration Assistant to COO                    
+ 5     5 Ruscella.Mies.Haber Administration Assistant to Engineering Group Mana…
+ 6     6 Carla.Forluniau     Administration Assistant to IT Group Manager       
+ 7     7 Cornelia.Lais       Administration Assistant to Security Group Manager 
+ 8    44 Kanon.Herrero       Security       Badging Office                      
+ 9    45 Varja.Lagos         Security       Badging Office                      
+10    46 Stenig.Fusil        Security       Building Control                    
+# ℹ 44 more rows
+#
+# Edge Data: 1,456 × 4
+   from    to Weekday   Weight
+  &lt;int&gt; &lt;int&gt; &lt;ord&gt;      &lt;int&gt;
+1     1     2 Monday         4
+2     1     2 Tuesday        3
+3     1     2 Wednesday      5
+# ℹ 1,453 more rows</code></pre>
+</div>
+</div>
 </section>
 <section id="changing-the-active-object" class="level2">
 <h2 class="anchored" data-anchor-id="changing-the-active-object">4.5 Changing the active object</h2>
+<p>The nodes tibble data frame is activated by default, but you can change which tibble data frame is active with the <code>activate()</code> function. Thus, if we wanted to rearrange the rows in the edges tibble to list those with the highest <em>weight</em> first, we could use <code>activate()</code> and then <code>arrange()</code>.</p>
+<p>The notion of an active tibble within a tbl_graph object makes it possible to manipulate the data in one tibble at a time.</p>
+<p>For example,</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>GAStech_graph <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">activate</span>(edges) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(Weight))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tbl_graph: 54 nodes and 1456 edges
+#
+# A directed multigraph with 1 component
+#
+# Edge Data: 1,456 × 4 (active)
+    from    to Weekday   Weight
+   &lt;int&gt; &lt;int&gt; &lt;ord&gt;      &lt;int&gt;
+ 1    40    41 Tuesday       23
+ 2    40    43 Tuesday       19
+ 3    41    43 Tuesday       15
+ 4    41    40 Tuesday       14
+ 5    42    41 Tuesday       13
+ 6    42    40 Tuesday       12
+ 7    42    43 Tuesday       11
+ 8    43    42 Wednesday     11
+ 9    36    32 Wednesday      9
+10    40    41 Monday         9
+# ℹ 1,446 more rows
+#
+# Node Data: 54 × 4
+     id label           Department     Title           
+  &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;          &lt;chr&gt;           
+1     1 Mat.Bramar      Administration Assistant to CEO
+2     2 Anda.Ribera     Administration Assistant to CFO
+3     3 Rachel.Pantanal Administration Assistant to CIO
+# ℹ 51 more rows</code></pre>
+</div>
+</div>
+<p>Visit the reference guide of <a href="https://tidygraph.data-imaginist.com/reference/activate.html">activate()</a> to find out more about the function.</p>
 </section>
 </section>
 <section id="plotting-static-network-graphs-with-ggraph-package" class="level1">

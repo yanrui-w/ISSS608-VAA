@@ -134,13 +134,71 @@ Refer to these two articles for more information:\
 
 ## 4.1 The tbl_graph object
 
+Two functions of **tidygraph** package can be used to create network objects, they are:
+
+-   `tbl_graph()` creates a new **tbl_graph** network object from nodes and edges data.
+
+-   `as_tbl_graph()` converts an existed network data and objects to a **tbl_graph** network. Below are network data and objects supported by `as_tbl_graph()`
+
+    -   a node data.frame and an edge data.frame,
+
+    -   data.frame, list, matrix from base,
+
+    -   igraph from igraph, - network from network,
+
+    -   dendrogram and hclust from stats,
+
+    -   Node from data.tree,
+
+    -   phylo and evonet from ape, and
+
+    -   graphNEL, graphAM, graphBAM from graph (in Bioconductor).
+
 ## 4.2 The dplyr verbs in tidygraph
+
+-   `activate()` verb from **tidygraph** serves as a switch between tibbles for nodes and edges. All dplyr verbs applied to **tbl_graph** object are applied to the active tibble.
+
+-   `N()` function is used to gain access to the node data while manipulating the edge data. Similarly .`E()` will give you the edge data and .`G()` will give you the tbl_graph object itself.
 
 ## 4.3 Using tbl_graph() to build tidygraph data model
 
+In this section, `tbl_graph()` of **tidygraph** package will be used to build an tidygraph’s network graph data.frame.
+
+Before typing the codes, it's recommended to review to reference guide of [tbl_graph()](https://tidygraph.data-imaginist.com/reference/tbl_graph.html)
+
+```{r}
+GAStech_graph <- tbl_graph(nodes=GAStech_nodes,
+                           edges=GAStech_edges_aggregated,
+                           directed =TRUE)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `directed=TRUE`: directed graph where edges have directions.
+:::
+
 ## 4.4 Reviewing the output tidygraph's graph object
 
+```{r}
+GAStech_graph
+```
+
 ## 4.5 Changing the active object
+
+The nodes tibble data frame is activated by default, but you can change which tibble data frame is active with the `activate()` function. Thus, if we wanted to rearrange the rows in the edges tibble to list those with the highest *weight* first, we could use `activate()` and then `arrange()`.
+
+The notion of an active tibble within a tbl_graph object makes it possible to manipulate the data in one tibble at a time.
+
+For example,
+
+```{r}
+GAStech_graph %>%
+  activate(edges) %>%
+  arrange(desc(Weight))
+```
+
+Visit the reference guide of [activate()](https://tidygraph.data-imaginist.com/reference/activate.html) to find out more about the function.
 
 # 5. Plotting Static Network Graphs with ggraph package
 
