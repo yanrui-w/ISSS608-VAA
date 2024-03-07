@@ -14,7 +14,7 @@ editor: visual
 
 # 1. Roadmap for studying
 
-![]()
+![roadmap_8](image/roadmap_8.png)
 
 # 2. Getting Started
 
@@ -417,7 +417,7 @@ g+facet_nodes(~Department)+
 
 Centrality measures are a collection of statistical indices use to describe the relative important of the actors are to a network. There are four well-known centrality measures, namely: **degree, betweenness, closeness** and **eigenvector**.
 
-Refer to *Chapter 7: Actor Prominence* of **A User’s Guide to Network Analysis in R*** to gain better understanding of theses network measures.
+Refer to *Chapter 7: Actor Prominence* of **A User’s Guide to Network Analysis in R**\* to gain better understanding of theses network measures.
 
 ```{r}
 g <- GAStech_graph %>%
@@ -455,7 +455,7 @@ g+theme_graph()
 
 ## 7.3 Visualizing community
 
-tidygraph package inherits many of the community detection algorithms imbedded into igraph and makes them available to us, including *Edge-betweenness (group_edge_betweenness), Leading eigenvector (group_leading_eigen), Fast-greedy (group_fast_greedy), Louvain (group_louvain), Walktrap (group_walktrap), Label propagation (group_label_prop), InfoMAP (group_infomap), Spinglass (group_spinglass), and Optimal (group_optimal)*. Some community algorithms are designed to take into account direction or weight, while others ignore it. 
+tidygraph package inherits many of the community detection algorithms imbedded into igraph and makes them available to us, including *Edge-betweenness (group_edge_betweenness), Leading eigenvector (group_leading_eigen), Fast-greedy (group_fast_greedy), Louvain (group_louvain), Walktrap (group_walktrap), Label propagation (group_label_prop), InfoMAP (group_infomap), Spinglass (group_spinglass), and Optimal (group_optimal)*. Some community algorithms are designed to take into account direction or weight, while others ignore it.
 
 For more about community detection, refer to [Group nodes and edges based on community structure](https://tidygraph.data-imaginist.com/reference/group_graph.html).
 
@@ -479,27 +479,136 @@ g+theme_graph()
 1.  **Edge Betweenness Centrality**: The number of times the shortest paths between all pairs of nodes pass through a particular edge. If an edge has a high betweenness centrality value, it means that many shortest paths go through this edge. In other words, this edge plays a significant role in connecting different parts of the network.
 
 2.  **community detection algorithm (edge betweenness centrality based)**:\
-  2.1  Identify the edges that connect different communities in a network. These edges often have a higher edge betweenness centrality because they lie between different communities, and many of the shortest paths connecting nodes within these communities pass through them.\
-  2.2  Remove these edges.\
-  2.3  More clearly reveal the different community structures within the network.
+    2.1 Identify the edges that connect different communities in a network. These edges often have a higher edge betweenness centrality because they lie between different communities, and many of the shortest paths connecting nodes within these communities pass through them.\
+    2.2 Remove these edges.\
+    2.3 More clearly reveal the different community structures within the network.
 :::
 
 # 8. Building Interactive Network Graph with visNetwork
 
+[visNetwork()](https://datastorm-open.github.io/visNetwork/) is a R package for network visualization, using [vis.js](https://visjs.org/) javascript library.
+
+*visNetwork()* function uses a nodes list and edges list to create an interactive graph.
+
+-   The nodes list must include an “id” column, and the edge list must have “from” and “to” columns.
+-   The function also plots the labels for the nodes, using the names of the actors from the “label” column in the node list.
+
+The resulting graph is fun to play around with.
+
+-   You can move the nodes and the graph will use an algorithm to keep the nodes properly spaced.
+-   You can also zoom in and out on the plot and move it around to re-center it.
+
 ## 8.1 Data Preparation
 
-## 8.2 Plotting the first interactive network graph
+Before we can plot the interactive network graph, we need to prepare the data model by using the code chunk below.
 
-## 8.3 Working with layout
-
-## 8.4 Working with visual attributes - Nodes
-
-## 8.5 Working with visual attributes - Edges
-
-## 8.6 Interactivity
+```{r}
+GAStech_edges_aggregated <- GAStech_edges %>%
+  left_join(GAStech_nodes, by=c("sourceLabel"="label")) %>%
+  rename(from=id) %>%
+  left_join(GAStech_nodes, by=c("targetLabel"="label")) %>%
+  rename(to=id) %>%
+  filter(MainSubject=="Work related") %>%
+  group_by(from,to) %>%
+  summarise(weight=n()) %>%
+  filter(from!=to) %>%
+  filter(weight>1) %>%
+  ungroup()
+```
 
 ::: {.callout-note icon="false"}
 ## Code Notes
 
-1.  `left_join()`: is used with `mpsz` simple feature data frame as the left data table is to ensure that the output will be a simple features data frame.
+1.  `rename(A=B)`: rename the existing column name B as A.
 :::
+
+## 8.2 Plotting the first interactive network graph
+
+The code chunk below will be used to plot an interactive network graph by using the data prepared.
+
+```{r}
+visNetwork(GAStech_nodes,
+           GAStech_edges_aggregated)
+```
+
+## 8.3 Working with layout
+
+In the code chunk below, Fruchterman and Reingold layout is used.
+
+```{r}
+visNetwork(GAStech_nodes,
+           GAStech_edges_aggregated) %>%
+  visIgraphLayout(layout="layout_with_fr")
+```
+
+Visit [Igraph](https://datastorm-open.github.io/visNetwork/igraph.html) to find out more about visIgraphLayout’s argument.
+
+## 8.4 Working with visual attributes - Nodes
+
+`visNetwork()` looks for a field called **“group”** in the nodes object and colour the nodes according to the values of the group field.
+
+The code chunk below rename Department field to group.
+
+```{r}
+GAStech_nodes <- GAStech_nodes %>%
+  rename(group=Department)
+```
+
+When we rerun the code chunk below, visNetwork shades the nodes by assigning unique colour to each category in the *group* field.
+
+```{r}
+visNetwork(GAStech_nodes,
+           GAStech_edges_aggregated) %>%
+  visIgraphLayout(layout="layout_with_fr") %>%
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `visIgraphLayout()`: defines vision configuration of the layout (how to display nodes and edges).
+
+2.  `visLayout()`: defines the overall layout algorithm after `visIgraphLayout()` setting (size, margin, whether to fix the position of nodes).
+
+3.  `randomSeed=123`: the algorithm will introduce randomness when calculating the position of nodes. Setting randomSeed=123 ensures the same output from multiple generations.
+:::
+
+## 8.5 Working with visual attributes - Edges
+
+In the code run below `visEdges()` is used to symbolise the edges.
+
+-   The argument *arrows* is used to define where to place the arrow.
+-   The *smooth* argument is used to plot the edges using a smooth curve.
+
+```{r}
+visNetwork(GAStech_nodes,
+           GAStech_edges_aggregated) %>%
+  visIgraphLayout(layout="layout_with_fr") %>%
+  visEdges(arrows="to",
+           smooth=list(enabled=TRUE,
+                       type="curvedCW")) %>%
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+Visit [Option](https://datastorm-open.github.io/visNetwork/edges.html) to find out more about visEdges’s argument.
+
+## 8.6 Interactivity
+
+In the code chunk below, `visOptions()` is used to incorporate interactivity features in the data visualisation.
+
+-   The argument *highlightNearest* highlights nearest when clicking a node.
+-   The argument *nodesIdSelection* adds an id node selection creating an HTML select element.
+
+```{r}
+visNetwork(GAStech_nodes,
+           GAStech_edges_aggregated) %>%
+  visIgraphLayout(layout="layout_with_fr") %>%
+  visOptions(highlightNearest = TRUE,
+             nodesIdSelection = TRUE) %>%
+  visLegend() %>%
+  visLayout(randomSeed = 123)
+```
+
+Visit [Option](https://datastorm-open.github.io/visNetwork/options.html) to find out more about visOption’s argument.
