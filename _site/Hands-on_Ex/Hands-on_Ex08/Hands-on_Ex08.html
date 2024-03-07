@@ -874,12 +874,94 @@ Code Notes
 <h1>7. Network Metrics Analysis</h1>
 <section id="computing-centrality-indices" class="level2">
 <h2 class="anchored" data-anchor-id="computing-centrality-indices">7.1 Computing centrality indices</h2>
+<p>Centrality measures are a collection of statistical indices use to describe the relative important of the actors are to a network. There are four well-known centrality measures, namely: <strong>degree, betweenness, closeness</strong> and <strong>eigenvector</strong>.</p>
+<p>Refer to <em>Chapter 7: Actor Prominence</em> of <strong>A User’s Guide to Network Analysis in R</strong>* to gain better understanding of theses network measures.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">betweenness_centrality =</span> <span class="fu">centrality_betweenness</span>()) <span class="sc">%&gt;%</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggraph</span>(<span class="at">layout =</span> <span class="st">"fr"</span>) <span class="sc">+</span> </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight), </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>) <span class="sc">+</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="dv">5</span>)) <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour =</span> Department,</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>            <span class="at">size=</span>betweenness_centrality))</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>g <span class="sc">+</span> <span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><code>centrality_betweenness()</code>: the result of this function defines a property for each node which is the amount of centrality.</li>
+</ol>
+</div>
+</div>
 </section>
 <section id="visualizing-network-metrics" class="level2">
 <h2 class="anchored" data-anchor-id="visualizing-network-metrics">7.2 Visualizing network metrics</h2>
+<p>t is important to note that from <strong>ggraph v2.0</strong> onward tidygraph algorithms such as centrality measures can be accessed directly in ggraph calls. This means that it is no longer necessary to precompute and store derived node and edge centrality measures on the graph in order to use them in a plot.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggraph</span>(<span class="at">layout=</span><span class="st">"fr"</span>)<span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight),</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="dv">5</span>))<span class="sc">+</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>Department,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>                  <span class="at">size=</span> <span class="fu">centrality_betweenness</span>()))</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>g<span class="sc">+</span><span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
 </section>
 <section id="visualizing-community" class="level2">
 <h2 class="anchored" data-anchor-id="visualizing-community">7.3 Visualizing community</h2>
+<p>tidygraph package inherits many of the community detection algorithms imbedded into igraph and makes them available to us, including <em>Edge-betweenness (group_edge_betweenness), Leading eigenvector (group_leading_eigen), Fast-greedy (group_fast_greedy), Louvain (group_louvain), Walktrap (group_walktrap), Label propagation (group_label_prop), InfoMAP (group_infomap), Spinglass (group_spinglass), and Optimal (group_optimal)</em>. Some community algorithms are designed to take into account direction or weight, while others ignore it.</p>
+<p>For more about community detection, refer to <a href="https://tidygraph.data-imaginist.com/reference/group_graph.html">Group nodes and edges based on community structure</a>.</p>
+<p>In the code chunk below <em>group_edge_betweenness()</em> is used.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> GAStech_graph <span class="sc">%&gt;%</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">community =</span> <span class="fu">as.factor</span>(<span class="fu">group_edge_betweenness</span>(<span class="at">weights=</span>Weight, <span class="at">directed=</span><span class="cn">TRUE</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggraph</span>(<span class="at">layout=</span><span class="st">"fr"</span>)<span class="sc">+</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_edge_link</span>(<span class="fu">aes</span>(<span class="at">width=</span>Weight),</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">alpha=</span><span class="fl">0.2</span>)<span class="sc">+</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_edge_width</span>(<span class="at">range=</span><span class="fu">c</span>(<span class="fl">0.1</span>,<span class="dv">5</span>))<span class="sc">+</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_node_point</span>(<span class="fu">aes</span>(<span class="at">colour=</span>community))</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>g<span class="sc">+</span><span class="fu">theme_graph</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="Hands-on_Ex08_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Code Notes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>Edge Betweenness Centrality</strong>: The number of times the shortest paths between all pairs of nodes pass through a particular edge. If an edge has a high betweenness centrality value, it means that many shortest paths go through this edge. In other words, this edge plays a significant role in connecting different parts of the network.</p></li>
+<li><p><strong>community detection algorithm (edge betweenness centrality based)</strong>:<br>
+2.1 Identify the edges that connect different communities in a network. These edges often have a higher edge betweenness centrality because they lie between different communities, and many of the shortest paths connecting nodes within these communities pass through them.<br>
+2.2 Remove these edges.<br>
+2.3 More clearly reveal the different community structures within the network.</p></li>
+</ol>
+</div>
+</div>
 </section>
 </section>
 <section id="building-interactive-network-graph-with-visnetwork" class="level1">

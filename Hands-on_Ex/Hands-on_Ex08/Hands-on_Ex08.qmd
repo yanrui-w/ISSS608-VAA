@@ -415,9 +415,74 @@ g+facet_nodes(~Department)+
 
 ## 7.1 Computing centrality indices
 
+Centrality measures are a collection of statistical indices use to describe the relative important of the actors are to a network. There are four well-known centrality measures, namely: **degree, betweenness, closeness** and **eigenvector**.
+
+Refer to *Chapter 7: Actor Prominence* of **A User’s Guide to Network Analysis in R*** to gain better understanding of theses network measures.
+
+```{r}
+g <- GAStech_graph %>%
+  mutate(betweenness_centrality = centrality_betweenness()) %>%
+  ggraph(layout = "fr") + 
+  geom_edge_link(aes(width=Weight), 
+                 alpha=0.2) +
+  scale_edge_width(range = c(0.1, 5)) +
+  geom_node_point(aes(colour = Department,
+            size=betweenness_centrality))
+g + theme_graph()
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `centrality_betweenness()`: the result of this function defines a property for each node which is the amount of centrality.
+:::
+
 ## 7.2 Visualizing network metrics
 
+t is important to note that from **ggraph v2.0** onward tidygraph algorithms such as centrality measures can be accessed directly in ggraph calls. This means that it is no longer necessary to precompute and store derived node and edge centrality measures on the graph in order to use them in a plot.
+
+```{r}
+g <- GAStech_graph %>%
+  ggraph(layout="fr")+
+  geom_edge_link(aes(width=Weight),
+                 alpha=0.2)+
+  scale_edge_width(range=c(0.1,5))+
+  geom_node_point(aes(colour=Department,
+                  size= centrality_betweenness()))
+
+g+theme_graph()
+```
+
 ## 7.3 Visualizing community
+
+tidygraph package inherits many of the community detection algorithms imbedded into igraph and makes them available to us, including *Edge-betweenness (group_edge_betweenness), Leading eigenvector (group_leading_eigen), Fast-greedy (group_fast_greedy), Louvain (group_louvain), Walktrap (group_walktrap), Label propagation (group_label_prop), InfoMAP (group_infomap), Spinglass (group_spinglass), and Optimal (group_optimal)*. Some community algorithms are designed to take into account direction or weight, while others ignore it. 
+
+For more about community detection, refer to [Group nodes and edges based on community structure](https://tidygraph.data-imaginist.com/reference/group_graph.html).
+
+In the code chunk below *group_edge_betweenness()* is used.
+
+```{r}
+g <- GAStech_graph %>%
+  mutate(community = as.factor(group_edge_betweenness(weights=Weight, directed=TRUE))) %>%
+  ggraph(layout="fr")+
+  geom_edge_link(aes(width=Weight),
+                 alpha=0.2)+
+  scale_edge_width(range=c(0.1,5))+
+  geom_node_point(aes(colour=community))
+
+g+theme_graph()
+```
+
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  **Edge Betweenness Centrality**: The number of times the shortest paths between all pairs of nodes pass through a particular edge. If an edge has a high betweenness centrality value, it means that many shortest paths go through this edge. In other words, this edge plays a significant role in connecting different parts of the network.
+
+2.  **community detection algorithm (edge betweenness centrality based)**:\
+  2.1  Identify the edges that connect different communities in a network. These edges often have a higher edge betweenness centrality because they lie between different communities, and many of the shortest paths connecting nodes within these communities pass through them.\
+  2.2  Remove these edges.\
+  2.3  More clearly reveal the different community structures within the network.
+:::
 
 # 8. Building Interactive Network Graph with visNetwork
 
