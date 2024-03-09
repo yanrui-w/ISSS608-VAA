@@ -915,5 +915,19 @@
     "title": "Hands-on Exercise 8: Network Data Visualisation and Analysis",
     "section": "8.6 Interactivity",
     "text": "8.6 Interactivity\nIn the code chunk below, visOptions() is used to incorporate interactivity features in the data visualisation.\n\nThe argument highlightNearest highlights nearest when clicking a node.\nThe argument nodesIdSelection adds an id node selection creating an HTML select element.\n\n\nvisNetwork(GAStech_nodes,\n           GAStech_edges_aggregated) %&gt;%\n  visIgraphLayout(layout=\"layout_with_fr\") %&gt;%\n  visOptions(highlightNearest = TRUE,\n             nodesIdSelection = TRUE) %&gt;%\n  visLegend() %&gt;%\n  visLayout(randomSeed = 123)\n\n\n\n\n\nVisit Option to find out more about visOption’s argument."
+  },
+  {
+    "objectID": "In-Class_Ex/In-Class_Ex07/In-Class_Ex07.html",
+    "href": "In-Class_Ex/In-Class_Ex07/In-Class_Ex07.html",
+    "title": "In-Class Exercise 7: Deal with Geospatial Data",
+    "section": "",
+    "text": "1. Getting Started\n\npacman::p_load(sf,terra,gstat,tmap,\n               viridis,tidyverse)\n\n\n\n2. Import Data\nImport attribute data (WGS84)\n\nrfstations &lt;- read_csv(\"data/aspatial/RainfallStation.csv\")\n\nImport rainfall data and process data extraction and transformation to get monthly rainfall data.\n\nrfdata &lt;- read_csv(\"data/aspatial/DAILYDATA_202402.csv\") %&gt;%\n  select(c(1,5)) %&gt;%\n  group_by(Station) %&gt;%\n  summarise(MONTHSUM = sum(`Daily Rainfall Total (mm)`)) %&gt;%\n  ungroup()\n\nAdd in attribute data. Reference layer is rainfall data, and left join with rainfall station data.\n\nEnsure there is a same and identifier variable in both table for join statement.\n\n\nrfdata &lt;- rfdata %&gt;%\n  left_join(rfstations)\n\nAfter that, sort the variables Longitude and Latitude to check if there is missing data.\n\n\n3. Create Single Frame Data\n\nrfdata_sf &lt;- st_as_sf(rfdata,\n                      coords=c(\"Longitude\",\"Latitude\"),\n                      crs=4326) %&gt;%\n  st_transform(crs=3414)\n\nNote:\n\nThe order of coords should be longitude first, and then followed by latitude.\ncrs=4326: WGS 84 (World Geodetic System 1984)\ncrs=3414: SVY21 (Singapore Variable Coordinate System 21). Transform decimal degree into meter degree\n\n\n\n4. Create boundary map\nMultipolygen sub zone.\n\nmpsz2019 &lt;- st_read(dsn=\"data/geospatial\",\n                    layer=\"MPSZ-2019\") %&gt;%\n  st_transform(crs=3414)\n\nReading layer `MPSZ-2019' from data source \n  `D:\\yanrui-w\\ISSS608-VAA\\In-Class_Ex\\In-Class_Ex07\\data\\geospatial' \n  using driver `ESRI Shapefile'\nSimple feature collection with 332 features and 6 fields\nGeometry type: MULTIPOLYGON\nDimension:     XY\nBounding box:  xmin: 103.6057 ymin: 1.158699 xmax: 104.0885 ymax: 1.470775\nGeodetic CRS:  WGS 84\n\n\n\n\n5. Plot the themtic map\nLayer1: boundary map Layer2: rainfall data\n\ntmap_options(check.and.fix = TRUE)\ntmap_mode(\"view\")\ntm_shape(mpsz2019)+\n  tm_borders()+\n  tm_shape(rfdata_sf)+\n  tm_dots(col=\"MONTHSUM\")\n\n\n\n\n\ntmap_mode(\"plot\")\n\nNote:\n\ntm_polygen(fill=) equals to tm_fill(colour=)+tm_borders()\ntm_dots(col=\"MONTHSUM\"): col is parameter for colour code according to the variable assigned to it.\n\n\n\n6. Plot the thematic map with raster\n(xmax-xmin)/resolution chosen\n\ngrid &lt;- terra::rast(mpsz2019,\n                    nrows=690,\n                    ncols=1075)\nxy &lt;- terra::xyFromCell(grid,\n                        1:ncell(grid))\n\nCreate sf layer\nCreate the raster layer\nPredit"
+  },
+  {
+    "objectID": "In-Class_Ex/In-Class_Ex07/data/geospatial/MPSZ-2019.html",
+    "href": "In-Class_Ex/In-Class_Ex07/data/geospatial/MPSZ-2019.html",
+    "title": "ISSS608-VAA",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n        0 0     false"
   }
 ]

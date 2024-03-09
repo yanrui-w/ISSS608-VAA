@@ -1,5 +1,5 @@
 ---
-title: "In-Class Exercise 7"
+title: "In-Class Exercise 7: Deal with Geospatial Data"
 author: "Wei Yanrui"
 date: "March 9,2024"
 date-modified: "last-modified"
@@ -10,3 +10,103 @@ execute:
   warning: false
   message: false
 ---
+
+# 1. Getting Started
+
+```{r}
+pacman::p_load(sf,terra,gstat,tmap,
+               viridis,tidyverse)
+```
+
+# 2. Import Data
+
+Import attribute data (WGS84)
+
+```{r}
+rfstations <- read_csv("data/aspatial/RainfallStation.csv")
+```
+
+Import rainfall data and process data extraction and transformation to get monthly rainfall data.
+
+```{r}
+rfdata <- read_csv("data/aspatial/DAILYDATA_202402.csv") %>%
+  select(c(1,5)) %>%
+  group_by(Station) %>%
+  summarise(MONTHSUM = sum(`Daily Rainfall Total (mm)`)) %>%
+  ungroup()
+```
+
+Add in attribute data. Reference layer is rainfall data, and left join with rainfall station data.
+
+-   Ensure there is a same and identifier variable in both table for join statement.
+
+```{r}
+rfdata <- rfdata %>%
+  left_join(rfstations)
+```
+
+After that, sort the variables *Longitude* and *Latitude* to check if there is missing data.
+
+# 3. Create Single Frame Data
+
+```{r}
+rfdata_sf <- st_as_sf(rfdata,
+                      coords=c("Longitude","Latitude"),
+                      crs=4326) %>%
+  st_transform(crs=3414)
+```
+
+Note:
+
+-   The order of coords should be longitude first, and then followed by latitude.
+-   `crs=4326`: WGS 84 (World Geodetic System 1984)
+-   `crs=3414`: SVY21 (Singapore Variable Coordinate System 21). Transform decimal degree into meter degree
+
+# 4. Create boundary map
+
+Multipolygen sub zone.
+
+```{r}
+mpsz2019 <- st_read(dsn="data/geospatial",
+                    layer="MPSZ-2019") %>%
+  st_transform(crs=3414)
+```
+
+# 5. Plot the themtic map
+
+Layer1: boundary map
+Layer2: rainfall data
+
+```{r}
+tmap_options(check.and.fix = TRUE)
+tmap_mode("view")
+tm_shape(mpsz2019)+
+  tm_borders()+
+  tm_shape(rfdata_sf)+
+  tm_dots(col="MONTHSUM")
+tmap_mode("plot")
+```
+
+Note:
+
+-   `tm_polygen(fill=)` equals to `tm_fill(colour=)+tm_borders()`
+-   `tm_dots(col="MONTHSUM")`: col is parameter for colour code according to the variable assigned to it.
+
+# 6. Plot the thematic map with raster
+
+(xmax-xmin)/resolution chosen
+
+```{r}
+grid <- terra::rast(mpsz2019,
+                    nrows=690,
+                    ncols=1075)
+xy <- terra::xyFromCell(grid,
+                        1:ncell(grid))
+
+```
+
+Create sf layer
+
+Create the raster layer
+
+Predit
