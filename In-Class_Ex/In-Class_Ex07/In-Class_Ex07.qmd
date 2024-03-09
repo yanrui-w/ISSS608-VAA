@@ -1,0 +1,12 @@
+---
+title: "In-Class Exercise 7"
+author: "Wei Yanrui"
+date: "March 9,2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  freeze: true
+  warning: false
+  message: false
+---
