@@ -231,7 +231,25 @@ consump_account <- consump_account %>%
 
 # 4. Visualization
 
+## 4.1 Visualization on Electricity Generation
 
+-   Visualization methods
+
+I choose **grouped bar chart** to display the absolute amount of energy input and electricity output together and **line chart** to show the conversion rate for each year. In this way, readers can get to know not only the amount of input and output but also the performance of electricity generation of each year.
+
+-   X-axis and Y-axis
+
+The x-axis represents the years, the left y-axis represents the amount of inputs and outputs in GWh, and the right y-axis represents the conversion rate. 
+
+-   Scale
+
+The input amount is around 80,000-120,000 GWh, the output amount is around 30,000-60,000 GWh, while the conversion rate is around 40%-50%. To better display both charts without disturbing each other, I set the scale of left y-axis (amount of input and output) to be from 0-120,000 GWh, and the scale of right y-axis (conversion rate) to be from 0%-50%.
+
+-   Interactivity
+
+I create interactive visualization by showing the detail text when hovering the mouse pointer on each bar and point on the line.
+
+The code is shown as below:
 
 ```{r}
 conversion <- conversion %>%
@@ -258,7 +276,8 @@ p1 <- conversion %>%
             name="Conversion rate",
             line = list(color = 'rgba(67,67,67,1)', 
                         width = 1)) %>%
-  layout(barmode = "group", 
+  layout(barmode = "group",
+         title = "Review on Electricity Generation",
          xaxis = list(title = "",tickangle=-45, tickfont=list(size=8)),
          yaxis = list(title="", tickfont=list(size=8)),
          yaxis2 = list(title="",
@@ -272,6 +291,21 @@ p1 <- conversion %>%
 p1
 ```
 
+## 4.2 Visualization on Electricity Consumption
+
+-   Visualization methods
+
+I choose **bubble plot** to display the cross-review on electricity consumption and number of electricity accounts by each sub sector.
+
+-   X-axis and Y-axis
+
+The x-axis represents the number of electricity accounts, the y-axis represents the amount of electricity consumption. Points will be coloured in terms of sub sector.
+
+-   Interactivity
+
+I create interactive visualization by showing the movement over the years.
+
+The code is shown as below:
 
 ```{r}
 # plot 2: 
@@ -287,9 +321,31 @@ bp <- consump_account %>%
           mode="markers",
           alpha = 0.8) %>%
   layout(showlegend=TRUE,
-         hovermode="closest")
+         hovermode="closest",
+         legend = list(font = list(size = 8)),
+         title="Review on Electricity Consumption and Number of Accounts by Sub-sector",
+         xaxis=list(title="No. of Accounts",
+                    titlefont = list(size = 8),
+                    tickfont = list(size = 8)),
+         yaxis=list(title="Consumption",
+                    titlefont = list(size = 8),
+                    tickfont = list(size = 8)))
 bp
 ```
 
-
 # 5. UI Design
+
+## 5.1 Draft storyboard
+
+The draft storyboard is shown as below:
+
+![draft_storyboard](image/draft_storyboard.png)
+
+## 5.2 UI Design
+
+The UI design is shown as below:
+
+![ui_design](image/ui_design.png)
+
+![ui_design_2](image/ui_design_2.png)
+
