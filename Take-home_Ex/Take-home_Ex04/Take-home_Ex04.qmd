@@ -1,0 +1,13 @@
+---
+title: "Take-Home Exercise 4: Prototyping Modules for Visual Analytics Shiny Application Project"
+author: "Wei Yanrui"
+date: "March 11, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  freeze: true
+  warning: false
+  message: false
+editor: visual
+---
