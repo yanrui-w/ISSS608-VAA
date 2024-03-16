@@ -16,6 +16,8 @@ editor: visual
 
 ![roadmap_8](image/roadmap_8.png)
 
+-   Applicable to the data with nodes and edges, e.g. transactions among accounts, connections among websites or IP addresses, delivery services, emails among senders and receivers, etc.
+
 # 2. Getting Started
 
 ## 2.1 Installing and launching R packages
@@ -44,6 +46,7 @@ The data sets used in this hands-on exercise is from an oil exploration and extr
 ## 3.2 The nodes data
 
 *GAStech_email_nodes.csv* which consist of the names, department and title of the 55 employees.
+The data should cover info of all the nodes of both side in one relationship.
 
 ![nodesdata](image/nodesdata.png)
 
@@ -87,7 +90,7 @@ GAStech_edges <- GAStech_edges %>%
 
 1.  `dmy()`: a function of **lubridate** package which transforms the *SentDate* to Date data type.
 
-2.  `wday()`: a function of **lubridate** package which returns the day of the week as a decimal number or an ordered factor if label is TRUE. The argument abbr is FALSE keep the daya spells in full, i.e. Monday. The function will create a new column in the data.frame i.e. *Weekday* and the output of `wday()` will save in this newly created field. The values in the Weekday field are in ordinal scale.
+2.  `wday()`: a function of **lubridate** package which returns the day of the week as a decimal number or an ordered factor if label is TRUE. The argument abbr is FALSE keep the days spells in full, i.e. Monday. The function will create a new column in the data.frame i.e. *Weekday* and the output of `wday()` will save in this newly created field. The values in the Weekday field are in ordinal scale.
 :::
 
 ## 3.6 Reviewing the revised data fields
@@ -116,6 +119,12 @@ GAStech_edges_aggregated <- GAStech_edges %>%
   ungroup()
 ```
 
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `Weight>1`: look for email communication of multiple times.
+:::
+
 ## 3.8 Reviewing the revised edges file
 
 Table below shows the data structure of the reformatted *GAStech_edges_aggregated* data frame.
@@ -136,7 +145,7 @@ Refer to these two articles for more information:\
 
 Two functions of **tidygraph** package can be used to create network objects, they are:
 
--   `tbl_graph()` creates a new **tbl_graph** network object from nodes and edges data.
+-   `tbl_graph()` creates a new **tbl_graph** network object from nodes and edges data from scratch.
 
 -   `as_tbl_graph()` converts an existed network data and objects to a **tbl_graph** network. Below are network data and objects supported by `as_tbl_graph()`
 
@@ -153,6 +162,11 @@ Two functions of **tidygraph** package can be used to create network objects, th
     -   phylo and evonet from ape, and
 
     -   graphNEL, graphAM, graphBAM from graph (in Bioconductor).
+
+Three elements in network data:
+-   Nodes: a data frame with nodes info
+-   Edges: a data frame with edges info
+-   Direct: the relationship from node A to node B is different from the one from B to A in terms of frequency, weight,etc.
 
 ## 4.2 The dplyr verbs in tidygraph
 
@@ -176,6 +190,7 @@ GAStech_graph <- tbl_graph(nodes=GAStech_nodes,
 ## Code Notes
 
 1.  `directed=TRUE`: directed graph where edges have directions.
+2.  In tidygraph, names of nodes will be replaced by numbers.
 :::
 
 ## 4.4 Reviewing the output tidygraph's graph object
@@ -282,7 +297,15 @@ g <- ggraph(GAStech_graph,
 g+theme_graph()
 ```
 
+::: {.callout-note icon="false"}
+## Code Notes
+
+1.  `layout = "fr"`: abbreviation of `layout_with_fr()`.
+:::
+
 ## 5.6 Modifying network nodes
+
+Modify nodes: size, colour, defination of nodes.
 
 In this section, I will colour each node by referring to their respective departments.
 
@@ -304,6 +327,8 @@ g+theme_graph()
 
 ## 5.7 Modifying edges
 
+Modify edges: thickness, colour.
+
 In the code chunk below, the thickness of the edges will be mapped with the *Weight* variable.
 
 ```{r}
@@ -321,7 +346,7 @@ g+theme_graph()
 ::: {.callout-note icon="false"}
 ## Code Notes
 
-1.  `geom_edge_link`: draws edges in the simplest way - as straight lines between the start and end nodes. But, it can do more that that. In the example above, argument `width` is used to map the width of the line in proportional to the Weight attribute and argument `alpha` is used to introduce opacity on the line.
+1.  `geom_edge_link`: draws edges in the simplest way - as straight lines between the start and end nodes. But, it can do more that that. In the example above, argument `width` is used to map the width of the line in proportional to the Weight attribute and argument `alpha` is used to introduce opacity on the line. Since introducing thickness of lines, need to define the range of thickness by using `scale_edge_width()`.
 :::
 
 # 6. Creating facet graphs
@@ -418,6 +443,8 @@ g+facet_nodes(~Department)+
 Centrality measures are a collection of statistical indices use to describe the relative important of the actors are to a network. There are four well-known centrality measures, namely: **degree, betweenness, closeness** and **eigenvector**.
 
 Refer to *Chapter 7: Actor Prominence* of **A User’s Guide to Network Analysis in R**\* to gain better understanding of theses network measures.
+
+To show centrality of each nodes by differentiating the size.
 
 ```{r}
 g <- GAStech_graph %>%
