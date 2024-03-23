@@ -1006,5 +1006,12 @@
     "title": "In-Class Exercise 9",
     "section": "Plot interactive graph",
     "text": "Plot interactive graph\n\nvisNetwork(GAStech_nodes,\n           GAStech_edges_aggregated) %&gt;%\n  visIgraphLayout(layout=\"layout_with_fr\")\n\n\n\n\n\n\nvisNetwork(GAStech_nodes,\n           GAStech_edges_aggregated) %&gt;%\n  visIgraphLayout(layout=\"layout_with_fr\") %&gt;%\n  visOptions(highlightNearest = TRUE,\n             nodesIdSelection = TRUE) %&gt;%\n  visLegend() %&gt;%\n  visLayout(randomSeed = 123)"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex04/Take-home_Ex04.html#electricity-consumption-and-account-number",
+    "href": "Take-home_Ex/Take-home_Ex04/Take-home_Ex04.html#electricity-consumption-and-account-number",
+    "title": "Take-Home Exercise 4: Prototyping Modules for Visual Analytics Shiny Application Project",
+    "section": "6.1 Electricity Consumption and account number",
+    "text": "6.1 Electricity Consumption and account number\n\n6.1.1 Plot\n\n# 1. Modify the file filtered by \"year\"\nconsump_account_filtered &lt;- consump_account %&gt;%\n  mutate(across(where(is.character), ~ gsub(\"&\", \"&amp;\", .))) %&gt;%\n  filter(year== 2005) \n\n# 2. Install packages\npacman::p_load(treemap, treemapify, \n               tidyverse,d3treeR,\n               devtools,RColorBrewer)\n\n# 3. Plot\nselected_year &lt;- 2005\ncolor_palette &lt;- colorRampPalette(brewer.pal(12, \"Blues\"))(20) \ntm &lt;- treemap(consump_account_filtered,\n              index=c(\"sector\", \"sub_sector\"),\n              vSize=\"consumption\",\n              vColor=\"Account_number\",\n              type=\"value\",\n              palette = color_palette,\n              title=paste0(\"Electricity consumption and account number in \",selected_year),\n              title.legend = \"Account_number\"\n)\nd3tree(tm,rootname = \"Industry\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n6.1.2 UI Design\n\nSelect year"
   }
 ]
